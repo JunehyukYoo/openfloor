@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -12,8 +9,8 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
+  id       String  @id @default(cuid())
+  email    String  @unique
   password String
 
   participants   Participant[]
@@ -23,13 +20,13 @@ model User {
 }
 
 model Debate {
-  id      Int      @id @default(autoincrement())
-  priv    Int
-  started DateTime @default(now())
-  closed  Boolean  @default(false)
+  id        String     @id @default(cuid())
+  priv      Int
+  started   DateTime   @default(now())
+  closed    Boolean    @default(false)
 
-  topicId Int
-  topic   Topic @relation(fields: [topicId], references: [id])
+  topicId   Int
+  topic     Topic      @relation(fields: [topicId], references: [id])
 
   participants Participant[]
 }
@@ -51,42 +48,42 @@ model Stance {
 }
 
 model Participant {
-  id       Int  @id @default(autoincrement())
-  userId   Int
-  debateId Int
-  stanceId Int?
+  id        Int      @id @default(autoincrement())
+  userId    String
+  debateId  String
+  stanceId  Int?
 
-  role     String // e.g., "debater", "judge", "observer"
-  joinedAt DateTime @default(now())
+  role      String
+  joinedAt  DateTime @default(now())
 
-  user   User    @relation(fields: [userId], references: [id])
-  debate Debate  @relation(fields: [debateId], references: [id])
-  stance Stance? @relation(fields: [stanceId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  debate    Debate   @relation(fields: [debateId], references: [id])
+  stance    Stance?  @relation(fields: [stanceId], references: [id])
 
-  @@unique([userId, debateId]) // one participation per debate per user
+  @@unique([userId, debateId])
 }
 
 model Justification {
-  id        Int      @id @default(autoincrement())
-  content   String
-  createdAt DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  content     String
+  createdAt   DateTime @default(now())
 
-  authorId Int
-  author   User @relation(fields: [authorId], references: [id])
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
 
-  stanceId Int
-  stance   Stance @relation(fields: [stanceId], references: [id])
+  stanceId    Int
+  stance      Stance   @relation(fields: [stanceId], references: [id])
 
-  votes    Vote[]
-  comments Comment[] @relation("JustificationComments")
+  votes       Vote[]
+  comments    Comment[] @relation("JustificationComments")
 }
 
 model Vote {
-  id    Int @id @default(autoincrement())
-  value Int
+  id              Int      @id @default(autoincrement())
+  value           Int
 
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
 
   justificationId Int
   justification   Justification @relation(fields: [justificationId], references: [id])
@@ -95,17 +92,17 @@ model Vote {
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
-  content   String
-  createdAt DateTime @default(now())
+  id               Int      @id @default(autoincrement())
+  content          String
+  createdAt        DateTime @default(now())
 
-  authorId Int
-  author   User @relation(fields: [authorId], references: [id])
+  authorId         String
+  author           User     @relation(fields: [authorId], references: [id])
 
-  justificationId Int
-  justification   Justification @relation("JustificationComments", fields: [justificationId], references: [id])
+  justificationId  Int
+  justification    Justification @relation("JustificationComments", fields: [justificationId], references: [id])
 
-  parentId Int?
-  parent   Comment?  @relation("CommentHierarchy", fields: [parentId], references: [id])
-  children Comment[] @relation("CommentHierarchy")
+  parentId         Int?
+  parent           Comment?  @relation("CommentHierarchy", fields: [parentId], references: [id])
+  children         Comment[] @relation("CommentHierarchy")
 }
