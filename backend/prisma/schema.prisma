@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+
+  participants   Participant[]
+  justifications Justification[]
+  votes          Vote[]
+  comments       Comment[]
+}
+
+model Debate {
+  id      Int      @id @default(autoincrement())
+  priv    Int
+  started DateTime @default(now())
+  closed  Boolean  @default(false)
+
+  topicId Int
+  topic   Topic @relation(fields: [topicId], references: [id])
+
+  participants Participant[]
+}
+
+model Topic {
+  id      Int      @id @default(autoincrement())
+  title   String
+  stances Stance[]
+  debates Debate[]
+}
+
+model Stance {
+  id             Int             @id @default(autoincrement())
+  label          String
+  topicId        Int
+  topic          Topic           @relation(fields: [topicId], references: [id])
+  justifications Justification[]
+  participants   Participant[]
+}
+
+model Participant {
+  id       Int  @id @default(autoincrement())
+  userId   Int
+  debateId Int
+  stanceId Int?
+
+  role     String // e.g., "debater", "judge", "observer"
+  joinedAt DateTime @default(now())
+
+  user   User    @relation(fields: [userId], references: [id])
+  debate Debate  @relation(fields: [debateId], references: [id])
+  stance Stance? @relation(fields: [stanceId], references: [id])
+
+  @@unique([userId, debateId]) // one participation per debate per user
+}
+
+model Justification {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+
+  authorId Int
+  author   User @relation(fields: [authorId], references: [id])
+
+  stanceId Int
+  stance   Stance @relation(fields: [stanceId], references: [id])
+
+  votes    Vote[]
+  comments Comment[] @relation("JustificationComments")
+}
+
+model Vote {
+  id    Int @id @default(autoincrement())
+  value Int
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  justificationId Int
+  justification   Justification @relation(fields: [justificationId], references: [id])
+
+  @@unique([userId, justificationId])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+
+  authorId Int
+  author   User @relation(fields: [authorId], references: [id])
+
+  justificationId Int
+  justification   Justification @relation("JustificationComments", fields: [justificationId], references: [id])
+
+  parentId Int?
+  parent   Comment?  @relation("CommentHierarchy", fields: [parentId], references: [id])
+  children Comment[] @relation("CommentHierarchy")
+}
