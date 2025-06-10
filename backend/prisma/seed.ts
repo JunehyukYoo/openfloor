@@ -3,7 +3,7 @@ import { PrismaClient } from "../generated/prisma";
 const prisma = new PrismaClient();
 
 async function main() {
-  // Create users TEMP NO HASING OF PWD
+  // Create users (no need to supply cuid() manually)
   const alice = await prisma.user.create({
     data: {
       email: "alice@example.com",
@@ -33,7 +33,7 @@ async function main() {
   });
 
   // Create stances
-  const stances = await prisma.stance.createMany({
+  await prisma.stance.createMany({
     data: [
       { label: "Private schools are better", topicId: topic.id },
       { label: "Public schools are more equitable", topicId: topic.id },
@@ -41,15 +41,15 @@ async function main() {
     ],
   });
 
-  // Fetch stances with their IDs
-  const allStances = await prisma.stance.findMany({
+  const stances = await prisma.stance.findMany({
     where: { topicId: topic.id },
+    orderBy: { id: "asc" },
   });
 
-  // Create debate
+  // Create debate (id is cuid-based now)
   const debate = await prisma.debate.create({
     data: {
-      priv: 0, // public
+      priv: 0,
       topicId: topic.id,
       closed: false,
       started: new Date(),
@@ -62,19 +62,19 @@ async function main() {
       {
         userId: alice.id,
         debateId: debate.id,
-        stanceId: allStances[0].id,
+        stanceId: stances[0].id,
         role: "debater",
       },
       {
         userId: bob.id,
         debateId: debate.id,
-        stanceId: allStances[1].id,
+        stanceId: stances[1].id,
         role: "debater",
       },
       {
         userId: june.id,
         debateId: debate.id,
-        stanceId: allStances[2].id,
+        stanceId: stances[2].id,
         role: "debater",
       },
     ],
@@ -87,29 +87,29 @@ async function main() {
         content:
           "Private schools often have smaller class sizes and more funding.",
         authorId: alice.id,
-        stanceId: allStances[0].id,
+        stanceId: stances[0].id,
       },
       {
         content:
           "Public schools better reflect real-world diversity and social equity.",
         authorId: bob.id,
-        stanceId: allStances[1].id,
+        stanceId: stances[1].id,
       },
       {
         content:
           "Each school is different: case-by-case analysis must be performed.",
         authorId: june.id,
-        stanceId: allStances[2].id,
+        stanceId: stances[2].id,
       },
     ],
   });
 
-  console.log("Database seeded!");
+  console.log("✅ Database seeded!");
 }
 
 main()
   .catch((e) => {
-    console.error(e);
+    console.error("❌ Seeding failed:", e);
     process.exit(1);
   })
   .finally(() => prisma.$disconnect());
