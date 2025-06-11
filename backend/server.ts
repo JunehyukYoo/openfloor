@@ -1,14 +1,19 @@
 // server.ts
-
 require("dotenv").config();
-const cors = require("cors");
 const express = require("express");
+const cors = require("cors");
 const pg = require("./lib/pool");
 const session = require("express-session");
 const pgSession = require("connect-pg-simple")(session);
 const passport = require("passport");
+import { User } from "./types";
+import prisma from "./lib/prisma";
+import { Request, Response } from "express";
 
+// Setup app
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 // Set up cors
 // NOTE: origin url should be changed for production
@@ -51,11 +56,11 @@ const mockStrategy = require("./utils/passport-local-strategy").default;
 
 passport.use(mockStrategy);
 
-passport.serializeUser((user, done) => {
+passport.serializeUser((user: User, done: any) => {
   done(null, user.id);
 });
 
-passport.deserializeUser(async (id, done) => {
+passport.deserializeUser(async (id: string, done: any) => {
   try {
     const { rows } = await pg.query("SELECT * FROM users WHERE id = $1", [id]);
     const user = rows[0];
@@ -70,10 +75,13 @@ if (process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1);
 }
 
-// Currently setting up a test route
-app.get("/test", (req, res) => {
-  res.send("This was sent from the server.");
-});
+//Currently setting up a test route
+// app.get("/test", (req: Request, res: Response) => {
+//   res.send("This was sent from the server.");
+// });
+
+const indexRouter = require("./routes/indexRouter").default;
+app.use("/", indexRouter);
 
 // Start server on port
 const PORT = process.env.PORT || 3000;
