@@ -17,6 +17,8 @@ model User {
   justifications Justification[]
   votes          Vote[]
   comments       Comment[]
+
+  @@map("users")
 }
 
 model Debate {
@@ -29,6 +31,8 @@ model Debate {
   topic     Topic      @relation(fields: [topicId], references: [id])
 
   participants Participant[]
+
+  @@map("debates")
 }
 
 model Topic {
@@ -36,6 +40,8 @@ model Topic {
   title   String
   stances Stance[]
   debates Debate[]
+
+  @@map("topics")
 }
 
 model Stance {
@@ -45,6 +51,8 @@ model Stance {
   topic          Topic           @relation(fields: [topicId], references: [id])
   justifications Justification[]
   participants   Participant[]
+
+  @@map("stances")
 }
 
 model Participant {
@@ -61,6 +69,8 @@ model Participant {
   stance    Stance?  @relation(fields: [stanceId], references: [id])
 
   @@unique([userId, debateId])
+
+  @@map("participants")
 }
 
 model Justification {
@@ -76,6 +86,8 @@ model Justification {
 
   votes       Vote[]
   comments    Comment[] @relation("JustificationComments")
+
+  @@map("justifications")
 }
 
 model Vote {
@@ -89,6 +101,8 @@ model Vote {
   justification   Justification @relation(fields: [justificationId], references: [id])
 
   @@unique([userId, justificationId])
+
+  @@map("votes")
 }
 
 model Comment {
@@ -105,4 +119,6 @@ model Comment {
   parentId         Int?
   parent           Comment?  @relation("CommentHierarchy", fields: [parentId], references: [id])
   children         Comment[] @relation("CommentHierarchy")
+
+  @@map("comments")
 }
