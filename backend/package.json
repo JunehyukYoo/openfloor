@@ -24,6 +24,9 @@
   },
   "dependencies": {
     "@prisma/client": "^6.9.0",
+    "bcrypt": "^6.0.0",
+    "express-session": "^1.18.1",
+    "passport-local": "^1.0.0",
     "prisma": "^6.9.0"
   }
 }
