@@ -5,18 +5,10 @@ import prisma from "../lib/prisma";
 
 const indexRouter = express.Router();
 
-indexRouter.get("/ping", (req, res, next) => {
+// PING
+indexRouter.get("/ping", (_req: Request, res: Response, next: NextFunction) => {
   res.status(200).json({ message: "Server alive!" });
 });
-
-// // BASIC AUTHENTICATION
-// indexRouter.get("/", async (req, res) => {
-//   if (req.isAuthenticated()) {
-//     res.status(200).json({ message: "Authorized" });
-//   } else {
-//     res.status(401).json({ message: "Unauthorized" });
-//   }
-// });
 
 // REGISTER
 indexRouter.post(
@@ -71,8 +63,10 @@ indexRouter.post(
 indexRouter.post(
   "/login",
   passport.authenticate("local"),
-  (_req: Request, res: Response, next: NextFunction) => {
-    res.status(200).json({ message: "Login successful" });
+  (req: Request, res: Response, next: NextFunction) => {
+    res
+      .status(200)
+      .json({ user: req.user || null, message: "Login successful" });
   }
 );
 
@@ -82,7 +76,7 @@ indexRouter.post("/logout", (req, res, next) => {
     if (err) {
       res.status(500).json({ message: "Logout failed" });
     } else {
-      res.json({ message: "Logged out successfully" });
+      res.json({ message: "Logout successful" });
     }
   });
 });
@@ -95,7 +89,7 @@ indexRouter.get("/test", (req: Request, res: Response, next: NextFunction) => {
 // Check if user is logged in
 indexRouter.get("/me", (req, res) => {
   if (req.isAuthenticated()) {
-    res.json({ user: req.user });
+    res.status(200).json({ user: req.user });
   } else {
     res.status(401).json({ message: "Not logged in" });
   }

@@ -1,32 +1,26 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/authContext";
+import api from "../../api/axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { setLoggedIn, setUsername } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const reqUrl = new URL(
-      "/login",
-      import.meta.env.VITE_API_BASE_URL
-    ).toString();
-    const body = JSON.stringify({ email, password });
-    console.log("Logging in with details: " + body);
     try {
-      const response = await fetch(reqUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: body,
-      });
-      // Handle response here (e.g., redirect, show error, etc.)
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Login successful:", data);
-        // Redirect or update UI after successful login
+      const response = await api.post("/login", { email, password });
+      if (response.status === 200) {
+        console.log("Login successful:", response.data);
+        console.log("User:", response.data.user);
+        setLoggedIn(true);
+        setUsername(response.data.user.username);
+        navigate("/");
       }
     } catch (error) {
-      // Handle error here
       console.error("Login failed:", error);
       alert("Login failed. Please check your credentials.");
     }
@@ -36,7 +30,7 @@ const Login = () => {
     <div>
       <div>
         <h2>Login</h2>
-        <form onSubmit={handleSubmit} id="login-form">
+        <form onSubmit={handleLogin} id="login-form">
           <div>
             <label htmlFor="login-email">Email</label>
             <input
