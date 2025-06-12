@@ -1,7 +1,10 @@
+// axios.ts
 import axios from "axios";
 
 // Just to cleanup fetching from backend
-export const api = axios.create({
-  baseURL: "http://localhost:3000",
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true,
 });
+
+export default api;
