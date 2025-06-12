@@ -15,15 +15,11 @@ const Register = () => {
     ).toString();
     console.log("Register URL:", reqUrl);
     try {
-      const { data } = await axios.post(
-        reqUrl,
-        document.querySelector("#register-form"),
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const { data } = await axios.post(reqUrl, {
+        email,
+        password,
+        username,
+      });
       console.log("Register successful:", data);
     } catch (error) {
       // Handle error here
