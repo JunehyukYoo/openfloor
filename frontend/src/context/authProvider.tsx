@@ -1,19 +1,10 @@
-// AuthContext.tsx
-// Custom React context for authentication state management
-import { createContext, useContext, useEffect, useState } from "react";
+// authProvider.tsx
+// Custom React component using React context for authentication state management
+import { useEffect, useState } from "react";
+import { AuthContext } from "./authContext";
 import api from "../../api/axios";
 
-type AuthContextType = {
-  loggedIn: boolean;
-  setLoggedIn: (value: boolean) => void;
-  username: string;
-  setUsername: (value: string) => void;
-  isLoading: boolean;
-};
-
-const AuthContext = createContext<AuthContextType | null>(null);
-
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -49,8 +40,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const useAuth = () => {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within an AuthProvider");
-  return ctx;
-};
+export default AuthProvider;
+
+// export const useAuth = () => {
+//   const ctx = useContext(AuthContext);
+//   if (!ctx) throw new Error("useAuth must be used within an AuthProvider");
+//   return ctx;
+// };
