@@ -1,5 +1,5 @@
 // App.tsx
-import { useState, useEffect } from "react";
+// import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import api from "../api/axios";
 import "./App.css";
@@ -25,38 +25,7 @@ function Home({ loggedIn, username }: { loggedIn: boolean; username: string }) {
 }
 
 function App() {
-  const { loggedIn, username, setLoggedIn, setUsername } = useAuth();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  // Use the useEffect hook to check login status when the component mounts
-  useEffect(() => {
-    // Check if the user is logged in when the component mounts
-    const checkLoginStatus = async () => {
-      try {
-        const response = await api.get(
-          new URL("/me", import.meta.env.VITE_API_BASE_URL).toString(),
-          {
-            withCredentials: true,
-          }
-        );
-        if (response.status === 200) {
-          setLoggedIn(true);
-          setUsername(response.data.user.username);
-        } else {
-          setLoggedIn(false);
-          setUsername("");
-        }
-      } catch (error) {
-        console.error("Error checking login status:", error);
-        setLoggedIn(false);
-        setUsername("");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkLoginStatus();
-  }, []);
+  const { isLoading, loggedIn, username, setLoggedIn, setUsername } = useAuth();
 
   if (isLoading) {
     return (
@@ -74,17 +43,10 @@ function App() {
 
   const handleLogout = async () => {
     await api
-      .post(
-        "/logout",
-        {},
-        {
-          withCredentials: true,
-        }
-      )
+      .post("/logout")
       .then(() => {
         setLoggedIn(false);
         setUsername("");
-        // Optionally redirect to login or home
       })
       .catch((error) => {
         console.error("Logout failed:", error);
