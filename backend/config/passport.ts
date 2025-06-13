@@ -1,6 +1,6 @@
 // passport.ts
 require("dotenv").config();
-const pool = require("../lib/pool").default;
+import prisma from "../lib/prisma";
 import passport from "passport";
 const LocalStrategy = require("passport-local").Strategy;
 import bcrypt from "bcryptjs";
@@ -14,18 +14,16 @@ const customFields = {
   usernameField: "email",
 };
 
+// Local strategy with password encryption using bcrypt
 const strategyWithEncryption = new LocalStrategy(
   customFields,
   async (username: string, password: string, done: DoneFunction) => {
+    console.log("Using strategy with encryption");
     try {
-      const { rows }: { rows: User[] } = await pool.query(
-        "SELECT * FROM users WHERE email = $1",
-        [username]
-      );
-      const user = rows[0];
+      const user = await prisma.user.findUnique({ where: { username } });
 
       if (!user) {
-        return done(null, false, { message: "Incorrect username" });
+        return done(null, false, { message: "Incorrect email/username" });
       }
       const match = await bcrypt.compare(password, user.password);
       if (!match) {
@@ -47,11 +45,7 @@ const mockStrategy = new LocalStrategy(
     console.log("Username:", username);
     console.log("Password:", password);
     try {
-      const { rows }: { rows: User[] } = await pool.query(
-        "SELECT * FROM users WHERE email = $1",
-        [username]
-      );
-      const user: User | undefined = rows[0];
+      const user = await prisma.user.findUnique({ where: { username } });
       console.log("Found user in strategy:", user);
       if (!user) {
         return done(null, false, { message: "Incorrect username" });
@@ -68,7 +62,7 @@ const mockStrategy = new LocalStrategy(
   }
 );
 
-passport.use(mockStrategy);
+passport.use(strategyWithEncryption);
 
 passport.serializeUser((user: any, done: any) => {
   console.log("Serializing user:", user);
@@ -78,10 +72,7 @@ passport.serializeUser((user: any, done: any) => {
 passport.deserializeUser(async (id: string, done: any) => {
   console.log("Deserializing user with ID:", id);
   try {
-    const { rows } = await pool.query("SELECT * FROM users WHERE id = $1", [
-      id,
-    ]);
-    const user = rows[0];
+    const user = await prisma.user.findUnique({ where: { id } });
     done(null, user);
   } catch (err) {
     done(err, null);
