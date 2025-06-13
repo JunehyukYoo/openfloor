@@ -55,9 +55,28 @@ indexRouter.post("/register", async (req, res, next) => {
 });
 
 // LOGIN;
-indexRouter.post("/login", passport.authenticate("local"), (req, res, next) => {
-  const { password: _, ...publicUser } = req.user as User;
-  res.json({ user: publicUser, message: "Login successful." });
+indexRouter.post("/login", (req, res, next) => {
+  passport.authenticate(
+    "local",
+    (err: any, user: User | false, info?: { message: string }) => {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        // Auth failed
+        const msg = info?.message ?? "Login failed";
+        return res.status(401).json({ message: msg });
+      }
+      // Success path—establish session
+      req.login(user, (err) => {
+        if (err) {
+          return next(err);
+        }
+        const { password: _, ...publicUser } = user as any;
+        return res.json({ user: publicUser, message: "Login successful." });
+      });
+    }
+  )(req, res, next);
 });
 
 // LOGOUT
