@@ -6,6 +6,7 @@ const pool = require("./lib/pool").default;
 const session = require("express-session");
 const poolSession = require("connect-pg-simple")(session);
 const passport = require("passport");
+import { Request, Response, NextFunction } from "express";
 
 // Setup app
 const app = express();
@@ -54,8 +55,18 @@ if (process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1);
 }
 
+// Import and use index router
 const indexRouter = require("./routes/indexRouter").default;
 app.use("/", indexRouter);
+
+// Handle uncaught errors
+app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
+  console.error("Error details:", err);
+  res.status(500).json({
+    message: "Unhandled Error",
+    error: process.env.NODE_ENV === "production" ? undefined : err.message,
+  });
+});
 
 // Start server on port
 const PORT = process.env.PORT || 3000;
