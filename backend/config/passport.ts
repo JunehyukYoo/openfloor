@@ -17,10 +17,10 @@ const customFields = {
 // Local strategy with password encryption using bcrypt
 const strategyWithEncryption = new LocalStrategy(
   customFields,
-  async (username: string, password: string, done: DoneFunction) => {
+  async (email: string, password: string, done: DoneFunction) => {
     console.log("Using strategy with encryption");
     try {
-      const user = await prisma.user.findUnique({ where: { username } });
+      const user = await prisma.user.findUnique({ where: { email } });
 
       if (!user) {
         return done(null, false, { message: "Incorrect email/username" });

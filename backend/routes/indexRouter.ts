@@ -2,6 +2,8 @@ import express from "express";
 import { Request, Response, NextFunction } from "express";
 import passport from "passport";
 import prisma from "../lib/prisma";
+import bcrypt from "bcryptjs";
+import type { User } from "../types/index";
 
 const indexRouter = express.Router();
 
@@ -22,7 +24,7 @@ indexRouter.post("/register", async (req, res, next) => {
 
     const existingUsername = await prisma.user.findUnique({
       where: {
-        email,
+        username,
       },
     });
 
@@ -36,20 +38,16 @@ indexRouter.post("/register", async (req, res, next) => {
       return;
     }
 
-    // TODO: No bcrypt here, change later
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
       data: {
         email,
         username,
-        password,
+        password: hashedPassword,
       },
     });
-
-    req.login(user, (err) => {
-      if (err)
-        res.status(500).json({ message: "Login after registration failed" });
-      else res.json({ message: "Registration successful", user });
-    });
+    const { password: _, ...publicUser } = user;
+    res.status(201).json({ message: "User created", user: publicUser });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Registration error" });
@@ -58,7 +56,8 @@ indexRouter.post("/register", async (req, res, next) => {
 
 // LOGIN;
 indexRouter.post("/login", passport.authenticate("local"), (req, res, next) => {
-  res.status(200).json({ user: req.user || null, message: "Login successful" });
+  const { password: _, ...publicUser } = req.user as User;
+  res.json({ user: publicUser, message: "Login successful." });
 });
 
 // LOGOUT
