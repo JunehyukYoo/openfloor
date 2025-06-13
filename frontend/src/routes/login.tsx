@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import api from "../../api/axios";
+import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { setLoggedIn, setUsername } = useAuth();
   const navigate = useNavigate();
 
@@ -21,8 +23,12 @@ const Login = () => {
         navigate("/");
       }
     } catch (error) {
-      console.error("Login failed:", error);
-      alert("Login failed. Please check your credentials.");
+      if (axios.isAxiosError(error)) {
+        const { message } = error.response!.data as {
+          message: string;
+        };
+        setErrorMessage(message);
+      }
     }
   };
 
@@ -53,6 +59,11 @@ const Login = () => {
           </div>
           <button type="submit">Login</button>
         </form>
+        {errorMessage && (
+          <div style={{ color: "red", marginTop: "10px" }}>
+            <p>{errorMessage}</p>
+          </div>
+        )}
       </div>
     </div>
   );
