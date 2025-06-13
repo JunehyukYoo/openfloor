@@ -34,7 +34,7 @@ indexRouter.post("/register", async (req, res, next) => {
     }
 
     if (existingUsername) {
-      res.status(400).json({ message: "Username already taken" });
+      res.status(409).json({ message: "Username already taken" });
       return;
     }
 
