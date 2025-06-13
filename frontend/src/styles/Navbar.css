@@ -1,0 +1,48 @@
+/* Navbar.css */
+.navbar {
+  color: white;
+  width: 100vw;
+  padding: 20px;
+  height: 5rem;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+
+  /* From https://css.glass */
+  background: rgba(202, 202, 202, 0.17);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10.3px);
+  -webkit-backdrop-filter: blur(10.3px);
+  border-bottom: 1px solid rgba(202, 202, 202, 0.47);
+}
+
+.navbar-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.navbar a {
+  color: white;
+  border-bottom: 2px solid transparent;
+  text-decoration: none;
+  font-size: 1.2rem;
+  transition: 0.4s ease;
+}
+
+.navbar a:hover {
+  border-bottom: 2px solid white;
+}
+
+#temp-logo {
+  font-size: 1.5rem;
+  font-weight: 600;
+  transition: 0.3s ease;
+}
+
+#temp-logo:hover {
+  transform: scale(2);
+}
