@@ -1,14 +1,21 @@
-// prisma/seed.ts
+// seed.ts
 import { PrismaClient } from "../generated/prisma";
+import bcrypt from "bcryptjs";
+
 const prisma = new PrismaClient();
 
 async function main() {
-  // Create users (no need to supply cuid() manually)
+  // Hash plaintext passwords
+  const alicePassword = await bcrypt.hash("alice", 10);
+  const bobPassword = await bcrypt.hash("bob", 10);
+  const junePassword = await bcrypt.hash("june", 10);
+
+  // Create users with hashed passwords
   const alice = await prisma.user.create({
     data: {
       email: "alice@example.com",
       username: "alicebear133",
-      password: "hashed-password-alice",
+      password: alicePassword,
     },
   });
 
@@ -16,7 +23,7 @@ async function main() {
     data: {
       email: "bob@example.com",
       username: "bobthebuilder",
-      password: "hashed-password-bob",
+      password: bobPassword,
     },
   });
 
@@ -24,7 +31,7 @@ async function main() {
     data: {
       email: "june@example.com",
       username: "notjune",
-      password: "hashed-password-june",
+      password: junePassword,
     },
   });
 
@@ -49,7 +56,7 @@ async function main() {
     orderBy: { id: "asc" },
   });
 
-  // Create debate (id is cuid-based now)
+  // Create debate
   const debate = await prisma.debate.create({
     data: {
       priv: 0,
