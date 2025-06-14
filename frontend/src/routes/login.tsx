@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/authContext";
+import RevealOnScroll from "../components/RevealOnScroll";
 import api from "../../api/axios";
 import axios from "axios";
 import "../styles/loginRegister.css";
@@ -51,37 +52,40 @@ const Login = () => {
       <div className="video-container">
         <video src="/login-background.mp4" autoPlay loop muted></video>
       </div>
+
       <div className="form-container">
         {banner && <div className="login-banner">{banner}</div>}
-        <h1>Glad to have you back.</h1>
-        <form onSubmit={handleLogin} id="login-form">
-          <div className="input-container">
-            <input
-              type="email"
-              id="login-email"
-              className="input-line"
-              placeholder="Email*"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="input-container">
-            <input
-              type="password"
-              id="login-password"
-              className="input-line"
-              placeholder="Password*"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <button type="submit">Login</button>
-        </form>
-        <p className="cl-account">
-          Don’t have an account? <a href="/register">Create one now!</a>
-        </p>
+        <RevealOnScroll>
+          <h1>Glad to have you back.</h1>
+          <form onSubmit={handleLogin} id="login-form">
+            <div className="input-container">
+              <input
+                type="email"
+                id="login-email"
+                className="input-line"
+                placeholder="Email*"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div className="input-container">
+              <input
+                type="password"
+                id="login-password"
+                className="input-line"
+                placeholder="Password*"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+            <button type="submit">Login</button>
+          </form>
+          <p className="cl-account">
+            Don't have an account? <a href="/register">Create one now!</a>
+          </p>
+        </RevealOnScroll>
         {errorMessage && (
           <div style={{ color: "red", marginTop: "10px" }}>
             <p>{errorMessage}</p>
