@@ -1,4 +1,5 @@
 // home.tsx
+import Footer from "../components/Footer";
 import "../styles/home.css";
 
 const Home = () => {
@@ -16,7 +17,7 @@ const Home = () => {
 
         <div className="hero-content">
           <h1>Openfloor.</h1>
-          <h3>We welcome all: debaters, philosophers, thinkers.</h3>
+          <h3>We welcome all: debaters, philosophers, and thinkers alike.</h3>
         </div>
       </section>
 
@@ -49,6 +50,7 @@ const Home = () => {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 };
