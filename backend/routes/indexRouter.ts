@@ -90,25 +90,21 @@ indexRouter.post("/logout", (req, res, next) => {
   });
 });
 
-// TESTING ROUTES
+// AUTH ROUTES
 
 // Check if user is logged in
 indexRouter.get("/me", (req, res, next) => {
-  if (req.isAuthenticated()) {
-    res.status(200).json({ user: req.user });
+  if (req.user) {
+    const { password, ...safeUser } = req.user as User;
+    res.status(200).json({ user: safeUser });
   } else {
-    res.status(401).json({ message: "Not logged in" });
+    res.status(401).json({ user: null });
   }
 });
 
 // Raw session data
 indexRouter.get("/session", (req, res, next) => {
   res.json({ session: req.session });
-});
-
-// Alias for current user
-indexRouter.get("/user", (req, res, next) => {
-  res.json({ user: req.user || null });
 });
 
 export default indexRouter;

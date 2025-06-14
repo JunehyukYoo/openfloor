@@ -1,4 +1,5 @@
 // seed.ts
+import "dotenv/config";
 import { PrismaClient } from "../generated/prisma";
 import bcrypt from "bcryptjs";
 
@@ -9,6 +10,8 @@ async function main() {
   const alicePassword = await bcrypt.hash("alice", 10);
   const bobPassword = await bcrypt.hash("bob", 10);
   const junePassword = await bcrypt.hash("june", 10);
+  const profilePicture =
+    process.env.S3_BUCKET + "/profile-pictures/default.png";
 
   // Create users with hashed passwords
   const alice = await prisma.user.create({
@@ -16,6 +19,7 @@ async function main() {
       email: "alice@example.com",
       username: "alicebear133",
       password: alicePassword,
+      profilePicture: profilePicture,
     },
   });
 
@@ -24,6 +28,7 @@ async function main() {
       email: "bob@example.com",
       username: "bobthebuilder",
       password: bobPassword,
+      profilePicture: profilePicture,
     },
   });
 
@@ -32,6 +37,7 @@ async function main() {
       email: "june@example.com",
       username: "notjune",
       password: junePassword,
+      profilePicture: profilePicture,
     },
   });
 

@@ -6,6 +6,7 @@ export interface User {
   email: string;
   username: string;
   password: string;
+  profilePicture: string;
 }
 
 export interface Debate {
