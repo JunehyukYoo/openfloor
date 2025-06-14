@@ -1,6 +1,7 @@
 // register.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import RevealOnScroll from "../components/RevealOnScroll";
 import api from "../../api/axios";
 import axios from "axios";
@@ -23,8 +24,18 @@ const Register = () => {
         username,
       });
       console.log("Register successful:", data);
-      alert("Registration successful! You can now log in.");
+      // alert("Registration successful! You can now log in.");
       navigate("/");
+      toast.success("Registration successful! You can now log in.", {
+        position: "bottom-right",
+        theme: "dark",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const status = error.response?.status;

@@ -8,6 +8,8 @@ import Login from "./routes/login";
 import Register from "./routes/register";
 import Profile from "./routes/profile";
 import { useAuth } from "./context/authContext";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
 function App() {
@@ -38,6 +40,7 @@ function App() {
           <Route path={"/profile"} element={<Profile />} />
         </Route>
       </Routes>
+      <ToastContainer />
     </BrowserRouter>
   );
 }
