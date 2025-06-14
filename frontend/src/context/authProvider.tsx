@@ -2,11 +2,12 @@
 // Custom React component using React context for authentication state management
 import { useEffect, useState } from "react";
 import { AuthContext } from "./authContext";
+import type { User } from "../types.ts";
 import api from "../../api/axios";
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [username, setUsername] = useState("");
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -15,14 +16,14 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const res = await api.get("/me");
         if (res.status === 200) {
           setLoggedIn(true);
-          setUsername(res.data.user.username);
+          setUser(res.data.user);
         } else {
           setLoggedIn(false);
-          setUsername("");
+          setUser(null);
         }
       } catch (error) {
         setLoggedIn(false);
-        setUsername("");
+        setUser(null);
         console.error("Error checking login status:", error);
       } finally {
         setIsLoading(false);
@@ -33,7 +34,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ loggedIn, setLoggedIn, username, setUsername, isLoading }}
+      value={{ loggedIn, setLoggedIn, user, setUser, isLoading }}
     >
       {children}
     </AuthContext.Provider>

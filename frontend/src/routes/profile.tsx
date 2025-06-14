@@ -4,7 +4,7 @@ import api from "../../api/axios";
 import { useAuth } from "../context/authContext";
 
 const Profile = () => {
-  const { username, setLoggedIn, setUsername } = useAuth();
+  const { user, setLoggedIn, setUser } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -12,7 +12,7 @@ const Profile = () => {
       .post("/logout")
       .then(() => {
         setLoggedIn(false);
-        setUsername("");
+        setUser(null);
         navigate("/");
       })
       .catch((error) => {
@@ -24,7 +24,7 @@ const Profile = () => {
   return (
     <div className="page-container">
       <h1>Profile</h1>
-      <h3>Welcome {username}!</h3>
+      <h3>Welcome {user ? user.username : null}!</h3>
       <p>This is the profile page.</p>
       <button onClick={handleLogout}>Logout</button>
     </div>
