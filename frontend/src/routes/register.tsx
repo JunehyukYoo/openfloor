@@ -24,7 +24,6 @@ const Register = () => {
         username,
       });
       console.log("Register successful:", data);
-      // alert("Registration successful! You can now log in.");
       navigate("/");
       toast.success("Registration successful! You can now log in.", {
         position: "bottom-right",
@@ -60,7 +59,7 @@ const Register = () => {
   return (
     <div className="lr-container">
       <div className="video-container">
-        <video src="/register-background.mp4" autoPlay loop muted></video>
+        <video src="/bg-register.mp4" autoPlay loop muted></video>
       </div>
       <div className="form-container">
         <RevealOnScroll>
