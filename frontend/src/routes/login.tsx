@@ -1,6 +1,6 @@
 // login.tsx
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import api from "../../api/axios";
 import axios from "axios";
@@ -10,8 +10,20 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [banner, setBanner] = useState<string | null>(null);
   const { setLoggedIn, setUsername } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // To display if user attempts to access a protected route without being logged in
+  useEffect(() => {
+    if (location.state?.message) {
+      setBanner(location.state.message);
+      setTimeout(() => {
+        setBanner(null);
+      }, 5000);
+    }
+  }, [location]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,6 +52,7 @@ const Login = () => {
         <video src="/login-background.mp4" autoPlay loop muted></video>
       </div>
       <div className="form-container">
+        {banner && <div className="login-banner">{banner}</div>}
         <h1>Glad to have you back.</h1>
         <form onSubmit={handleLogin} id="login-form">
           <div className="input-container">

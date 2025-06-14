@@ -2,6 +2,7 @@
 // import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./routes/home";
 import Login from "./routes/login";
 import Register from "./routes/register";
@@ -33,7 +34,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path={"/profile"} element={<Profile />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
