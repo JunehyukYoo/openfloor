@@ -89,3 +89,12 @@
 .cl-account a:hover {
   color: #646cff;
 }
+
+.login-banner {
+  background-color: #ffcccb;
+  color: #660000;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-weight: bold;
+}
