@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/authContext";
+import { toast } from "react-toastify";
 import RevealOnScroll from "../components/RevealOnScroll";
 import api from "../../api/axios";
 import axios from "axios";
@@ -11,18 +12,25 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [banner, setBanner] = useState<string | null>(null);
+  // const [banner, setBanner] = useState<string | null>(null);
   const { setLoggedIn, setUsername } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   // To display if user attempts to access a protected route without being logged in
+  // uses react-toastify package
   useEffect(() => {
     if (location.state?.message) {
-      setBanner(location.state.message);
-      setTimeout(() => {
-        setBanner(null);
-      }, 5000);
+      toast.error(location.state.message, {
+        position: "bottom-right",
+        theme: "dark",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
   }, [location]);
 
@@ -54,7 +62,7 @@ const Login = () => {
       </div>
 
       <div className="form-container">
-        {banner && <div className="login-banner">{banner}</div>}
+        {/* {banner && <div className="login-banner">{banner}</div>} */}
         <RevealOnScroll>
           <h1>Glad to have you back.</h1>
           <form onSubmit={handleLogin} id="login-form">
