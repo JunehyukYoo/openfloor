@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import api from "../../api/axios";
 import axios from "axios";
+import "../styles/loginRegister.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -34,25 +35,30 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <div>
-        <h2>Login</h2>
+    <div className="lr-container">
+      <div className="video-container">
+        <video src="/login-background.mp4" autoPlay loop muted></video>
+      </div>
+      <div className="form-container">
+        <h1>Glad to have you back.</h1>
         <form onSubmit={handleLogin} id="login-form">
-          <div>
-            <label htmlFor="login-email">Email</label>
+          <div className="input-container">
             <input
               type="email"
               id="login-email"
+              className="input-line"
+              placeholder="Email*"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-          <div>
-            <label htmlFor="login-password">Password</label>
+          <div className="input-container">
             <input
               type="password"
               id="login-password"
+              className="input-line"
+              placeholder="Password*"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -60,6 +66,9 @@ const Login = () => {
           </div>
           <button type="submit">Login</button>
         </form>
+        <p className="cl-account">
+          Don’t have an account? <a href="/register">Create one now!</a>
+        </p>
         {errorMessage && (
           <div style={{ color: "red", marginTop: "10px" }}>
             <p>{errorMessage}</p>

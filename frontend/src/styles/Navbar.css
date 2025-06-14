@@ -22,6 +22,7 @@
 
 .navbar-links {
   display: flex;
+  font-size: 1rem;
   gap: 2rem;
 }
 
@@ -38,7 +39,7 @@
 }
 
 #temp-logo {
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 600;
   transition: 0.3s ease;
 }
