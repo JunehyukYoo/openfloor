@@ -12,7 +12,6 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  // const [banner, setBanner] = useState<string | null>(null);
   const { setLoggedIn, setUsername } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -58,11 +57,10 @@ const Login = () => {
   return (
     <div className="lr-container">
       <div className="video-container">
-        <video src="/login-background.mp4" autoPlay loop muted></video>
+        <video src="/bg-login.mp4" autoPlay loop muted></video>
       </div>
 
       <div className="form-container">
-        {/* {banner && <div className="login-banner">{banner}</div>} */}
         <RevealOnScroll>
           <h1>Glad to have you back.</h1>
           <form onSubmit={handleLogin} id="login-form">
