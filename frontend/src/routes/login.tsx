@@ -12,7 +12,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const { setLoggedIn, setUsername } = useAuth();
+  const { setLoggedIn, setUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -41,7 +41,7 @@ const Login = () => {
         console.log("Login successful:", response.data);
         console.log("User:", response.data.user);
         setLoggedIn(true);
-        setUsername(response.data.user.username);
+        setUser(response.data.user);
         navigate("/");
       }
     } catch (error) {
