@@ -57,7 +57,9 @@ if (process.env.NODE_ENV === "production") {
 
 // Import and use index router
 const indexRouter = require("./routes/indexRouter").default;
+const uploadRouter = require("./routes/uploadRouter").default;
 app.use("/api", indexRouter);
+app.use("/api/upload", uploadRouter);
 
 // Handle uncaught errors
 app.use((err: any, req: Request, res: Response, _next: NextFunction) => {

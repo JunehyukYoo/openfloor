@@ -1,10 +1,9 @@
+// indexRouter.ts
 import express from "express";
-import { Request, Response, NextFunction } from "express";
 import passport from "passport";
 import prisma from "../lib/prisma";
 import bcrypt from "bcryptjs";
 import type { User } from "../types/index";
-import uploadRouter from "./uploadRouter";
 
 const indexRouter = express.Router();
 
@@ -94,7 +93,7 @@ indexRouter.post("/logout", (req, res, next) => {
   });
 });
 
-// AUTH ROUTES
+// AUTH & PROFILE ROUTES
 
 // Check if user is logged in
 indexRouter.get("/me", (req, res, next) => {
@@ -110,8 +109,5 @@ indexRouter.get("/me", (req, res, next) => {
 indexRouter.get("/session", (req, res, next) => {
   res.json({ session: req.session });
 });
-
-// OTHER ROUTERS
-indexRouter.use("/upload", uploadRouter);
 
 export default indexRouter;
