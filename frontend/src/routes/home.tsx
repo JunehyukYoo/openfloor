@@ -8,13 +8,15 @@ const Hero = () => {
     <section className="hero">
       <video
         className="hero-video"
-        src="/bg-home-compressed.mp4"
         autoPlay
         loop
         muted
         playsInline
         preload="auto"
-      ></video>
+      >
+        <source src="/bg-home-compressed.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
 
       <div className="hero-content">
         <h1>Openfloor.</h1>

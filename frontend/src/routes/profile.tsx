@@ -35,13 +35,10 @@ const Profile = () => {
   return (
     <div className="page-container">
       <div className="full-video-container">
-        <video
-          src="/bg-profile-compressed.mp4"
-          autoPlay
-          loop
-          muted
-          preload="auto"
-        ></video>
+        <video autoPlay loop muted preload="auto">
+          <source src="./bg-profile-loop.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
       </div>
       <RevealOnScroll>
         <div className="profile-container">
