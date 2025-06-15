@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
 import axios from "axios";
-import "../styles/loginRegister.css";
 
 const Edit = () => {
   const { user, setUser } = useAuth();
@@ -83,48 +82,66 @@ const Edit = () => {
   };
 
   return (
-    <div className="lr-container">
-      <div className="video-container">
-        <video src="/bg-edit.mp4" autoPlay loop muted preload="auto"></video>
+    <div className="flex justify-end items-center w-screen h-screen">
+      <div className="absolute top-0 left-0 w-full h-full -z-[-1]">
+        <video
+          className="w-full h-full object-cover"
+          src="/bg-edit.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+        />
       </div>
 
-      <div className="form-container">
+      <div className="p-6 z-[10] w-[35%] h-full flex flex-col justify-center items-center bg-[#1a1a1a] shadow-[inset_0_8px_64px_rgba(0,0,0,0.15),inset_0_32px_128px_rgba(0,0,0,0.12),inset_0_64px_256px_rgba(0,0,0,0.10),inset_0_128px_384px_rgba(0,0,0,0.08)]">
         <RevealOnScroll>
-          <h1>What would you like to change?</h1>
-          <form onSubmit={handleEdit} id="login-form">
-            <div className="input-container">
+          <h1 className="mb-10 text-white text-5xl font-bold text-center px-4">
+            What would you like to change?
+          </h1>
+          <form
+            onSubmit={handleEdit}
+            className="flex flex-col items-center w-full"
+          >
+            <div className="flex justify-center items-center w-full">
               <input
                 type="text"
                 id="edit-username"
-                className="input-line"
+                className="bg-transparent w-1/2 border-b border-white py-3 px-2 mb-5 text-white text-base outline-none focus:border-[#646cff]"
                 placeholder="Username"
                 value={newUsername}
                 onChange={(e) => setNewUsername(e.target.value)}
               />
             </div>
-            <div className="input-container">
+            <div className="flex justify-center items-center w-full">
               <input
                 type="password"
                 id="edit-password"
-                className="input-line"
+                className="bg-transparent w-1/2 border-b border-white py-3 px-2 mb-5 text-white text-base outline-none focus:border-[#646cff]"
                 placeholder="New Password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
               />
             </div>
-            <div className="input-container">
+            <div className="flex justify-center items-center w-full">
               <input
                 type="password"
                 id="edit-confirm-password"
-                className="input-line"
+                className="bg-transparent w-1/2 border-b border-white py-3 px-2 mb-5 text-white text-base outline-none focus:border-[#646cff]"
                 placeholder="Confirm New Password"
                 value={confirmNewPwd}
                 onChange={(e) => setConfirmNewPwd(e.target.value)}
               />
             </div>
-            <button type="submit">Save</button>
+            <button
+              type="submit"
+              className="text-black mt-4 py-2 px-7 bg-white rounded-full cursor-pointer hover:bg-[#f0f0f0]"
+            >
+              Save
+            </button>
           </form>
-          <p className="cl-account" style={{ margin: "1rem 5rem" }}>
+          <p className="text-white text-[16px] text-center mt-5 px-10">
             Tip: You may leave the passwords blank if you only want to change
             your username!
           </p>

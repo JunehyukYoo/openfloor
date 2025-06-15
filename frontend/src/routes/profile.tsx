@@ -1,10 +1,8 @@
-// profile.tsx
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
 import { useAuth } from "../context/authContext";
 import RevealOnScroll from "../components/RevealOnScroll";
 import UploadAvatar from "../components/UploadAvatar";
-import "../styles/profile.css";
 
 const Profile = () => {
   const { user, setLoggedIn, setUser } = useAuth();
@@ -15,12 +13,6 @@ const Profile = () => {
       .post("/logout")
       .then(() => {
         navigate("/");
-        /*
-          Timeout here because otherwise application will 
-          still be on route /profile but see that user is not
-          logged in and immediately redirect to /login and
-          display a banner.
-        */
         setTimeout(() => {
           setLoggedIn(false);
           setUser(null);
@@ -33,46 +25,69 @@ const Profile = () => {
   };
 
   return (
-    <div className="page-container">
-      <div className="full-video-container">
-        <video autoPlay loop muted preload="auto">
-          <source src="./bg-profile-loop.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+    <div className="relative w-screen h-screen flex justify-center items-center overflow-hidden">
+      {/* Dark overlay that sits above video only */}
+      <div className="absolute top-0 left-0 w-full h-full bg-black/40 z-0 pointer-events-none">
+        {/* Video Background */}
+        <video
+          className="absolute top-0 left-0 w-full h-full object-cover z-0"
+          src="/bg-profile-loop.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+        />
       </div>
-      <RevealOnScroll>
-        <div className="profile-container">
-          {user ? (
-            <>
-              <h1>Welcome {user.username}!</h1>
-              <div className="profile-inner-container">
-                <UploadAvatar />
-                <div className="profile-details">
-                  <p>
-                    Username - <span>{user.username}</span>
-                  </p>
-                  <p style={{ marginBottom: "1rem" }}>
-                    Email - <span>{user.email}</span>
-                  </p>
-                  <div className="profile-buttons">
-                    <a style={{ color: "black" }} href="/profile/edit">
-                      <button>Edit</button>
-                    </a>
 
-                    <button onClick={handleLogout}>Logout</button>
-                  </div>
-                  <p className="tips">
-                    Tip: Click on your profile picture to change it!
-                  </p>
+      {/* Profile Card */}
+      {user && (
+        <RevealOnScroll>
+          <div className="relative z-20 flex flex-col justify-center items-center gap-8 min-w-3xl h-[60vh] rounded-[100px] bg-[#1a1a1a] shadow-[inset_0px_8px_64px_rgba(0,0,0,0.15),inset_0px_32px_128px_rgba(0,0,0,0.12),inset_0px_64px_256px_rgba(0,0,0,0.1),inset_0px_128px_384px_rgba(0,0,0,0.08)] text-white text-center">
+            <h1 className="text-5xl font-bold mb-6">
+              Welcome {user.username}!
+            </h1>
+
+            <div className="flex justify-center gap-6">
+              <UploadAvatar />
+              <div className="flex flex-col justify-center items-start text-lg gap-4 ml-[1rem] text-white text-[20px]">
+                <p>
+                  Username -{" "}
+                  <span className="font-bold border-b-2 border-white">
+                    {user.username}
+                  </span>
+                </p>
+                <p className="mb-4">
+                  Email -{" "}
+                  <span className="font-bold border-b-2 border-white">
+                    {user.email}
+                  </span>
+                </p>
+
+                <div className="flex gap-4 tx-[16px]">
+                  <a href="/profile/edit">
+                    <button className="bg-white text-black px-4 py-1 rounded-full hover:bg-gray-100 transition">
+                      Edit
+                    </button>
+                  </a>
+                  <button
+                    onClick={handleLogout}
+                    className="bg-white text-black px-4 py-1 rounded-full hover:bg-gray-100 transition"
+                  >
+                    Logout
+                  </button>
                 </div>
+
+                <p className="text-[16px] text-gray-300 mt-2">
+                  Tip: Click on your profile picture to change it!
+                </p>
               </div>
-            </>
-          ) : (
-            <div></div>
-          )}
-        </div>
-      </RevealOnScroll>
+            </div>
+          </div>
+        </RevealOnScroll>
+      )}
     </div>
   );
 };
+
 export default Profile;
