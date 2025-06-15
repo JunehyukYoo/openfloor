@@ -11,12 +11,15 @@
 .form-container {
   width: 35%;
   height: 100vh;
-  border-radius: 20px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: #1a1a1a;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 8px 64px 0px inset,
+    rgba(0, 0, 0, 0.12) 0px 32px 128px 0px inset,
+    rgba(0, 0, 0, 0.1) 0px 64px 256px 0px inset,
+    rgba(0, 0, 0, 0.08) 0px 128px 384px 0px inset;
 }
 
 .video-container video {

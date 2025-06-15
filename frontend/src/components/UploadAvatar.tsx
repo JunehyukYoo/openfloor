@@ -62,7 +62,11 @@ const UploadAvatar = () => {
       <Avatar
         alt="Default"
         src={user?.profilePicture}
-        sx={{ width: "250px", height: "250px" }}
+        sx={{
+          width: "250px",
+          height: "250px",
+          boxShadow: "0 0 12px 2px rgba(255,255,255,0.4)",
+        }}
       />
       <input
         type="file"

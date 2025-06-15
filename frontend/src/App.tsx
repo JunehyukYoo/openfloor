@@ -7,6 +7,7 @@ import Home from "./routes/home";
 import Login from "./routes/login";
 import Register from "./routes/register";
 import Profile from "./routes/profile";
+import Edit from "./routes/edit.tsx";
 import { useAuth } from "./context/authContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -38,7 +39,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route element={<ProtectedRoute />}>
           <Route path={"/profile"} element={<Profile />} />
-          <Route path={"/profile/edit"} element={<Profile />} />
+          <Route path={"/profile/edit"} element={<Edit />} />
         </Route>
       </Routes>
       <ToastContainer />

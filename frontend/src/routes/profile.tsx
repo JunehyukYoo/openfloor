@@ -55,7 +55,10 @@ const Profile = () => {
                     Email - <span>{user.email}</span>
                   </p>
                   <div className="profile-buttons">
-                    <button>Modify</button>
+                    <a style={{ color: "black" }} href="/profile/edit">
+                      <button>Edit</button>
+                    </a>
+
                     <button onClick={handleLogout}>Logout</button>
                   </div>
                   <p className="tips">
