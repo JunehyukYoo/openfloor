@@ -57,7 +57,7 @@ if (process.env.NODE_ENV === "production") {
 
 // Import and use index router
 const indexRouter = require("./routes/indexRouter").default;
-app.use("/", indexRouter);
+app.use("/api", indexRouter);
 
 // Handle uncaught errors
 app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
