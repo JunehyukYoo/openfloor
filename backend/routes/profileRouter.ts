@@ -19,7 +19,24 @@ profileRouter.put("/edit", ensureAuthenticated, async (req, res, next) => {
     const { username, newPassword } = req.body;
     const updates: any = {};
 
-    if (username) updates.username = username;
+    if (!username || username.length === 0) {
+      res.status(400).json({ message: "Invalid username" });
+      return;
+    }
+
+    const existingUsername = await prisma.user.findUnique({
+      where: {
+        username,
+      },
+    });
+
+    if (existingUsername) {
+      res.status(400).json({ message: "Username already taken" });
+      return;
+    }
+
+    updates.username = username;
+
     if (newPassword) {
       const hashed = await bcrypt.hash(newPassword, 10);
       updates.password = hashed;
