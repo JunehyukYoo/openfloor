@@ -4,6 +4,7 @@ import passport from "passport";
 import prisma from "../lib/prisma";
 import bcrypt from "bcryptjs";
 import type { User } from "../types/index";
+import uploadRouter from "./uploadRouter";
 
 const indexRouter = express.Router();
 
@@ -106,5 +107,8 @@ indexRouter.get("/me", (req, res, next) => {
 indexRouter.get("/session", (req, res, next) => {
   res.json({ session: req.session });
 });
+
+// OTHER ROUTERS
+indexRouter.use("/upload", uploadRouter);
 
 export default indexRouter;

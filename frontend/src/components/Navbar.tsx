@@ -1,10 +1,10 @@
 // Navbar.tsx
 import { useAuth } from "../context/authContext";
-import MyAvatar from "./MyAvatar";
+import Avatar from "@mui/material/Avatar";
 import "../styles/Navbar.css";
 
 const Navbar = () => {
-  const { loggedIn } = useAuth();
+  const { loggedIn, user } = useAuth();
   return (
     <nav className="navbar">
       <div className="navbar-logo">
@@ -34,7 +34,15 @@ const Navbar = () => {
               <a href="/debates/private">My Debates</a>
             </div>
             <div>
-              <MyAvatar />
+              {user ? (
+                <div className="prof-pic">
+                  <a href="/profile">
+                    <Avatar src={user.profilePicture} alt={user.username} />
+                  </a>
+                </div>
+              ) : (
+                <div>null</div>
+              )}
             </div>
           </>
         )}

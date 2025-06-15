@@ -38,6 +38,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route element={<ProtectedRoute />}>
           <Route path={"/profile"} element={<Profile />} />
+          <Route path={"/profile/edit"} element={<Profile />} />
         </Route>
       </Routes>
       <ToastContainer />
