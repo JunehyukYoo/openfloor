@@ -29,6 +29,21 @@ const Edit = () => {
         draggable: true,
         progress: undefined,
       });
+      return;
+    }
+
+    if (newPassword.trim() === "" && newUsername === user!.username) {
+      toast.error("Nothing was changed...", {
+        position: "bottom-right",
+        theme: "dark",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
     }
 
     try {

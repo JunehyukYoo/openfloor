@@ -30,7 +30,7 @@ profileRouter.put("/edit", ensureAuthenticated, async (req, res, next) => {
       },
     });
 
-    if (existingUsername) {
+    if (existingUsername && existingUsername.id !== user.id) {
       res.status(400).json({ message: "Username already taken" });
       return;
     }
