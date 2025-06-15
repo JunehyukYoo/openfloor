@@ -59,7 +59,13 @@ const Register = () => {
   return (
     <div className="lr-container">
       <div className="video-container">
-        <video src="/bg-register.mp4" autoPlay loop muted></video>
+        <video
+          src="/bg-register.mp4"
+          autoPlay
+          loop
+          muted
+          preload="auto"
+        ></video>
       </div>
       <div className="form-container">
         <RevealOnScroll>

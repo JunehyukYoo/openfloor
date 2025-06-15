@@ -57,7 +57,7 @@ const Login = () => {
   return (
     <div className="lr-container">
       <div className="video-container">
-        <video src="/bg-login.mp4" autoPlay loop muted></video>
+        <video src="/bg-login.mp4" autoPlay loop muted preload="auto"></video>
       </div>
 
       <div className="form-container">

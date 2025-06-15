@@ -8,11 +8,12 @@ const Hero = () => {
     <section className="hero">
       <video
         className="hero-video"
-        src="/bg-home.mp4"
+        src="/bg-home-compressed.mp4"
         autoPlay
         loop
         muted
         playsInline
+        preload="auto"
       ></video>
 
       <div className="hero-content">
