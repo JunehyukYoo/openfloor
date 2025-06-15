@@ -40,11 +40,14 @@ indexRouter.post("/register", async (req, res, next) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const profilePicture =
+      process.env.CDN_DOMAIN_NAME + "/profile-pictures/default.png";
     const user = await prisma.user.create({
       data: {
         email,
         username,
         password: hashedPassword,
+        profilePicture: profilePicture,
       },
     });
     const { password: _, ...publicUser } = user;

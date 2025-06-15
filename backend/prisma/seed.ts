@@ -11,7 +11,7 @@ async function main() {
   const bobPassword = await bcrypt.hash("bob", 10);
   const junePassword = await bcrypt.hash("june", 10);
   const profilePicture =
-    process.env.S3_BUCKET_BASE_URL + "/profile-pictures/default.png";
+    process.env.CDN_DOMAIN_NAME + "/profile-pictures/default.png";
 
   // Create users with hashed passwords
   const alice = await prisma.user.create({

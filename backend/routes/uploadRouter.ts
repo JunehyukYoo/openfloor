@@ -40,7 +40,7 @@ uploadRouter.post("/avatar", upload.single("avatar"), async (req, res) => {
       })
       .promise();
 
-    const publicUrl = `${process.env.S3_BUCKET_BASE_URL}/` + key;
+    const publicUrl = `${process.env.CDN_DOMAIN_NAME}/` + key;
     console.log("Put file at: " + publicUrl);
     const updatedUser = await prisma.user.update({
       where: { id: userId },
