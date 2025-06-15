@@ -32,7 +32,7 @@ const UploadAvatar = () => {
       });
     } catch (err) {
       console.error("Upload failed", err);
-      toast.error("Please refresh the page and try again", {
+      toast.error(err + "Please refresh the page and try again.", {
         position: "bottom-right",
         theme: "dark",
         autoClose: 5000,

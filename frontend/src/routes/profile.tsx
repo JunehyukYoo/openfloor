@@ -32,10 +32,16 @@ const Profile = () => {
       });
   };
 
+  const bgVid = new URL(
+    "/bg-videos/bg-profile.mp4",
+    import.meta.env.VITE_CDN_DOMAIN
+  ).toString();
+  console.log(bgVid);
+
   return (
     <div className="page-container">
       <div className="video-container">
-        <video src="/bg-profile.mp4" autoPlay loop muted></video>
+        <video src={bgVid} autoPlay loop muted preload="auto"></video>
       </div>
       <RevealOnScroll>
         <div className="profile-container">
