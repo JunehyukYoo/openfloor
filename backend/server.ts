@@ -55,11 +55,13 @@ if (process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1);
 }
 
-// Import and use index router
+// Import and use routers
 const indexRouter = require("./routes/indexRouter").default;
 const uploadRouter = require("./routes/uploadRouter").default;
+const profileRouter = require("./routes/profileRouter").default;
 app.use("/api", indexRouter);
 app.use("/api/upload", uploadRouter);
+app.use("/api/profile", profileRouter);
 
 // Handle uncaught errors
 app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
