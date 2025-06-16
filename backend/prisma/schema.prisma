@@ -25,7 +25,7 @@ model User {
 
 model Debate {
   id        String     @id @default(cuid())
-  priv      Int
+  private   Boolean    @default(true)
   started   DateTime   @default(now())
   closed    Boolean    @default(false)
 

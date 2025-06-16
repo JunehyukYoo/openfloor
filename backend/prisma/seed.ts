@@ -57,7 +57,7 @@ async function main() {
   });
 
   const debate1 = await prisma.debate.create({
-    data: { priv: 1, topicId: topic1.id, closed: false },
+    data: { private: true, topicId: topic1.id, closed: false },
   });
 
   await prisma.participant.createMany({
@@ -155,7 +155,7 @@ async function main() {
 
   const debate2 = await prisma.debate.create({
     data: {
-      priv: 1,
+      private: true,
       topicId: topic2.id,
       closed: true,
       started: new Date(Date.now() - 2 * 86400000), // 2 days ago
@@ -253,7 +253,7 @@ async function main() {
   });
 
   const debate3 = await prisma.debate.create({
-    data: { priv: 1, topicId: topic3.id, closed: false },
+    data: { private: true, topicId: topic3.id, closed: false },
   });
 
   await prisma.participant.createMany({
@@ -328,7 +328,7 @@ async function main() {
   });
 
   const debate4 = await prisma.debate.create({
-    data: { priv: 0, topicId: topic4.id, closed: false },
+    data: { private: true, topicId: topic4.id, closed: false },
   });
 
   const allUsers = [alice, bob, june, diana, eric, frank, grace, helen];
