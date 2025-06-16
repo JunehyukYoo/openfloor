@@ -33,7 +33,6 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* <LoadingScreen /> */}
         {/* Public homepage routes + unauth */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />

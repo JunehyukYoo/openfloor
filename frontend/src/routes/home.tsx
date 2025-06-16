@@ -24,7 +24,7 @@ const Hero = () => {
 
       <div className="relative z-10 text-white px-[10%] pt-[20vh] text-center">
         <RevealOnScroll>
-          <div className="translate-y-24">
+          <div className="translate-y-38">
             <h1 className="text-[150px] font-[300] mb-2 leading-none">
               Openfloor.
             </h1>
