@@ -24,3 +24,8 @@ export interface Justification {
   authorId: string;
   stanceId: number;
 }
+
+export interface Topic {
+  id: number;
+  title: string;
+}
