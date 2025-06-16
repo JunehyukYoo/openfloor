@@ -7,28 +7,35 @@ import { TextReveal } from "../components/magicui/text-reveal";
 const Hero = () => {
   return (
     <section className="relative h-screen w-full overflow-hidden">
-      <video
-        className="absolute top-0 left-0 h-full w-full object-cover z-[-1] brightness-[0.4]"
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-      >
-        <source src="/bg-home-compressed.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
+      {/* Video + dark filter wrapper */}
+      <div className="absolute top-0 left-0 h-full w-full z-[1] brightness-[0.4]">
+        <video
+          className="w-full h-full object-cover"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+        >
+          <source src="/bg-home-compressed.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
 
-      <div className="relative z-10 text-white px-[10%] pt-[20vh] text-center translate-y-24">
-        <h1 className="text-[150px] font-[300] mb-2 leading-none">
-          Openfloor.
-        </h1>
-        <div className="flex justify-center">
-          <MorphingText
-            className="first:text-[50px] font-light"
-            texts={["Debaters", "Thinkers", "Philosophers", "Enthusiasts"]}
-          />
-        </div>
+      <div className="relative z-10 text-white px-[10%] pt-[20vh] text-center">
+        <RevealOnScroll>
+          <div className="translate-y-24">
+            <h1 className="text-[150px] font-[300] mb-2 leading-none">
+              Openfloor.
+            </h1>
+            <div className="flex justify-center">
+              <MorphingText
+                className="first:text-[50px] font-light"
+                texts={["Debaters", "Thinkers", "Philosophers", "Enthusiasts"]}
+              />
+            </div>
+          </div>
+        </RevealOnScroll>
       </div>
     </section>
   );
@@ -94,9 +101,7 @@ const Info = () => {
 const Home = () => {
   return (
     <div className="w-screen min-h-screen">
-      <RevealOnScroll>
-        <Hero />
-      </RevealOnScroll>
+      <Hero />
       <Quote />
       <Info />
       <Footer />
