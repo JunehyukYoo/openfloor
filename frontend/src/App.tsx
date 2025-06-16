@@ -2,7 +2,8 @@
 // import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-// Auth checking and page layouts
+// Components
+import LoadingScreen from "./components/LoadingScreen.tsx";
 import DashboardLayout from "./components/DashboardLayout.tsx";
 import PublicLayout from "./components/PublicLayout.tsx";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -26,24 +27,13 @@ function App() {
   const { isLoading } = useAuth();
 
   if (isLoading) {
-    return (
-      <div
-        style={{
-          width: "100vw",
-          height: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        Loading...
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (
     <BrowserRouter>
       <Routes>
+        {/* <LoadingScreen /> */}
         {/* Public homepage routes + unauth */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
