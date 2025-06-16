@@ -12,57 +12,50 @@ router.get("/analytics", ensureAuthenticated, async (req, res, next) => {
   }
   const user = req.user as User;
   try {
-    // DEBATE STATS
-    const totalDebates = await prisma.participant.count({
-      where: { userId: user.id },
-    });
-    const participantStats = await prisma.participant.groupBy({
-      by: ["role"],
-      where: {
-        userId: user.id,
-      },
-      _count: true,
-    });
-    const activeDebates = await prisma.participant.count({
-      where: {
-        userId: user.id,
-        debate: { closed: false },
-      },
-    });
-    const privateDebates = await prisma.participant.count({
-      where: {
-        userId: user.id,
-        debate: { private: true },
-      },
-    });
+    // Run basic counts in parallel
+    const [
+      totalDebates,
+      participantStats,
+      activeDebates,
+      privateDebates,
+      totalJustifications,
+      totalComments,
+      totalVotesCast,
+    ] = await Promise.all([
+      prisma.participant.count({ where: { userId: user.id } }),
+      prisma.participant.groupBy({
+        by: ["role"],
+        where: { userId: user.id },
+        _count: true,
+      }),
+      prisma.participant.count({
+        where: {
+          userId: user.id,
+          debate: { closed: false },
+        },
+      }),
+      prisma.participant.count({
+        where: {
+          userId: user.id,
+          debate: { private: true },
+        },
+      }),
+      prisma.justification.count({ where: { authorId: user.id } }),
+      prisma.comment.count({ where: { authorId: user.id } }),
+      prisma.vote.count({ where: { userId: user.id } }),
+    ]);
 
-    // CONTRIBUTION STATS
-    const totalJustifications = await prisma.justification.count({
-      where: { authorId: user.id },
-    });
-    const totalComments = await prisma.comment.count({
-      where: { authorId: user.id },
-    });
-    const totalVotesCast = await prisma.vote.count({
-      where: { userId: user.id },
-    });
-
-    // QUALITY / ENGAGEMENT STATS (HIGHLIGHTS)
-
-    // Calculates the topic most participated in for user
+    // Topic most participated in
     const userParticipations = await prisma.participant.findMany({
       where: { userId: user.id },
       include: {
         debate: {
-          include: {
-            topic: true,
-          },
+          include: { topic: true },
         },
       },
     });
 
     const topicMap = new Map<string, { count: number; topic: Topic }>();
-
     for (const p of userParticipations) {
       const topicId = p.debate.topic.id.toString();
       const existing = topicMap.get(topicId);
@@ -76,31 +69,45 @@ router.get("/analytics", ensureAuthenticated, async (req, res, next) => {
     const sorted = [...topicMap.values()].sort((a, b) => b.count - a.count);
     const mostParticipatedTopic = sorted.length > 0 ? sorted[0] : null;
 
-    // Calculates average vote per justification for user
+    // Avg votes per justification + most upvoted justification
     const justifications = await prisma.justification.findMany({
       where: { authorId: user.id },
-      include: { votes: true },
+      include: {
+        votes: true,
+        stance: {
+          include: { topic: true },
+        },
+      },
     });
-    const totalVotes = justifications.reduce(
+
+    const totalVoteValue = justifications.reduce(
       (sum, j) => sum + j.votes.reduce((vSum, v) => vSum + v.value, 0),
       0
     );
     const avgVotes =
-      justifications.length > 0 ? totalVotes / justifications.length : 0;
+      justifications.length > 0
+        ? Math.round((totalVoteValue / justifications.length) * 100) / 100
+        : 0;
 
-    // Calculates most upvoted justification for user
     let topJustification = null;
     let maxVotes = -Infinity;
 
     for (const j of justifications) {
-      const sumVotes = j.votes.reduce((sum, v) => sum + v.value, 0);
-      if (sumVotes > maxVotes) {
-        maxVotes = sumVotes;
-        topJustification = { ...j, voteTotal: sumVotes };
+      const voteSum = j.votes.reduce((sum, v) => sum + v.value, 0);
+      if (voteSum > maxVotes) {
+        maxVotes = voteSum;
+        topJustification = {
+          id: j.id,
+          content: j.content,
+          voteSum,
+          stance: j.stance?.label || null,
+          topic: j.stance?.topic?.title || null,
+        };
       }
     }
 
-    console.log({
+    // Send final structured response
+    res.json({
       participation: {
         totalDebates,
         participantStats,
