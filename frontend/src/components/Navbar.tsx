@@ -16,9 +16,6 @@ const Navbar = () => {
         {!loggedIn ? (
           <>
             <div>
-              <a href="/public-debates">Public Debates</a>
-            </div>
-            <div>
               <a href="/login">Login</a>
             </div>
             <div>
@@ -28,10 +25,7 @@ const Navbar = () => {
         ) : (
           <>
             <div>
-              <a href="/debates/public">Public Debates</a>
-            </div>
-            <div>
-              <a href="/debates/private">My Debates</a>
+              <a href="/dashboard/topics">Debate Dashboard</a>
             </div>
             <div>
               {user ? (

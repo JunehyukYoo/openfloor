@@ -1,13 +1,20 @@
 // App.tsx
 // import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
+
+// Auth checking and page layouts
+import DashboardLayout from "./components/DashboardLayout.tsx";
+import PublicLayout from "./components/PublicLayout.tsx";
 import ProtectedRoute from "./components/ProtectedRoute";
+
+// Routes
 import Home from "./routes/home";
 import Login from "./routes/login";
 import Register from "./routes/register";
 import Profile from "./routes/profile";
 import Edit from "./routes/edit.tsx";
+import Topics from "./routes/topics.tsx";
+
 import { useAuth } from "./context/authContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -32,14 +39,25 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Navbar />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route element={<ProtectedRoute />}>
-          <Route path={"/profile"} element={<Profile />} />
-          <Route path={"/profile/edit"} element={<Edit />} />
+        {/* Public homepage routes + unauth */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Route>
+        {/* Public homepage routes + auth */}
+        <Route element={<PublicLayout />}>
+          <Route element={<ProtectedRoute />}>
+            <Route path={"/profile"} element={<Profile />} />
+            <Route path={"/profile/edit"} element={<Edit />} />
+          </Route>
+        </Route>
+        {/* Dashboard routes for debates */}
+        <Route element={<DashboardLayout />}>
+          <Route element={<ProtectedRoute />}>
+            <Route path={"/dashboard/topics"} element={<Topics />} />
+          </Route>
         </Route>
       </Routes>
       <ToastContainer />
