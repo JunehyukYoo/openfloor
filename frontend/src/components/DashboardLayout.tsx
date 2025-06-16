@@ -10,7 +10,7 @@ const DashboardLayout = () => {
     <div className="flex h-screen w-screen overflow-hidden relative">
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full w-64 z-30 bg-gray-900 shadow-lg transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 h-full w-64 z-30 shadow-lg transition-transform duration-300 ease-in-out ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -36,11 +36,11 @@ const DashboardLayout = () => {
 
       {/* Main content */}
       <div
-        className={`flex-1 flex flex-col bg-gray-900 text-white transition-all duration-300 ${
+        className={`flex-1 flex flex-col bg-[#282828] text-white transition-all duration-300 ${
           isSidebarOpen ? "ml-64" : "ml-0"
         }`}
       >
-        <main className="flex-1 overflow-y-auto p-4 bg-gray-800">
+        <main className="flex-1 overflow-y-auto p-4">
           <Outlet />
         </main>
       </div>

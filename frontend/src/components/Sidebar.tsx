@@ -23,7 +23,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         />
       )}
 
-      <aside className="h-full w-64 p-4 bg-gray-900 shadow-lg z-30">
+      <aside className="h-full w-64 p-4 bg-[#131313] shadow-lg z-30">
         {/* Mobile close */}
         <div className="md:hidden flex justify-end mb-4">
           <button onClick={onClose}>
