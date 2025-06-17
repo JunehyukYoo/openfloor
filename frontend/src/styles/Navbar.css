@@ -27,25 +27,26 @@
   gap: 2rem;
 }
 
-.navbar a {
+.navbar-links a {
   color: white;
   border-bottom: 2px solid transparent;
   text-decoration: none;
   font-size: 1.2rem;
-  transition: 0.4s ease;
+  transition: all 0.4s ease;
 }
 
-.navbar a:hover {
+.navbar-links a:hover {
   border-bottom: 2px solid white;
 }
 
-#temp-logo {
+#logo {
+  color: white;
   font-size: 2rem;
   font-weight: 600;
-  transition: 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
-#temp-logo:hover {
+#logo:hover {
   transform: scale(2);
 }
 

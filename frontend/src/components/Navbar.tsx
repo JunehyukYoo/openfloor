@@ -8,7 +8,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-logo">
-        <a href="/" id="temp-logo">
+        <a href="/" id="logo">
           Openfloor.
         </a>
       </div>
