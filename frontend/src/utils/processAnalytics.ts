@@ -3,7 +3,7 @@ import type { AnalyticsData } from "../types";
 // Formats raw json data from backend into data
 // usable by RadialBarChart (Recharts) at routes/analytics.tsx
 export function processDebateBreakdown(data: AnalyticsData) {
-  const roles = ["debater", "admin", "observer"];
+  const roles = ["admin", "debater", "observer"];
   const roleColorMap: Record<string, string> = {
     debater: "#8884d8",
     admin: "#82ca9d",
