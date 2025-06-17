@@ -184,7 +184,7 @@ const Analytics = () => {
               <h2 className="text-2xl font-semibold">Contributions</h2>
               <div className="flex flex-col gap-4 h-full justify-around">
                 <div className="p-2 bg-zinc-600 rounded-lg grow">
-                  <h3 className="text-2xl">Justifications</h3>
+                  <h3 className="text-xl">Justifications</h3>
                   <div className="flex-1 flex items-center justify-center">
                     <NumberTicker
                       className="whitespace-pre-wrap text-8xl font-light tracking-tighter text-white"
@@ -193,7 +193,7 @@ const Analytics = () => {
                   </div>
                 </div>
                 <div className="p-2 bg-zinc-600 rounded-lg grow">
-                  <h3 className="text-2xl">Comments</h3>
+                  <h3 className="text-xl">Comments</h3>
                   <div className="flex-1 flex items-center justify-center">
                     <NumberTicker
                       className="whitespace-pre-wrap text-8xl font-light tracking-tighter text-white"
@@ -202,7 +202,7 @@ const Analytics = () => {
                   </div>
                 </div>
                 <div className="p-2 bg-zinc-600 rounded-lg grow">
-                  <h3 className="text-2xl">Votes Cast</h3>
+                  <h3 className="text-xl">Votes Cast</h3>
                   <div className="flex-1 flex items-center justify-center">
                     <NumberTicker
                       className="whitespace-pre-wrap text-8xl font-light tracking-tighter text-white"
