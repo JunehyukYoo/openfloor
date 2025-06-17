@@ -21,6 +21,10 @@ router.get("/analytics", ensureAuthenticated, async (req, res, next) => {
       totalJustifications,
       totalComments,
       totalVotesCast,
+      debateActivity,
+      justificationActivity,
+      commentActivity,
+      voteActivity,
     ] = await Promise.all([
       prisma.participant.count({ where: { userId: user.id } }),
       prisma.participant.groupBy({
@@ -43,6 +47,25 @@ router.get("/analytics", ensureAuthenticated, async (req, res, next) => {
       prisma.justification.count({ where: { authorId: user.id } }),
       prisma.comment.count({ where: { authorId: user.id } }),
       prisma.vote.count({ where: { userId: user.id } }),
+      prisma.debate.findMany({
+        where: { creatorId: user.id },
+        select: { started: true },
+      }),
+
+      prisma.justification.findMany({
+        where: { authorId: user.id },
+        select: { createdAt: true },
+      }),
+
+      prisma.comment.findMany({
+        where: { authorId: user.id },
+        select: { createdAt: true },
+      }),
+
+      prisma.vote.findMany({
+        where: { userId: user.id },
+        select: { createdAt: true },
+      }),
     ]);
 
     // Topic most participated in
@@ -106,6 +129,56 @@ router.get("/analytics", ensureAuthenticated, async (req, res, next) => {
       }
     }
 
+    // Activity over time (for graph)
+    const allEvents = [
+      ...debateActivity.map((d) => ({ createdAt: d.started, type: "debate" })),
+      ...justificationActivity.map((j) => ({
+        createdAt: j.createdAt,
+        type: "justification",
+      })),
+      ...commentActivity.map((c) => ({
+        createdAt: c.createdAt,
+        type: "comment",
+      })),
+      ...voteActivity.map((v) => ({ createdAt: v.createdAt, type: "vote" })),
+    ];
+
+    // Accumulate counts by date and type
+    const activityMap = allEvents.reduce(
+      (acc, { createdAt, type }) => {
+        const date = createdAt.toISOString().split("T")[0];
+        if (!acc[date]) {
+          acc[date] = {
+            date,
+            debates: 0,
+            justifications: 0,
+            comments: 0,
+            votes: 0,
+          };
+        }
+        if (type === "debate") acc[date].debates++;
+        if (type === "justification") acc[date].justifications++;
+        if (type === "comment") acc[date].comments++;
+        if (type === "vote") acc[date].votes++;
+        return acc;
+      },
+      {} as Record<
+        string,
+        {
+          date: string;
+          debates: number;
+          justifications: number;
+          comments: number;
+          votes: number;
+        }
+      >
+    );
+
+    // Convert to sorted array
+    const activityOverTime = Object.values(activityMap).sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+
     // Send final structured response
     res.json({
       participation: {
@@ -124,6 +197,7 @@ router.get("/analytics", ensureAuthenticated, async (req, res, next) => {
         avgVotesPerJustification: avgVotes,
         topJustification,
       },
+      activityOverTime,
     });
   } catch (error) {
     res.status(500).json({ message: "Internal server error." });
