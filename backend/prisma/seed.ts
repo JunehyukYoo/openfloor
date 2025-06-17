@@ -2,8 +2,10 @@
 import "dotenv/config";
 import { PrismaClient } from "../generated/prisma";
 import bcrypt from "bcryptjs";
+import type { User } from "../types/index";
 
 const prisma = new PrismaClient();
+const daysAgo = (n: number) => new Date(Date.now() - 1000 * 60 * 60 * 24 * n);
 
 async function main() {
   const profilePicture =
@@ -57,7 +59,12 @@ async function main() {
   });
 
   const debate1 = await prisma.debate.create({
-    data: { private: true, topicId: topic1.id, closed: false },
+    data: {
+      private: true,
+      topicId: topic1.id,
+      closed: false,
+      creatorId: eric.id,
+    },
   });
 
   await prisma.participant.createMany({
@@ -158,7 +165,8 @@ async function main() {
       private: true,
       topicId: topic2.id,
       closed: true,
-      started: new Date(Date.now() - 2 * 86400000), // 2 days ago
+      started: daysAgo(2),
+      creatorId: alice.id,
     },
   });
 
@@ -253,7 +261,13 @@ async function main() {
   });
 
   const debate3 = await prisma.debate.create({
-    data: { private: true, topicId: topic3.id, closed: false },
+    data: {
+      private: true,
+      topicId: topic3.id,
+      closed: false,
+      started: daysAgo(2),
+      creatorId: june.id,
+    },
   });
 
   await prisma.participant.createMany({
@@ -328,7 +342,12 @@ async function main() {
   });
 
   const debate4 = await prisma.debate.create({
-    data: { private: true, topicId: topic4.id, closed: false },
+    data: {
+      private: true,
+      topicId: topic4.id,
+      closed: false,
+      creatorId: june.id,
+    },
   });
 
   const allUsers = [alice, bob, june, diana, eric, frank, grace, helen];
