@@ -125,8 +125,6 @@ router.get("/analytics", ensureAuthenticated, async (req, res, next) => {
         topJustification,
       },
     });
-
-    res.json({ message: "Testing analytics route" });
   } catch (error) {
     res.status(500).json({ message: "Internal server error." });
   }
