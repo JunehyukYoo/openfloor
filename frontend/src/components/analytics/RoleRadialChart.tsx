@@ -2,15 +2,27 @@ import { PureComponent } from "react";
 import {
   RadialBarChart,
   RadialBar,
-  Legend,
+  Tooltip,
   ResponsiveContainer,
 } from "recharts";
 
-const style = {
-  top: "50%",
-  right: 0,
-  transform: "translate(0, -70%)",
-  lineHeight: "24px",
+const CustomTooltip = ({
+  active,
+  payload,
+}: {
+  active?: boolean;
+  payload?: { payload: { name: string; count: number } }[];
+}) => {
+  if (active && payload && payload.length) {
+    const { name, count } = payload[0].payload;
+    return (
+      <div className="bg-zinc-800 text-white text-sm p-2 rounded shadow">
+        <p className="font-semibold capitalize">{name}</p>
+        <p>Count: {count}</p>
+      </div>
+    );
+  }
+  return null;
 };
 
 interface Props {
@@ -22,26 +34,21 @@ export default class RoleRadialChart extends PureComponent<Props> {
     return (
       <ResponsiveContainer>
         <RadialBarChart
-          cx="30%"
-          cy="60%"
-          innerRadius="10%"
-          outerRadius="80%"
-          barSize={10}
+          cx="50%"
+          cy="80%"
+          innerRadius={20}
+          outerRadius={100}
+          barSize={15}
           data={this.props.data}
           startAngle={180}
           endAngle={0}
         >
           <RadialBar
-            label={{ fill: "white", position: "insideStart" }}
+            label={{ fill: "white", position: "insideTop" }}
             background
             dataKey="count"
           />
-          <Legend
-            iconSize={10}
-            layout="vertical"
-            verticalAlign="middle"
-            wrapperStyle={style}
-          />
+          <Tooltip content={<CustomTooltip />} />
         </RadialBarChart>
       </ResponsiveContainer>
     );
