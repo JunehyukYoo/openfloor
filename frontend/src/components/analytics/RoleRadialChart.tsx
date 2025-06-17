@@ -1,3 +1,5 @@
+// RoleRadialChart.tsx
+// https://recharts.org/en-US/api/RadialBarChart
 import { PureComponent } from "react";
 import {
   RadialBarChart,

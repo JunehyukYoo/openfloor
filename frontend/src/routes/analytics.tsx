@@ -5,6 +5,7 @@ import { processDebateBreakdown } from "../utils/processAnalytics";
 import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
 import RoleRadialChart from "../components/analytics/RoleRadialChart";
+import ActivityGraph from "../components/analytics/ActivityGraph";
 import { NumberTicker } from "../components/magicui/number-ticker";
 import type { AnalyticsData, RadialBarChartData } from "../types";
 
@@ -48,43 +49,54 @@ const Analytics = () => {
       <h1 className="text-3xl font-bold text-white">Your Debate Analytics</h1>
       {data ? (
         <div className="grid grid-cols-12 gap-4 h-full overflow-hidden box-border">
-          {/* Main Column (Debates + Highlights) */}
+          {/* Main Column (Debates + Highlights + Activity Graph) */}
           <div className="md:col-span-10 col-span-8 flex flex-col gap-4 overflow-hidden">
-            {/* Debates */}
-            <section className="bg-zinc-700 rounded-[20px] p-2 grow overflow-scroll">
-              <h2 className="text-2xl font-semibold mb-4 mt-2">
-                Participation
-              </h2>
-              <ul className="list-none p-4 flex gap-4 w-full justify-around items-center flex-wrap">
-                <li className="grow p-2 h-40 w-60 bg-zinc-600 rounded-lg">
-                  <h3 className="text-xl">Total Debates</h3>
-                  <NumberTicker
-                    className="whitespace-pre-wrap text-8xl font-light tracking-tighter text-white translate-y-[10px]"
-                    value={data.participation.totalDebates}
-                  />
-                </li>
-                <li className="grow p-2 h-40 w-60 bg-zinc-600 rounded-lg">
-                  <h3 className="text-xl">Active Debates</h3>
-                  <NumberTicker
-                    className="whitespace-pre-wrap text-8xl font-light tracking-tighter text-white translate-y-[10px]"
-                    value={data.participation.activeDebates}
-                  />
-                </li>
-                <li className="grow p-2 h-40 w-60 bg-zinc-600 rounded-lg">
-                  <h3 className="text-xl">Private Debates</h3>
-                  <NumberTicker
-                    className="whitespace-pre-wrap text-8xl font-light tracking-tighter text-white translate-y-[10px]"
-                    value={data.participation.privateDebates}
-                  />
-                </li>
-                <li className="grow p-2 h-40 w-60 bg-zinc-600 rounded-lg shrink-0">
-                  <h3 className="text-xl">Role Distribution</h3>
-                  <RoleRadialChart data={participantStats} />
-                </li>
-              </ul>
-            </section>
+            {/* Debates + Activity graph */}
+            <div className="flex gap-4">
+              {/* Debates */}
+              <section className="bg-zinc-700 rounded-[20px] p-2 grow-1 shrink-2 overflow-scroll">
+                <h2 className="text-2xl font-semibold mb-4 mt-2">
+                  Participation
+                </h2>
+                <ul className="list-none p-4 flex gap-4 w-full justify-around items-center flex-wrap">
+                  <li className="grow p-2 h-40 w-45 bg-zinc-600 rounded-lg">
+                    <h3 className="text-xl">Total Debates</h3>
+                    <NumberTicker
+                      className="whitespace-pre-wrap text-8xl font-light tracking-tighter text-white translate-y-[10px]"
+                      value={data.participation.totalDebates}
+                    />
+                  </li>
+                  <li className="grow p-2 h-40 w-45 bg-zinc-600 rounded-lg">
+                    <h3 className="text-xl">Active Debates</h3>
+                    <NumberTicker
+                      className="whitespace-pre-wrap text-8xl font-light tracking-tighter text-white translate-y-[10px]"
+                      value={data.participation.activeDebates}
+                    />
+                  </li>
+                  <li className="grow p-2 h-40 w-45 bg-zinc-600 rounded-lg">
+                    <h3 className="text-xl">Private Debates</h3>
+                    <NumberTicker
+                      className="whitespace-pre-wrap text-8xl font-light tracking-tighter text-white translate-y-[10px]"
+                      value={data.participation.privateDebates}
+                    />
+                  </li>
+                  <li className="grow p-2 h-40 w-60 bg-zinc-600 rounded-lg shrink-0">
+                    <h3 className="text-xl">Role Distribution</h3>
+                    <RoleRadialChart data={participantStats} />
+                  </li>
+                </ul>
+              </section>
+
+              {/* Activity Graph */}
+              <section className="bg-zinc-700 rounded-[20px] min-w-1/3 h-auto shrink-1 p-4 col-span-12">
+                <h2 className="text-2xl font-semibold mb-4 mt-2">Activity</h2>
+                <div className="w-full h-auto">
+                  <ActivityGraph data={data.activityOverTime} />
+                </div>
+              </section>
+            </div>
             {/* Highlights */}
-            <section className="bg-zinc-700 rounded-[20px] grow p-4 flex flex-row gap-4">
+            <section className="bg-zinc-700 rounded-[20px] grow p-4 flex flex-row gap-4 overflow-scroll">
               {/* Top justification + Most participated topic */}
               <div className="flex flex-col gap-4 flex-1">
                 <div className="bg-zinc-600 p-4 rounded-lg grow">

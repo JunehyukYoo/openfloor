@@ -46,4 +46,11 @@ export interface AnalyticsData {
       topic: string;
     };
   };
+  activityOverTime: {
+    date: string;
+    debates: number;
+    justifications: number;
+    comments: number;
+    votes: number;
+  }[];
 }
