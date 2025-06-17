@@ -19,6 +19,7 @@ model User {
   justifications Justification[]
   votes          Vote[]
   comments       Comment[]
+  createdDebates Debate[] @relation("DebateCreator")
 
   @@map("users")
 }
@@ -32,6 +33,9 @@ model Debate {
   topicId   Int
   topic     Topic      @relation(fields: [topicId], references: [id])
 
+  creatorId    String
+  creator      User     @relation("DebateCreator", fields: [creatorId], references: [id])
+  
   participants Participant[]
 
   @@map("debates")
@@ -98,6 +102,7 @@ model Vote {
 
   userId          String
   user            User     @relation(fields: [userId], references: [id])
+  createdAt       DateTime @default(now())
 
   justificationId Int
   justification   Justification @relation(fields: [justificationId], references: [id])
