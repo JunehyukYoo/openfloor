@@ -62,17 +62,22 @@ export default class ActivityGraph extends PureComponent<Props> {
           <LineChart
             data={this.props.data}
             margin={{
-              top: 50,
-              right: 30,
-              left: 20,
-              bottom: 50, // enough for X-axis label + legend
+              top: 0,
+              right: 50,
+              left: 0,
+              bottom: 0,
             }}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" />
             <YAxis allowDecimals={false} />
             <Tooltip content={<CustomTooltip />} />
-            <Legend verticalAlign="top" />
+            <Legend
+              verticalAlign="top"
+              wrapperStyle={{
+                paddingBottom: 10,
+              }}
+            />
             <Line
               type="monotone"
               dataKey="debates"

@@ -37,10 +37,10 @@ export default class RoleRadialChart extends PureComponent<Props> {
       <ResponsiveContainer>
         <RadialBarChart
           cx="50%"
-          cy="80%"
-          innerRadius={20}
-          outerRadius={100}
-          barSize={15}
+          cy="90%"
+          innerRadius={50}
+          outerRadius={140}
+          barSize={20}
           data={this.props.data}
           startAngle={180}
           endAngle={0}

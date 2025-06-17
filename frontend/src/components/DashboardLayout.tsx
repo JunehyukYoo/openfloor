@@ -7,7 +7,7 @@ const DashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden relative">
+    <div className="flex h-screen w-screen overflow-y-scroll relative">
       {/* Sidebar */}
       <div
         className={`fixed top-0 left-0 h-full w-64 z-30 shadow-lg transition-transform duration-300 ease-in-out ${
@@ -36,11 +36,11 @@ const DashboardLayout = () => {
 
       {/* Main content */}
       <div
-        className={`flex-1 flex flex-col bg-[#282828] text-white transition-all duration-300 ${
+        className={`flex-1 flex flex-col bg-zinc-900 text-white transition-all duration-300 ${
           isSidebarOpen ? "ml-64" : "ml-0"
         }`}
       >
-        <main className="flex-1 overflow-y-auto p-4">
+        <main className="flex-1 p-4">
           <Outlet />
         </main>
       </div>

@@ -19,6 +19,14 @@ export interface ParticipantStats {
   _count: number;
 }
 
+export interface ActivityOverTime {
+  date: string;
+  debates: number;
+  justifications: number;
+  comments: number;
+  votes: number;
+}
+
 export interface AnalyticsData {
   participation: {
     totalDebates: number;
@@ -46,11 +54,5 @@ export interface AnalyticsData {
       topic: string;
     };
   };
-  activityOverTime: {
-    date: string;
-    debates: number;
-    justifications: number;
-    comments: number;
-    votes: number;
-  }[];
+  activityOverTime: ActivityOverTime[];
 }
