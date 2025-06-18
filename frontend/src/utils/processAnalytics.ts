@@ -30,3 +30,17 @@ export function processDebateBreakdown(data: AnalyticsData) {
 export function processActivityData(data: AnalyticsData) {
   return data.activityOverTime.map((d) => ({ ...d, date: d.date.slice(5) }));
 }
+
+// Generates random line data for feature cards in home page
+export function generateRandomData(
+  length: number,
+  base: number,
+  variation: number
+) {
+  return Array.from({ length }, (_, i) => ({
+    name: i,
+    num: Math.floor(
+      base + Math.sin(i / 2 + base / 3) * variation + Math.random() * variation
+    ),
+  }));
+}
