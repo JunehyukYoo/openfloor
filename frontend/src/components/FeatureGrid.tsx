@@ -10,6 +10,7 @@ import { ResponsiveContainer, LineChart, Line, XAxis, YAxis } from "recharts";
 import { cn } from "../lib/utils";
 import { BentoCard, BentoGrid } from "./magicui/bento-grid";
 
+import { useAuth } from "../context/authContext";
 import { generateRandomData } from "../utils/processAnalytics";
 
 const topics = [
@@ -89,13 +90,13 @@ const fakeData = fakeData1.map((point, i) => ({
   line3: fakeData3[i].num,
 }));
 
-const features = [
+const featuresUnath = [
   {
     Icon: FaGlobe,
     name: "Debate people from across the globe",
     description:
       "Engage in debates with people from around the world and share your perspectives.",
-    href: "#",
+    href: "/register",
     cta: "Create an account",
     className: "col-span-3 lg:col-span-1 bg-zinc-700 text-left",
     background: (
@@ -129,7 +130,7 @@ const features = [
     name: "Choose a topic to debate",
     description:
       "Browse and select from a variety of trending and thought-provoking debate topics.",
-    href: "#",
+    href: "/register",
     cta: "Create an account",
     className: "col-span-3 lg:col-span-2 bg-zinc-600 text-left",
     background: (
@@ -165,7 +166,7 @@ const features = [
     name: "Vote on your beliefs",
     description:
       "Let the community decide the winner of debates through a voting system.",
-    href: "#",
+    href: "/register",
     cta: "You should really create an account",
     className: "col-span-3 lg:col-span-2 bg-zinc-700 text-left",
     background: (
@@ -185,8 +186,126 @@ const features = [
     description: "See how good of a debater you are.",
     className:
       "col-span-3 lg:col-span-1 bg-zinc-700/[0.8] text-left  group-hover:scale-90",
-    href: "#",
-    cta: "Create an account already",
+    href: "/dashboard/analytics",
+    cta: "Go to analytics",
+    background: (
+      <div className="absolute top-10 w-full right-8 center blur-[1px] hover:blur-none hover:scale-130 transition-all duration-300 ease-out">
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart
+            data={fakeData}
+            className="[mask-image:linear-gradient(to_top,transparent_5%,#000_100%)]"
+          >
+            <XAxis tick={false} tickLine={true} />
+            <YAxis tick={false} tickLine={true} />
+            <Line dataKey="line1" stroke="#8884d8" dot={false} />
+            <Line dataKey="line2" stroke="#82ca9d" dot={false} />
+            <Line dataKey="line3" stroke="#ffc658" dot={false} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    ),
+  },
+];
+
+// Only thing that changes are the links
+const featuresAuth = [
+  {
+    Icon: FaGlobe,
+    name: "Debate people from across the globe",
+    description:
+      "Engage in debates with people from around the world and share your perspectives.",
+    href: "/dashboard/debates",
+    cta: "Go to debates",
+    className: "col-span-3 lg:col-span-1 bg-zinc-700 text-left",
+    background: (
+      <div className="blur-[0.5px] hover:blur-none hover:scale-130 transition-all duration-300 ease-out">
+        <Globe
+          config={{
+            width: 400,
+            height: 400,
+            phi: 0,
+            theta: 0,
+            dark: 1,
+            scale: 1,
+            mapSamples: 16000,
+            mapBrightness: 1,
+            baseColor: [1, 1, 1],
+            markerColor: [251 / 255, 100 / 255, 21 / 255],
+            glowColor: [1, 1, 1],
+            markers: [],
+            onRender: () => {},
+            diffuse: 1,
+            devicePixelRatio:
+              typeof window !== "undefined" ? window.devicePixelRatio : 1,
+          }}
+          className="[mask-image:linear-gradient(to_top,transparent_5%,#000_100%)]"
+        />
+      </div>
+    ),
+  },
+  {
+    Icon: FaComments,
+    name: "Choose a topic to debate",
+    description:
+      "Browse and select from a variety of trending and thought-provoking debate topics.",
+    href: "/dashboard/topics",
+    cta: "Go to topics",
+    className: "col-span-3 lg:col-span-2 bg-zinc-600 text-left",
+    background: (
+      <Marquee
+        pauseOnHover
+        className="absolute top-10 [--duration:20s] [mask-image:linear-gradient(to_top,transparent_5%,#000_100%)] "
+      >
+        {topics.map((t) => (
+          <figure
+            key={t.name}
+            className={cn(
+              "relative w-40 cursor-pointer overflow-hidden rounded-xl border p-4",
+              "border-gray-950/[.1] bg-gray-950/[0.5] hover:bg-gray-800/[0.5]",
+              "transform-gpu blur-[0.8px] transition-all duration-300 ease-out hover:blur-none",
+              "text-zinc-400 hover:text-white"
+            )}
+          >
+            <div className="flex flex-row items-center gap-2">
+              <div className="flex flex-col">
+                <figcaption className="text-medium font-medium ">
+                  {t.name}
+                </figcaption>
+              </div>
+            </div>
+            <blockquote className="mt-2 text-xs">{t.body}</blockquote>
+          </figure>
+        ))}
+      </Marquee>
+    ),
+  },
+  {
+    Icon: MdHowToVote,
+    name: "Vote on your beliefs",
+    description:
+      "Let the community decide the winner of debates through a voting system.",
+    href: "/dashboard/debates",
+    cta: "Go to debates",
+    className: "col-span-3 lg:col-span-2 bg-zinc-700 text-left",
+    background: (
+      <AnimatedList className="absolute right-2 top-4 h-[300px] w-full scale-75 border-none transition-all duration-300 ease-out [mask-image:linear-gradient(to_top,transparent_5%,#000_100%)] group-hover:scale-80">
+        {notifications.map((notif, idx) => (
+          <div key={idx} className="text-lg text-neutral-200">
+            {"> "}
+            {notif.name}
+          </div>
+        ))}
+      </AnimatedList>
+    ),
+  },
+  {
+    Icon: IoAnalyticsOutline,
+    name: "View your analytics",
+    description: "See how good of a debater you are.",
+    className:
+      "col-span-3 lg:col-span-1 bg-zinc-700/[0.8] text-left  group-hover:scale-90",
+    href: "/dashboard/analytics",
+    cta: "Go to analytics",
     background: (
       <div className="absolute top-10 w-full right-8 center blur-[1px] hover:blur-none hover:scale-130 transition-all duration-300 ease-out">
         <ResponsiveContainer width="100%" height={300}>
@@ -207,11 +326,16 @@ const features = [
 ];
 
 export function FeatureGrid() {
+  const { loggedIn } = useAuth();
   return (
     <BentoGrid>
-      {features.map((feature, idx) => (
-        <BentoCard key={idx} {...feature} />
-      ))}
+      {loggedIn
+        ? featuresAuth.map((feature, idx) => (
+            <BentoCard key={idx} {...feature} />
+          ))
+        : featuresUnath.map((feature, idx) => (
+            <BentoCard key={idx} {...feature} />
+          ))}
     </BentoGrid>
   );
 }
