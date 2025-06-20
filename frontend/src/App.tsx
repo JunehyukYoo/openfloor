@@ -14,9 +14,9 @@ import Login from "./routes/login";
 import Register from "./routes/register";
 import Profile from "./routes/profile";
 import Edit from "./routes/edit.tsx";
-import Topics from "./routes/topics.tsx";
-import Debates from "./routes/debates.tsx";
-import Analytics from "./routes/analytics.tsx";
+import Topics from "./routes/dashboard/topics.tsx";
+import Debates from "./routes/dashboard/debates.tsx";
+import Analytics from "./routes/dashboard/analytics.tsx";
 
 import { useAuth } from "./context/authContext";
 import { ToastContainer } from "react-toastify";
@@ -54,6 +54,9 @@ function App() {
             <Route path={"/dashboard/analytics"} element={<Analytics />} />
           </Route>
         </Route>
+        {/* <Route element={<ProtectedRoute />}>
+          <Route path={"/dashboard"} element={<DashboardLayout />} />
+        </Route> */}
       </Routes>
       <ToastContainer />
     </BrowserRouter>

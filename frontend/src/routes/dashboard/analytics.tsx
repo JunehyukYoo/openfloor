@@ -1,20 +1,22 @@
 // routes/analytics.tsx
-import api from "../../api/axios";
+import api from "../../../api/axios";
 import axios from "axios";
 import {
   processDebateBreakdown,
   processActivityData,
-} from "../utils/processAnalytics";
+} from "../../utils/processAnalytics";
 import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
-import RoleRadialChart from "../components/analytics/RoleRadialChart";
-import ActivityGraph from "../components/analytics/ActivityGraph";
-import { NumberTicker } from "../components/magicui/number-ticker";
+import RoleRadialChart from "../../components/analytics/RoleRadialChart";
+import ActivityGraph from "../../components/analytics/ActivityGraph";
+import { NumberTicker } from "../../components/magicui/number-ticker";
 import type {
   AnalyticsData,
   RadialBarChartData,
   ActivityOverTime,
-} from "../types";
+} from "../../types";
+
+import { SiteHeader as PageHeader } from "../../components/dashboard/site-header";
 
 const Analytics = () => {
   const [data, setData] = useState<AnalyticsData | null>(null);
@@ -57,8 +59,8 @@ const Analytics = () => {
     return <div className="text-white p-4">Loading analytics...</div>;
 
   return (
-    <section className="text-white p-4 h-full box-border flex flex-col gap-4">
-      <h1 className="text-3xl font-bold text-white">Analytics</h1>
+    <section className="text-white pl-4 pr-4 pb-4 h-full w-full box-border flex flex-col gap-4">
+      <PageHeader title={"Analytics"} />
       {data ? (
         <div className="flex flex-col gap-4 h-full overflow-hidden box-border">
           {/* Debate Participation + Activity graph */}

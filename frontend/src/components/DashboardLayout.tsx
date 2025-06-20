@@ -1,50 +1,71 @@
-import { useState } from "react";
-import Sidebar from "./Sidebar";
+// import { useState } from "react";
+// import Sidebar from "./Sidebar";
 import { Outlet } from "react-router-dom";
-import { IoChevronForward, IoChevronBack } from "react-icons/io5";
+// import { IoChevronForward, IoChevronBack } from "react-icons/io5";
+
+import { SidebarInset, SidebarProvider } from "./ui/sidebar";
+import { AppSidebar } from "./dashboard/app-sidebar";
 
 const DashboardLayout = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  // const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
-    <div className="flex h-screen w-screen overflow-y-scroll relative">
-      {/* Sidebar */}
-      <div
-        className={`fixed top-0 left-0 h-full w-64 z-30 shadow-lg transition-transform duration-300 ease-in-out ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <Sidebar
-          isOpen={isSidebarOpen}
-          onClose={() => setIsSidebarOpen(false)}
-        />
-      </div>
-      <button
-        onClick={() => setIsSidebarOpen((prev) => !prev)}
-        className={`absolute top-1/2 -translate-y-1/2 z-40 transition-all duration-300 ${
-          isSidebarOpen ? "left-64" : "left-0"
-        }`}
-      >
-        <div className="w-6 h-16 bg-gray-700 hover:bg-gray-600 text-white flex items-center justify-center rounded-r-full shadow-md">
-          {isSidebarOpen ? (
-            <IoChevronBack className="text-lg" />
-          ) : (
-            <IoChevronForward className="text-lg" />
-          )}
+    <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "calc(var(--spacing) * 72)",
+          "--header-height": "calc(var(--spacing) * 12)",
+        } as React.CSSProperties
+      }
+      className="w-screen dark"
+    >
+      <AppSidebar variant="inset" />
+      <SidebarInset>
+        <div className="flex flex-1 flex-col">
+          <div className=" flex flex-1 flex-col gap-2">
+            <Outlet />
+          </div>
         </div>
-      </button>
+      </SidebarInset>
+    </SidebarProvider>
+    // <div className="flex h-screen w-screen overflow-y-scroll relative">
+    //   {/* Sidebar */}
+    //   <div
+    //     className={`fixed top-0 left-0 h-full w-64 z-30 shadow-lg transition-transform duration-300 ease-in-out ${
+    //       isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+    //     }`}
+    //   >
+    //     <Sidebar
+    //       isOpen={isSidebarOpen}
+    //       onClose={() => setIsSidebarOpen(false)}
+    //     />
+    //   </div>
+    //   <button
+    //     onClick={() => setIsSidebarOpen((prev) => !prev)}
+    //     className={`absolute top-1/2 -translate-y-1/2 z-40 transition-all duration-300 ${
+    //       isSidebarOpen ? "left-64" : "left-0"
+    //     }`}
+    //   >
+    //     <div className="w-6 h-16 bg-gray-700 hover:bg-gray-600 text-white flex items-center justify-center rounded-r-full shadow-md">
+    //       {isSidebarOpen ? (
+    //         <IoChevronBack className="text-lg" />
+    //       ) : (
+    //         <IoChevronForward className="text-lg" />
+    //       )}
+    //     </div>
+    //   </button>
 
-      {/* Main content */}
-      <div
-        className={`flex-1 flex flex-col bg-zinc-900 text-white transition-all duration-300 ${
-          isSidebarOpen ? "ml-64" : "ml-0"
-        }`}
-      >
-        <main className="flex-1 p-4">
-          <Outlet />
-        </main>
-      </div>
-    </div>
+    //   {/* Main content */}
+    //   <div
+    //     className={`flex-1 flex flex-col bg-zinc-900 text-white transition-all duration-300 ${
+    //       isSidebarOpen ? "ml-64" : "ml-0"
+    //     }`}
+    //   >
+    //     <main className="flex-1 p-4">
+    //       <Outlet />
+    //     </main>
+    //   </div>
+    // </div>
   );
 };
 
