@@ -25,12 +25,12 @@ const Profile = () => {
   };
 
   return (
-    <div className="relative w-screen h-screen flex justify-center items-center overflow-hidden">
+    <div className="relative w-screen h-screen flex justify-end items-center overflow-hidden">
       {/* Dark overlay that sits above video only */}
-      <div className="absolute top-0 left-0 w-full h-full bg-black/40 z-0 pointer-events-none">
+      <div className="absolute top-0 left-0 w-[65%] h-full bg-black/40 z-0 pointer-events-none">
         {/* Video Background */}
         <video
-          className="absolute top-0 left-0 w-full h-full object-cover z-0"
+          className="object-cover w-full h-full z-0"
           src="/bg-profile-loop.mp4"
           autoPlay
           loop
@@ -42,26 +42,22 @@ const Profile = () => {
 
       {/* Profile Card */}
       {user && (
-        <RevealOnScroll>
-          <div className="relative z-20 flex flex-col justify-center items-center gap-8 min-w-3xl h-[60vh] rounded-[100px] bg-[#1a1a1a] shadow-[inset_0px_8px_64px_rgba(0,0,0,0.15),inset_0px_32px_128px_rgba(0,0,0,0.12),inset_0px_64px_256px_rgba(0,0,0,0.1),inset_0px_128px_384px_rgba(0,0,0,0.08)] text-white text-center">
-            <h1 className="text-5xl font-bold mb-6">
-              Welcome {user.username}!
-            </h1>
+        <div className="z-10 flex flex-col justify-center items-center gap-8 w-[35%] h-screen bg-[#1a1a1a] shadow-[inset_0px_8px_64px_rgba(0,0,0,0.15),inset_0px_32px_128px_rgba(0,0,0,0.12),inset_0px_64px_256px_rgba(0,0,0,0.1),inset_0px_128px_384px_rgba(0,0,0,0.08)] text-white text-center">
+          <RevealOnScroll>
+            <h1 className="text-5xl font-bold mb-6">Your Profile</h1>
 
-            <div className="flex justify-center gap-6">
+            <div className="flex flex-col justify-center gap-6">
               <UploadAvatar />
-              <div className="flex flex-col justify-center items-start text-lg gap-4 ml-[1rem] text-white text-[20px]">
+              <div className="flex flex-col justify-center items-center text-lg gap-4 ml-[1rem] text-white text-[20px]">
                 <p>
                   Username -{" "}
-                  <span className="font-bold border-b-2 border-white">
+                  <span className="font-bold border-white">
                     {user.username}
                   </span>
                 </p>
                 <p className="mb-4">
                   Email -{" "}
-                  <span className="font-bold border-b-2 border-white">
-                    {user.email}
-                  </span>
+                  <span className="font-bold border-white">{user.email}</span>
                 </p>
 
                 <div className="flex gap-4 tx-[16px]">
@@ -83,8 +79,8 @@ const Profile = () => {
                 </p>
               </div>
             </div>
-          </div>
-        </RevealOnScroll>
+          </RevealOnScroll>
+        </div>
       )}
     </div>
   );
