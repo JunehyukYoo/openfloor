@@ -13,6 +13,7 @@ import {
   CardAction,
   CardDescription,
 } from "../../components/ui/card";
+import { DataTable, columns } from "../../components/dashboard/DataTable";
 import { Button } from "../../components/ui/button";
 import axios from "axios";
 import api from "../../../api/axios";
@@ -51,7 +52,7 @@ const Topics = () => {
           {/* Trending weekly section */}
           <section className="flex flex-col p-2 gap-4">
             <h1 className="text-4xl text-left ">Trending Weekly</h1>
-            <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-4">
+            <div className="grid 2xl:grid-cols-4 xl:grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-4">
               {topics.trendingTopics.map((t) => {
                 return (
                   <Card
@@ -89,7 +90,7 @@ const Topics = () => {
           {/* Recommended topics section */}
           <section className="flex flex-col p-2 gap-4">
             <h1 className="text-4xl text-left">Recommended</h1>
-            <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-4">
+            <div className="grid 2xl:grid-cols-4 xl:grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-4">
               {topics.recommendedTopics.map((t) => {
                 return (
                   <Card
@@ -120,9 +121,11 @@ const Topics = () => {
               })}
             </div>
           </section>
-          <div className="p-2">
-            <h1 className="text-2xl text-left">Browse all Topics</h1>
-          </div>
+          {/* All topics data table section */}
+          <section className="p-2">
+            <h1 className="text-4xl text-left p-2">Browse all Topics</h1>
+            <DataTable columns={columns} data={topics.allTopics} />
+          </section>
         </>
       ) : (
         <div>Something went wrong.</div>

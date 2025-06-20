@@ -1,10 +1,6 @@
 import * as React from "react";
-import {
-  IconChartBar,
-  IconBubble,
-  // IconHelp,
-  IconListDetails,
-} from "@tabler/icons-react";
+import { IconChartBar, IconBubble, IconListDetails } from "@tabler/icons-react";
+import IconLogo from "/icon-outline.png";
 
 // import { NavDocuments } from "./nav-documents";
 import { NavMain } from "./nav-main";
@@ -55,7 +51,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <a href="/">
-                <span className="text-xl font-semibold">Openfloor.</span>
+                <img src={IconLogo} className="w-8 h-8 -translate-y-0.3" />
+                <span className="text-xl font-semibold text-white">
+                  Openfloor.
+                </span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
