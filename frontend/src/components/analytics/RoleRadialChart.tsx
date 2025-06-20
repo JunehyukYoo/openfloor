@@ -38,8 +38,8 @@ export default class RoleRadialChart extends PureComponent<Props> {
         <RadialBarChart
           cx="50%"
           cy="90%"
-          innerRadius={50}
-          outerRadius={140}
+          innerRadius={30}
+          outerRadius={120}
           barSize={20}
           data={this.props.data}
           startAngle={180}

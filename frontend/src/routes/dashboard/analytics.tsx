@@ -15,6 +15,7 @@ import type {
   RadialBarChartData,
   ActivityOverTime,
 } from "../../types";
+import { Card, CardTitle } from "../../components/ui/card";
 
 import { SiteHeader as PageHeader } from "../../components/dashboard/site-header";
 
@@ -66,62 +67,68 @@ const Analytics = () => {
           {/* Debate Participation + Activity graph */}
           <div className="flex gap-4 ">
             {/* Participation */}
-            <section className="bg-zinc-700 rounded-[20px] p-4 gap-4 grow-1 shrink-2 overflow-scroll">
-              <h2 className="text-2xl font-semibold mb-6">Participation</h2>
-              <ul className="list-none flex flex-col gap-4 w-full items-center">
+            <Card className="bg-neutral-900 p-4 gap-4 grow-1 shrink-2 overflow-scroll">
+              <CardTitle className="text-2xl font-semibold mb-6">
+                Participation
+              </CardTitle>
+              <div className="list-none flex flex-col gap-4 w-full items-center">
                 <div className="flex flex-wrap justify-center gap-4 w-full">
-                  <li className="grow shrink p-2 h-40 bg-zinc-600 rounded-lg">
+                  <Card className="grow shrink p-2 h-40 bg-gradient-to-t from-neutral-700/[0.1] to-neutral-800">
                     <h3 className="text-xl">Total Debates</h3>
                     <NumberTicker
-                      className="whitespace-pre-wrap text-8xl font-light tracking-tighter text-white translate-y-[10px]"
+                      className="whitespace-pre-wrap text-8xl font-light tracking-tighter text-white -translate-y-[15px]"
                       value={data.participation.totalDebates}
                     />
-                  </li>
-                  <li className="grow shrink p-2 h-40 bg-zinc-600 rounded-lg">
+                  </Card>
+                  <Card className="grow shrink p-2 h-40 bg-gradient-to-t from-neutral-700/[0.1] to-neutral-800">
                     <h3 className="text-xl">Active Debates</h3>
                     <NumberTicker
-                      className="whitespace-pre-wrap text-8xl font-light tracking-tighter text-white translate-y-[10px]"
+                      className="whitespace-pre-wrap text-8xl font-light tracking-tighter text-white -translate-y-[15px]"
                       value={data.participation.activeDebates}
                     />
-                  </li>
-                  <li className="grow shrink p-2 h-40 bg-zinc-600 rounded-lg">
+                  </Card>
+                  <Card className="grow shrink p-2 h-40 bg-gradient-to-t from-neutral-700/[0.1] to-neutral-800">
                     <h3 className="text-xl">Private Debates</h3>
                     <NumberTicker
-                      className="whitespace-pre-wrap text-8xl font-light tracking-tighter text-white translate-y-[10px]"
+                      className="whitespace-pre-wrap text-8xl font-light tracking-tighter text-white -translate-y-[15px]"
                       value={data.participation.privateDebates}
                     />
-                  </li>
+                  </Card>
                 </div>
 
-                <li className="w-full bg-zinc-600 rounded-lg p-4">
+                <Card className="h-60 w-full bg-gradient-to-t from-neutral-700/[0.1] to-neutral-800 rounded-lg p-4">
                   <h3 className="text-xl text-center mb-2">
                     Role Distribution
                   </h3>
-                  <div className="max-w-[300px] mx-auto h-40">
+                  <div className="max-w-[300px] mx-auto h-40 w-50">
                     <RoleRadialChart data={chartData} />
                   </div>
-                </li>
-              </ul>
-            </section>
+                </Card>
+              </div>
+            </Card>
 
             {/* Activity Graph */}
-            <section className="bg-zinc-700 rounded-[20px] min-w-2/5 h-auto grow-2 p-4 col-span-12 box-border">
-              <h2 className="text-2xl font-semibold mb-4 mt-2">Activity</h2>
-              <div className="w-full h-6/7 bg-zinc-600 rounded-lg">
+            <Card className="bg-neutral-900 min-w-2/5 h-auto grow-2 p-4 col-span-12 box-border">
+              <CardTitle className="text-2xl font-semibold mb-4 mt-2">
+                Activity
+              </CardTitle>
+              <Card className="w-full h-6/7 bg-gradient-to-t from-neutral-700/[0.1] to-neutral-800 rounded-lg">
                 <ActivityGraph data={graphData} />
-              </div>
-            </section>
+              </Card>
+            </Card>
           </div>
 
           {/* Highlights + Contribution */}
           <div className="flex gap-4 flex-wrap">
             {/* Highlights */}
-            <section className="h-auto bg-zinc-700 rounded-[20px] grow p-4 flex flex-col gap-4 overflow-scroll">
-              <h2 className="text-2xl font-semibold">Highlights</h2>
+            <Card className="bg-neutral-900 h-auto  grow p-4 flex flex-col gap-4 overflow-scroll">
+              <CardTitle className="text-2xl font-semibold">
+                Highlights
+              </CardTitle>
               {/* Top justification + Most participated topic */}
               <div className="flex gap-4 h-full">
                 <div className="flex flex-col gap-4 flex-1">
-                  <div className="bg-zinc-600 p-4 rounded-lg grow">
+                  <Card className="bg-gradient-to-t from-neutral-700/[0.1] to-neutral-800 p-4 rounded-lg grow">
                     <h3 className="text-xl font-medium text-purple-300">
                       Top Justification
                     </h3>
@@ -144,9 +151,9 @@ const Analytics = () => {
                     ) : (
                       <p>No upvoted justifications yet.</p>
                     )}
-                  </div>
+                  </Card>
 
-                  <div className="bg-zinc-600 p-4 rounded-lg grow">
+                  <Card className="bg-gradient-to-t from-neutral-700/[0.1] to-neutral-800 p-4 rounded-lg grow">
                     <h3 className="text-lg font-medium text-purple-300">
                       Most Participated Topic
                     </h3>
@@ -163,11 +170,11 @@ const Analytics = () => {
                         "No participated topics yet."
                       )}
                     </p>
-                  </div>
+                  </Card>
                 </div>
 
                 {/* Avg. Votes per Justification */}
-                <div className="bg-zinc-600 p-4 rounded-lg flex flex-col justify-center items-center w-48 shrink-0">
+                <Card className="bg-gradient-to-t from-neutral-700/[0.1] to-neutral-800 p-4 rounded-lg flex flex-col justify-center items-center w-48 shrink-0">
                   <h3 className="text-lg font-medium text-purple-300 mb-2 text-center">
                     Avg. Votes
                     <br />
@@ -177,15 +184,15 @@ const Analytics = () => {
                     className="whitespace-pre-wrap text-6xl font-light tracking-tighter text-white translate-y-[6px]"
                     value={data.highlights.avgVotesPerJustification}
                   />
-                </div>
+                </Card>
               </div>
-            </section>
+            </Card>
 
             {/* Contribution */}
-            <section className="bg-zinc-700 rounded-[20px] p-4 flex flex-col gap-4 overflow-hidden">
+            <Card className="bg-neutral-900 p-4 flex flex-col gap-4 overflow-hidden">
               <h2 className="text-2xl font-semibold">Contributions</h2>
               <div className="flex flex-col gap-4 h-full justify-around">
-                <div className="p-2 bg-zinc-600 rounded-lg grow">
+                <Card className="p-2 bg-gradient-to-t from-neutral-700/[0.1] to-neutral-800 rounded-lg grow">
                   <h3 className="text-xl">Justifications</h3>
                   <div className="flex-1 flex items-center justify-center">
                     <NumberTicker
@@ -193,8 +200,8 @@ const Analytics = () => {
                       value={data.contributions.totalJustifications}
                     />
                   </div>
-                </div>
-                <div className="p-2 bg-zinc-600 rounded-lg grow">
+                </Card>
+                <Card className="p-2 bg-gradient-to-t from-neutral-700/[0.1] to-neutral-800 rounded-lg grow">
                   <h3 className="text-xl">Comments</h3>
                   <div className="flex-1 flex items-center justify-center">
                     <NumberTicker
@@ -202,8 +209,8 @@ const Analytics = () => {
                       value={data.contributions.totalComments}
                     />
                   </div>
-                </div>
-                <div className="p-2 bg-zinc-600 rounded-lg grow">
+                </Card>
+                <Card className="p-2 bg-gradient-to-t from-neutral-700/[0.1] to-neutral-800 rounded-lg grow">
                   <h3 className="text-xl">Votes Cast</h3>
                   <div className="flex-1 flex items-center justify-center">
                     <NumberTicker
@@ -211,9 +218,9 @@ const Analytics = () => {
                       value={data.contributions.totalVotesCast}
                     />
                   </div>
-                </div>
+                </Card>
               </div>
-            </section>
+            </Card>
           </div>
         </div>
       ) : (
