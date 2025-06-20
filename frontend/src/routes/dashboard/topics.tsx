@@ -78,7 +78,7 @@ const Topics = () => {
                         variant="link"
                         className="m-0 p-0 font-normal text-left"
                       >
-                        View debates
+                        View debates →
                       </Button>
                     </CardFooter>
                   </Card>
@@ -113,7 +113,7 @@ const Topics = () => {
                         variant="link"
                         className="m-0 p-0 font-normal text-left"
                       >
-                        View debates
+                        View debates →
                       </Button>
                     </CardFooter>
                   </Card>
