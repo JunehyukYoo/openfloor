@@ -25,7 +25,7 @@ const Navbar = () => {
         ) : (
           <>
             <div>
-              <a href="/dashboard/topics">Dashboard</a>
+              <a href="/dashboard/debates">Dashboard</a>
             </div>
             <div>
               {user ? (

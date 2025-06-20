@@ -54,9 +54,6 @@ function App() {
             <Route path={"/dashboard/analytics"} element={<Analytics />} />
           </Route>
         </Route>
-        {/* <Route element={<ProtectedRoute />}>
-          <Route path={"/dashboard"} element={<DashboardLayout />} />
-        </Route> */}
       </Routes>
       <ToastContainer />
     </BrowserRouter>
