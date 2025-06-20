@@ -350,7 +350,7 @@ async function main() {
     },
   });
 
-  const allUsers = [alice, bob, june, diana, eric, frank, grace, helen];
+  let allUsers = [alice, bob, june, diana, eric, frank, grace, helen];
   await Promise.all(
     allUsers.map((user, idx) =>
       prisma.participant.create({
@@ -365,6 +365,103 @@ async function main() {
   );
 
   console.log("✅ All seed data successfully generated!");
+
+  // === PAGINATION-FRIENDLY PUBLIC DEBATES ===
+  const extraTopics = await Promise.all([
+    prisma.topic.create({
+      data: { title: "Is social media harming public discourse?" },
+    }),
+    prisma.topic.create({
+      data: { title: "Should governments implement Universal Basic Income?" },
+    }),
+    prisma.topic.create({
+      data: { title: "Are electric vehicles the future of transportation?" },
+    }),
+  ]);
+
+  const extraStanceLabels = [
+    ["Yes, it's toxic", "No, it's just a tool", "Depends on usage"],
+    [
+      "Yes, it will reduce poverty",
+      "No, it's economically unsustainable",
+      "Only during automation crises",
+    ],
+    [
+      "Yes, they are cleaner",
+      "No, not globally viable yet",
+      "Depends on energy sources",
+    ],
+  ];
+
+  // Create stances for each topic
+  await Promise.all(
+    extraTopics.map((topic, i) =>
+      prisma.stance.createMany({
+        data: extraStanceLabels[i].map((label) => ({
+          label,
+          topicId: topic.id,
+        })),
+      })
+    )
+  );
+
+  // Fetch all stances per topic
+  const allExtraStances = await Promise.all(
+    extraTopics.map((topic) =>
+      prisma.stance.findMany({
+        where: { topicId: topic.id },
+      })
+    )
+  );
+
+  let userCursor = 0;
+  for (let i = 0; i < 50; i++) {
+    const topicIndex = i % extraTopics.length;
+    const topic = extraTopics[topicIndex];
+    const stances = allExtraStances[topicIndex];
+
+    const creator = allUsers[userCursor % allUsers.length];
+    userCursor++;
+
+    const debate = await prisma.debate.create({
+      data: {
+        private: false,
+        topicId: topic.id,
+        closed: Math.random() > 0.7,
+        started: daysAgo(Math.floor(Math.random() * 14)),
+        creatorId: creator.id,
+      },
+    });
+
+    // Pick 3 debaters
+    const participants = [];
+    for (let j = 0; j < 3; j++) {
+      const user = allUsers[(userCursor + j) % allUsers.length];
+      const stance = stances[j % stances.length];
+      participants.push({
+        userId: user.id,
+        debateId: debate.id,
+        stanceId: stance.id,
+        role: "debater",
+      });
+    }
+    await prisma.participant.createMany({ data: participants });
+
+    // Add basic justifications
+    await Promise.all(
+      participants.map((p) =>
+        prisma.justification.create({
+          data: {
+            content: `Debate #${i + 1}: Supporting stance ${p.stanceId}.`,
+            authorId: p.userId,
+            stanceId: p.stanceId!,
+          },
+        })
+      )
+    );
+
+    userCursor += 3;
+  }
 }
 
 main()

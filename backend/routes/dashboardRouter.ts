@@ -5,6 +5,121 @@ import type { User, Topic } from "../types/index";
 
 const router = express.Router();
 
+// -- DEBATES --
+router.get("/debates", ensureAuthenticated, (req, res, next) => {
+  if (!req.user) {
+    res.status(401).json({ message: "User not authenticated." });
+    return;
+  }
+  const user = req.user as User;
+  res.json({ message: "testing" });
+});
+
+// -- TOPICS --
+router.get("/topics", ensureAuthenticated, async (req, res, next) => {
+  if (!req.user) {
+    res.status(401).json({ message: "User not authenticated." });
+    return;
+  }
+  const user = req.user as User;
+  try {
+    const [allTopicsRaw, trendingTopicsRaw] = await Promise.all([
+      prisma.topic.findMany({
+        orderBy: {
+          debates: {
+            _count: "desc",
+          },
+        },
+        include: {
+          _count: {
+            select: { debates: true },
+          },
+          debates: {
+            where: {
+              private: false,
+            },
+          },
+        },
+      }),
+      prisma.topic.findMany({
+        include: {
+          _count: {
+            select: { debates: true },
+          },
+          debates: {
+            where: {
+              private: false,
+              started: {
+                gte: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7), // last 7 days
+              },
+            },
+          },
+        },
+      }),
+    ]);
+
+    const userTopicIds = await prisma.participant.findMany({
+      where: { userId: user.id },
+      select: {
+        debate: {
+          select: { topicId: true },
+        },
+      },
+    });
+    const seenTopicIds = userTopicIds.map((p) => p.debate.topicId);
+
+    const recommendedTopicsRaw = await prisma.topic.findMany({
+      where: {
+        id: { notIn: seenTopicIds },
+      },
+      include: {
+        _count: {
+          select: { debates: true },
+        },
+        debates: {
+          where: { private: false },
+        },
+      },
+      orderBy: {
+        debates: {
+          _count: "desc",
+        },
+      },
+      take: 4,
+    });
+
+    const allTopics = allTopicsRaw.map((t) => ({
+      id: t.id,
+      title: t.title,
+      totalCount: t._count.debates,
+      debates: t.debates,
+    }));
+
+    // Trending topiocs sorted based on number of recent debates
+    const trendingTopics = trendingTopicsRaw
+      .map((t) => ({
+        id: t.id,
+        title: t.title,
+        totalCount: t._count.debates,
+        debates: t.debates,
+        recentPublicDebateCount: t.debates.length,
+      }))
+      .sort((a, b) => b.recentPublicDebateCount - a.recentPublicDebateCount)
+      .slice(0, 4);
+
+    const recommendedTopics = recommendedTopicsRaw.map((t) => ({
+      id: t.id,
+      title: t.title,
+      totalCount: t._count.debates,
+      debates: t.debates,
+    }));
+    res.json({ allTopics, trendingTopics, recommendedTopics });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error." });
+  }
+});
+
+// -- ANALYTICS --
 router.get("/analytics", ensureAuthenticated, async (req, res, next) => {
   if (!req.user) {
     res.status(401).json({ message: "User not authenticated." });

@@ -6,6 +6,38 @@ export interface User {
   profilePicture: string;
 }
 
+export interface Debate {
+  id: string;
+  private: boolean;
+  started: Date;
+  closed: boolean;
+  topicId: number;
+  creatorId: string;
+}
+
+// TOPICS
+
+export interface AllTopicData {
+  allTopics: TopicData[];
+  trendingTopics: TrendingTopicsData[];
+  recommendedTopics: TopicData[];
+}
+
+export interface TopicData {
+  id: number;
+  title: string;
+  totalCount: number;
+  debates: Debate[];
+}
+
+export interface TrendingTopicsData {
+  id: number;
+  title: string;
+  totalCount: number;
+  debates: Debate[];
+  recentPublicDebateCount: number;
+}
+
 // ANALYTICS
 
 export interface RadialBarChartData {
