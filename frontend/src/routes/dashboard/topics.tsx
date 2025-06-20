@@ -1,5 +1,7 @@
 // routes/topics.tsx
 import { SiteHeader as PageHeader } from "../../components/dashboard/site-header";
+import { Badge } from "../../components/ui/badge";
+import { IconTrendingUp } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
 import type { AllTopicData } from "../../types";
 import { toast } from "react-toastify";
@@ -8,9 +10,10 @@ import {
   CardHeader,
   CardFooter,
   CardTitle,
+  CardAction,
   CardDescription,
-  CardContent,
 } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
 import axios from "axios";
 import api from "../../../api/axios";
 
@@ -45,52 +48,80 @@ const Topics = () => {
       <PageHeader title="Topics" />
       {topics ? (
         <>
-          <div className="flex flex-col p-2 gap-4">
-            <h1 className="text-4xl text-left ml-10">Weekly Trending Topics</h1>
-            <div className="flex gap-4 flex-wrap">
+          {/* Trending weekly section */}
+          <section className="flex flex-col p-2 gap-4">
+            <h1 className="text-4xl text-left ">Trending Weekly</h1>
+            <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-4">
               {topics.trendingTopics.map((t) => {
                 return (
-                  <Card key={t.title} className="flex-1">
+                  <Card
+                    key={t.title}
+                    className="col-span-1 flex flex-col justify-between min-h-[200px] bg-gradient-to-t from-neutral-900 to-neutral-800 hover:*:opacity-100 hover:scale-103 transition-all duration-300 ease"
+                  >
                     <CardHeader>
-                      <CardTitle>{t.title}</CardTitle>
-                      <CardDescription>Card desc</CardDescription>
+                      <CardDescription className="text-left">
+                        {t.recentPublicDebateCount} debates in the last week.
+                      </CardDescription>
+                      <CardAction>
+                        <Badge variant="outline">
+                          <IconTrendingUp />
+                          Trending
+                        </Badge>
+                      </CardAction>
+                      <CardTitle className="text-xl font-semibold text-left">
+                        {t.title}
+                      </CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      Number of total debates: {t.totalCount}
-                      <br />
-                      Number of recent debates: {t.recentPublicDebateCount}
-                    </CardContent>
-                    <CardFooter>
-                      <p>Card Footer</p>
+                    <CardFooter className="opacity-0 transition-opacity duration-500 ease">
+                      <Button
+                        variant="link"
+                        className="m-0 p-0 font-normal text-left"
+                      >
+                        View debates
+                      </Button>
                     </CardFooter>
                   </Card>
                 );
               })}
             </div>
-          </div>
-          <div className="flex flex-col p-2 gap-4">
-            <h1 className="text-4xl text-left ml-10">Recommended Topics</h1>
-            <div className="flex gap-4 flex-wrap">
+          </section>
+
+          {/* Recommended topics section */}
+          <section className="flex flex-col p-2 gap-4">
+            <h1 className="text-4xl text-left">Recommended</h1>
+            <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-4">
               {topics.recommendedTopics.map((t) => {
                 return (
-                  <Card key={t.title} className="flex-1">
+                  <Card
+                    key={t.title}
+                    className="col-span-1 flex flex-col justify-between min-h-[200px] bg-gradient-to-t from-neutral-900 to-neutral-800 hover:*:opacity-100 hover:scale-103 transition-all duration-300 ease"
+                  >
                     <CardHeader>
-                      <CardTitle>{t.title}</CardTitle>
-                      <CardDescription>Card desc</CardDescription>
+                      <CardAction>
+                        <Badge variant="outline">
+                          <IconTrendingUp />
+                          Recommended
+                        </Badge>
+                      </CardAction>
+                      <CardTitle className="text-xl font-semibold text-left">
+                        {t.title}
+                      </CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      Number of total debates: {t.totalCount}
-                    </CardContent>
-                    <CardFooter>
-                      <p>Card Footer</p>
+                    <CardFooter className="text-sm opacity-0 transition-opacity duration-500 ease">
+                      <Button
+                        variant="link"
+                        className="m-0 p-0 font-normal text-left"
+                      >
+                        View debates
+                      </Button>
                     </CardFooter>
                   </Card>
                 );
               })}
             </div>
-          </div>
-          <div>
-            <h1 className="text-2xl text-left ml-10">Browse all Topics</h1>
+          </section>
+          <div className="p-2">
+            <h1 className="text-2xl text-left">Browse all Topics</h1>
           </div>
         </>
       ) : (
