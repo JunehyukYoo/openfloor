@@ -17,6 +17,17 @@ export interface Debate {
 
 // TOPICS
 
+export interface DebateData {
+  id: string;
+  private: boolean;
+  started: Date;
+  closed: boolean;
+  topicId: number;
+  participantCount: number;
+  creatorId: string;
+  creatorUsername: string;
+}
+
 export interface AllTopicData {
   allTopics: TopicData[];
   trendingTopics: TrendingTopicsData[];
@@ -27,14 +38,14 @@ export interface TopicData {
   id: number;
   title: string;
   totalCount: number;
-  debates: Debate[];
+  debates: DebateData[];
 }
 
 export interface TrendingTopicsData {
   id: number;
   title: string;
   totalCount: number;
-  debates: Debate[];
+  debates: DebateData[];
   recentPublicDebateCount: number;
 }
 

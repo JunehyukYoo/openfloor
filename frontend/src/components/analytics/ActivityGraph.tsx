@@ -6,7 +6,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
 
@@ -68,37 +67,44 @@ export default class ActivityGraph extends PureComponent<Props> {
               bottom: 0,
             }}
           >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis allowDecimals={false} />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend
-              verticalAlign="top"
-              wrapperStyle={{
-                paddingBottom: 10,
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="date"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              minTickGap={32}
+              tickFormatter={(value) => {
+                const date = new Date(value);
+                return date.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                });
               }}
             />
+            <YAxis allowDecimals={false} tickLine={false} />
+            <Tooltip content={<CustomTooltip />} />
             <Line
-              type="monotone"
+              type="natural"
               dataKey="debates"
               stroke="#8884d8"
               activeDot={{ r: 8 }}
               strokeWidth={2}
             />
             <Line
-              type="monotone"
+              type="natural"
               dataKey="justifications"
               stroke="#90cdf4"
               strokeWidth={2}
             />
             <Line
-              type="monotone"
+              type="natural"
               dataKey="comments"
               stroke="#82ca9d"
               strokeWidth={2}
             />
             <Line
-              type="monotone"
+              type="natural"
               dataKey="votes"
               stroke="#f5d742"
               strokeWidth={2}

@@ -38,6 +38,14 @@ router.get("/topics", ensureAuthenticated, async (req, res, next) => {
             where: {
               private: false,
             },
+            include: {
+              _count: {
+                select: { participants: true },
+              },
+              creator: {
+                select: { username: true },
+              },
+            },
           },
         },
       }),
@@ -51,6 +59,14 @@ router.get("/topics", ensureAuthenticated, async (req, res, next) => {
               private: false,
               started: {
                 gte: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7), // last 7 days
+              },
+            },
+            include: {
+              _count: {
+                select: { participants: true },
+              },
+              creator: {
+                select: { username: true },
               },
             },
           },
@@ -78,6 +94,14 @@ router.get("/topics", ensureAuthenticated, async (req, res, next) => {
         },
         debates: {
           where: { private: false },
+          include: {
+            _count: {
+              select: { participants: true },
+            },
+            creator: {
+              select: { username: true },
+            },
+          },
         },
       },
       orderBy: {
@@ -92,7 +116,16 @@ router.get("/topics", ensureAuthenticated, async (req, res, next) => {
       id: t.id,
       title: t.title,
       totalCount: t._count.debates,
-      debates: t.debates,
+      debates: t.debates.map((debate) => ({
+        id: debate.id,
+        private: debate.private,
+        started: debate.started,
+        closed: debate.closed,
+        topicId: debate.topicId,
+        participantCount: debate._count.participants,
+        creatorId: debate.creatorId,
+        creatorUsername: debate.creator.username,
+      })),
     }));
 
     // Trending topiocs sorted based on number of recent debates
@@ -101,8 +134,17 @@ router.get("/topics", ensureAuthenticated, async (req, res, next) => {
         id: t.id,
         title: t.title,
         totalCount: t._count.debates,
-        debates: t.debates,
         recentPublicDebateCount: t.debates.length,
+        debates: t.debates.map((debate) => ({
+          id: debate.id,
+          private: debate.private,
+          started: debate.started,
+          closed: debate.closed,
+          topicId: debate.topicId,
+          participantCount: debate._count.participants,
+          creatorId: debate.creatorId,
+          creatorUsername: debate.creator.username,
+        })),
       }))
       .sort((a, b) => b.recentPublicDebateCount - a.recentPublicDebateCount)
       .slice(0, 4);
@@ -111,7 +153,16 @@ router.get("/topics", ensureAuthenticated, async (req, res, next) => {
       id: t.id,
       title: t.title,
       totalCount: t._count.debates,
-      debates: t.debates,
+      debates: t.debates.map((debate) => ({
+        id: debate.id,
+        private: debate.private,
+        started: debate.started,
+        closed: debate.closed,
+        topicId: debate.topicId,
+        participantCount: debate._count.participants,
+        creatorId: debate.creatorId,
+        creatorUsername: debate.creator.username,
+      })),
     }));
     res.json({ allTopics, trendingTopics, recommendedTopics });
   } catch (error) {

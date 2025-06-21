@@ -1,12 +1,21 @@
 "use client";
 
 import * as React from "react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  ArrowUpDown,
+} from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { TopicData } from "../../types";
-import type { SortingState } from "@tanstack/react-table";
+import type { SortingState, ColumnFiltersState } from "@tanstack/react-table";
+import TopicViewer from "./TopicViewer";
 import {
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
@@ -14,6 +23,8 @@ import {
 import { MoreHorizontal } from "lucide-react";
 
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +33,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+
 import {
   Table,
   TableBody,
@@ -30,8 +42,8 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { ArrowUpDown } from "lucide-react";
 
+// Table column definition
 export const columns: ColumnDef<TopicData>[] = [
   {
     accessorKey: "title",
@@ -47,9 +59,7 @@ export const columns: ColumnDef<TopicData>[] = [
       );
     },
     cell: ({ row }) => {
-      return (
-        <div className="text-left font-medium">{row.getValue("title")}</div>
-      );
+      return <TopicViewer item={row.original} title={row.original.title} />;
     },
   },
   {
@@ -61,7 +71,7 @@ export const columns: ColumnDef<TopicData>[] = [
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            Title
+            Debate Count
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         </div>
@@ -94,8 +104,9 @@ export const columns: ColumnDef<TopicData>[] = [
               Copy topic
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Do this</DropdownMenuItem>
-            <DropdownMenuItem>Do that</DropdownMenuItem>
+            <DropdownMenuItem className="text-red-400">
+              Report topic
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -103,6 +114,7 @@ export const columns: ColumnDef<TopicData>[] = [
   },
 ];
 
+// Main table here
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -113,20 +125,37 @@ export function DataTable<TData, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     state: {
       sorting,
+      columnFilters,
     },
   });
 
   return (
     <div>
+      <div className="flex items-center py-4">
+        <Input
+          id="table-filter"
+          placeholder="Filter topics..."
+          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("title")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -180,19 +209,43 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
+          size="icon"
+          className="hidden size-8 lg:flex"
+          onClick={() => table.setPageIndex(0)}
           disabled={!table.getCanPreviousPage()}
         >
-          Previous
+          <span className="sr-only">Go to first page</span>
+          <ChevronsLeft />
         </Button>
         <Button
           variant="outline"
-          size="sm"
+          size="icon"
+          className="size-8"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          <span className="sr-only">Go to previous page</span>
+          <ChevronLeft />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          className="size-8"
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
         >
-          Next
+          <span className="sr-only">Go to next page</span>
+          <ChevronRight />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          className="hidden size-8 lg:flex"
+          onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+          disabled={!table.getCanNextPage()}
+        >
+          <span className="sr-only">Go to last page</span>
+          <ChevronsRight />
         </Button>
       </div>
     </div>

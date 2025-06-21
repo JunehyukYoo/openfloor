@@ -26,6 +26,7 @@ export function processDebateBreakdown(data: AnalyticsData) {
   });
 }
 
+// DEPRECIATED (NOT USING ANYMORE)
 // Slice away the year off the date
 export function processActivityData(data: AnalyticsData) {
   return data.activityOverTime.map((d) => ({ ...d, date: d.date.slice(5) }));

@@ -13,8 +13,8 @@ import {
   CardAction,
   CardDescription,
 } from "../../components/ui/card";
+import TopicViewer from "../../components/dashboard/TopicViewer";
 import { DataTable, columns } from "../../components/dashboard/DataTable";
-import { Button } from "../../components/ui/button";
 import axios from "axios";
 import api from "../../../api/axios";
 
@@ -43,7 +43,6 @@ const Topics = () => {
     };
     getTopics();
   }, []);
-
   return (
     <div className="pl-2 pr-2 flex flex-col gap-4">
       <PageHeader title="Topics" />
@@ -56,8 +55,8 @@ const Topics = () => {
               {topics.trendingTopics.map((t) => {
                 return (
                   <Card
-                    key={t.title}
-                    className="col-span-1 flex flex-col justify-between min-h-[200px] bg-gradient-to-t from-neutral-900 to-neutral-800 hover:*:opacity-100 hover:scale-103 transition-all duration-300 ease"
+                    key={t.id + t.title}
+                    className="col-span-1 flex flex-col justify-between min-h-[200px] bg-gradient-to-t from-neutral-900 to-neutral-800 hover:*:opacity-100 hover:scale-101 transition-all duration-300 ease"
                   >
                     <CardHeader>
                       <CardDescription className="text-left">
@@ -74,12 +73,9 @@ const Topics = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardFooter className="opacity-0 transition-opacity duration-500 ease">
-                      <Button
-                        variant="link"
-                        className="m-0 p-0 font-normal text-left"
-                      >
-                        View debates →
-                      </Button>
+                      <div className="translate-x-[-15px]">
+                        <TopicViewer item={t} title="View debates →" />
+                      </div>
                     </CardFooter>
                   </Card>
                 );
@@ -94,8 +90,8 @@ const Topics = () => {
               {topics.recommendedTopics.map((t) => {
                 return (
                   <Card
-                    key={t.title}
-                    className="col-span-1 flex flex-col justify-between min-h-[200px] bg-gradient-to-t from-neutral-900 to-neutral-800 hover:*:opacity-100 hover:scale-103 transition-all duration-300 ease"
+                    key={t.id + t.title}
+                    className="col-span-1 flex flex-col justify-between min-h-[200px] bg-gradient-to-t from-neutral-900 to-neutral-800 hover:*:opacity-100 hover:scale-101 transition-all duration-300 ease"
                   >
                     <CardHeader>
                       <CardAction>
@@ -109,12 +105,9 @@ const Topics = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardFooter className="text-sm opacity-0 transition-opacity duration-500 ease">
-                      <Button
-                        variant="link"
-                        className="m-0 p-0 font-normal text-left"
-                      >
-                        View debates →
-                      </Button>
+                      <div className="translate-x-[-15px]">
+                        <TopicViewer item={t} title="View debates →" />
+                      </div>
                     </CardFooter>
                   </Card>
                 );

@@ -1,6 +1,7 @@
 import {
   IconDotsVertical,
   IconLogout,
+  IconEdit,
   IconUserCircle,
 } from "@tabler/icons-react";
 
@@ -94,7 +95,12 @@ export function NavUser() {
                 <IconUserCircle />
                 Account
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/profile/edit")}>
+                <IconEdit />
+                Edit
+              </DropdownMenuItem>
             </DropdownMenuGroup>
+            <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
               <IconLogout />
               Log out
