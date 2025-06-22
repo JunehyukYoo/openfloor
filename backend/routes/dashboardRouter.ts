@@ -1,6 +1,10 @@
+// dashboardRouter.ts
 import express from "express";
 import prisma from "../lib/prisma";
-import { ensureAuthenticated } from "./authMiddleware";
+import {
+  ensureAuthenticated,
+  ensureDebateAuthenticated,
+} from "./authMiddleware";
 import type { User, Topic } from "../types/index";
 
 const router = express.Router();
@@ -14,6 +18,38 @@ router.get("/debates", ensureAuthenticated, (req, res, next) => {
   const user = req.user as User;
   res.json({ message: "testing" });
 });
+
+router.get(
+  "/debates/:id",
+  ensureAuthenticated,
+  ensureDebateAuthenticated,
+  async (req, res, next) => {
+    if (!req.user) {
+      res.status(401).json({ message: "User not authenticated." });
+      return;
+    }
+    const { id } = req.params;
+    try {
+      const debate = await prisma.debate.findUnique({
+        where: {
+          id: id,
+        },
+        include: {
+          participants: {
+            include: {
+              user: true,
+            },
+          },
+          creator: true,
+          topic: true,
+        },
+      });
+      res.json({ debate });
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error." });
+    }
+  }
+);
 
 // -- TOPICS --
 router.get("/topics", ensureAuthenticated, async (req, res, next) => {
