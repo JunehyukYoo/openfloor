@@ -87,7 +87,7 @@ const TopicViewer = ({ item, title }: { item: TopicData; title: string }) => {
                       return (
                         <Card
                           key={d.creatorId + idx}
-                          className="gap-4 bg-neutral-800 opacity-10 col-span-1 hover:scale-103 hover:opacity-50 transition:all duration-300"
+                          className="gap-4 bg-neutral-800 opacity-40 col-span-1 hover:scale-102 hover:opacity-60 transition:all duration-300"
                         >
                           <CardHeader>
                             <CardAction>
@@ -107,7 +107,7 @@ const TopicViewer = ({ item, title }: { item: TopicData; title: string }) => {
                       return (
                         <Card
                           key={d.creatorId + idx}
-                          className="gap-4 bg-neutral-800 col-span-1 hover:scale-103 transition:all duration-300"
+                          className="gap-4 bg-neutral-800 col-span-1 hover:scale-102 transition:all duration-300"
                         >
                           <CardHeader>
                             <CardAction>
