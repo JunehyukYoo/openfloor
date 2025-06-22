@@ -2,7 +2,7 @@
 // See https://ui.shadcn.com/docs for more
 import * as React from "react";
 import { IconChartBar, IconBubble, IconListDetails } from "@tabler/icons-react";
-import IconLogo from "/icon-outline.png";
+import IconLogo from "/icon-circle.png";
 
 // import { NavDocuments } from "./nav-documents";
 import { NavMain } from "./nav-main";
@@ -53,7 +53,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <a href="/">
-                <img src={IconLogo} className="w-8 h-8 -translate-y-0.3" />
+                <img src={IconLogo} className="w-8 h-8" />
                 <span className="text-xl font-semibold text-white">
                   Openfloor.
                 </span>

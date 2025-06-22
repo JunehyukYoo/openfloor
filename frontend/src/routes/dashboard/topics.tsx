@@ -89,7 +89,7 @@ const Topics = () => {
 
           {/* Recommended topics section */}
           <section className="flex flex-col p-2 gap-4">
-            <h1 className="text-4xl text-left">Never Debated</h1>
+            <h1 className="text-4xl text-left">Recommended for You</h1>
             <div className="grid 2xl:grid-cols-4 xl:grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-4">
               {topics.recommendedTopics.map((t) => {
                 return (

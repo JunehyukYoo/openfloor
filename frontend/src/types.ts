@@ -22,6 +22,27 @@ export interface TopicDataMini {
   title: string;
 }
 
+// DEBATES
+
+export interface AllDebateData {
+  createdDebates: {
+    id: number;
+    userId: string;
+    stanceId?: number;
+    role: "CREATOR" | "ADMIN" | "DEBATER" | "OBSERVER";
+    joinedAt: Date;
+    debate: Debate;
+  }[];
+  joinedDebates: {
+    id: number;
+    userId: string;
+    stanceId?: number;
+    role: "CREATOR" | "ADMIN" | "DEBATER" | "OBSERVER";
+    joinedAt: Date;
+    debate: Debate;
+  }[];
+}
+
 // TOPICS
 
 export interface DebateData {
