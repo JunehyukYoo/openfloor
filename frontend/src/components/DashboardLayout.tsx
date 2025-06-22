@@ -1,3 +1,4 @@
+// components/DashboardLayout.tsx
 import { Outlet } from "react-router-dom";
 import { SidebarInset, SidebarProvider } from "./ui/sidebar";
 import { AppSidebar } from "./dashboard/app-sidebar";

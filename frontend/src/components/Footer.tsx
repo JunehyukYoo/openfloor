@@ -1,3 +1,4 @@
+// components/Footer.tsx
 const Footer = () => {
   return (
     <footer className="bg-zinc-950 p-10 text-white">

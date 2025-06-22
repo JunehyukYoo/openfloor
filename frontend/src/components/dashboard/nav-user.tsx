@@ -1,3 +1,5 @@
+// components/dashboard/nav-user.tsx
+// See https://ui.shadcn.com/docs for more
 import {
   IconDotsVertical,
   IconLogout,

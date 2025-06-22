@@ -1,4 +1,4 @@
-// Navbar.tsx
+// components/Navbar.tsx
 import { useAuth } from "../context/authContext";
 import Avatar from "@mui/material/Avatar";
 import "../styles/Navbar.css";

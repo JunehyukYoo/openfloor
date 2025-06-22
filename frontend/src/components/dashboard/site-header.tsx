@@ -1,3 +1,5 @@
+// components/dashboard/site-header.tsx
+// See https://ui.shadcn.com/docs for more
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { SidebarTrigger } from "../ui/sidebar";

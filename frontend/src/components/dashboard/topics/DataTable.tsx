@@ -1,3 +1,5 @@
+// components/dashboard/topics/DataTable.tsx
+// See https://ui.shadcn.com/docs for more
 "use client";
 
 import * as React from "react";

@@ -1,3 +1,6 @@
+// components/dashboard/topics/TopicViewer.tsx
+// See https://ui.shadcn.com/docs for more
+
 import { useState } from "react";
 import { useIsMobile } from "../../../hooks/use-mobile";
 import type { TopicData } from "../../../types";

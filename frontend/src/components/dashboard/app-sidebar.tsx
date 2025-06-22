@@ -1,3 +1,5 @@
+// components/dashboard/app-sidebar.tsx
+// See https://ui.shadcn.com/docs for more
 import * as React from "react";
 import { IconChartBar, IconBubble, IconListDetails } from "@tabler/icons-react";
 import IconLogo from "/icon-outline.png";

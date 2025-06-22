@@ -1,4 +1,4 @@
-// routes/analytics.tsx
+// routes/dashboard/analytics.tsx
 import api from "../../../api/axios";
 import axios from "axios";
 import {

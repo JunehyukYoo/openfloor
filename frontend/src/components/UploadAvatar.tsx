@@ -1,4 +1,4 @@
-// MyAvatar.tsx
+// components/MyAvatar.tsx
 // taken from https://mui.com/material-ui/react-avatar/ with slight modifications
 import React from "react";
 import Avatar from "@mui/material/Avatar";

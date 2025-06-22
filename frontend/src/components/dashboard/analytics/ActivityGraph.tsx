@@ -1,3 +1,5 @@
+// components/analytics/dashboard/ActivityGraph.tsx
+// See https://recharts.org/en-US/api/LineChart for more
 import { PureComponent } from "react";
 import {
   LineChart,

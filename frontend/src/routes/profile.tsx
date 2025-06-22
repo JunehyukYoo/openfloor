@@ -1,3 +1,4 @@
+// routes/profile.tsx
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
 import { useAuth } from "../context/authContext";

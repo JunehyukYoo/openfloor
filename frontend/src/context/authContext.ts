@@ -1,4 +1,4 @@
-// authContext.ts
+// context/authContext.ts
 import type { User } from "../types.ts";
 import { createContext, useContext } from "react";
 

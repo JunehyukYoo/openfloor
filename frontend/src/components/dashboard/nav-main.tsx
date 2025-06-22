@@ -1,3 +1,5 @@
+// components/dashboard/nav-main.tsx
+// See https://ui.shadcn.com/docs for more
 import { IconCirclePlusFilled, type Icon } from "@tabler/icons-react";
 import {
   SidebarGroup,

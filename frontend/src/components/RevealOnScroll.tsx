@@ -1,3 +1,4 @@
+// components/RevealOnScroll.tsx
 import { useEffect, useRef } from "react";
 import "../styles/RevealOnScroll.css";
 

@@ -1,4 +1,4 @@
-// routes/debates.tsx
+// routes/dashboard/debates.tsx
 import { SiteHeader as PageHeader } from "../../components/dashboard/site-header";
 
 const Debates = () => {

@@ -1,4 +1,4 @@
-// authProvider.tsx
+// context/authProvider.tsx
 // Custom React component using React context for authentication state management
 import { useEffect, useState } from "react";
 import { AuthContext } from "./authContext";
