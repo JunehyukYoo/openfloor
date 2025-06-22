@@ -86,8 +86,6 @@ export const columns: ColumnDef<TopicData>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const title = row.original.title;
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -99,9 +97,16 @@ export const columns: ColumnDef<TopicData>[] = [
           <DropdownMenuContent align="end" className="dark">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(title)}
+              onClick={() => navigator.clipboard.writeText(row.original.title)}
             >
-              Copy topic
+              Copy title
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                navigator.clipboard.writeText(String(row.original.id))
+              }
+            >
+              Copy topic ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-red-400">

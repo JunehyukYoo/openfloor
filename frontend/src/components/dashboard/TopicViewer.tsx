@@ -50,18 +50,6 @@ const TopicViewer = ({ item, title }: { item: TopicData; title: string }) => {
           </DrawerHeader>
           <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
             <Separator />
-            <div className="grid gap-2">
-              <div className="flex gap-2 leading-none font-medium">
-                Blah blah blah
-              </div>
-              <div className="text-muted-foreground">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis
-                praesentium reiciendis sequi explicabo! Dolorem suscipit odio,
-                quas nihil perferendis quis, deserunt, sequi autem consequuntur
-                doloremque iure magni ipsam aliquam dolor.
-              </div>
-            </div>
-            <Separator />
             <div className="flex justify-between">
               <div className="flex gap-2 leading-none font-medium">
                 Public Debates

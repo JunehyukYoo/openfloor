@@ -13,6 +13,7 @@ import {
   CardAction,
   CardDescription,
 } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
 import TopicViewer from "../../components/dashboard/TopicViewer";
 import { DataTable, columns } from "../../components/dashboard/DataTable";
 import axios from "axios";
@@ -118,6 +119,15 @@ const Topics = () => {
           <section className="p-2">
             <h1 className="text-4xl text-left p-2">Browse all Topics</h1>
             <DataTable columns={columns} data={topics.allTopics} />
+          </section>
+
+          <section className="p-2 mb-4 flex flex-col gap-2 items-center">
+            <h1 className="text-2xl">
+              Have a topic you want to debate? Submit a request here!
+            </h1>
+            <Button variant="default" className="max-w-100">
+              Submit a request
+            </Button>
           </section>
         </>
       ) : (
