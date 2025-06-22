@@ -16,7 +16,7 @@ import type {
   ActivityOverTime,
 } from "../../types";
 import { Card, CardTitle } from "../../components/ui/card";
-import { SiteHeader as PageHeader } from "../../components/dashboard/topics/site-header";
+import { SiteHeader as PageHeader } from "../../components/dashboard/site-header";
 
 const Analytics = () => {
   const [data, setData] = useState<AnalyticsData | null>(null);

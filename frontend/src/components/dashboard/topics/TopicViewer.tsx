@@ -23,11 +23,59 @@ import {
   CardTitle,
   CardDescription,
 } from "../../ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "../../ui/dialog";
 import { Badge } from "../../ui/badge";
+import api from "../../../../api/axios";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const TopicViewer = ({ item, title }: { item: TopicData; title: string }) => {
   const isMobile = useIsMobile();
   const [showClosed, setShowClosed] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(false);
+
+  const handleCreate = async () => {
+    try {
+      await api.post("/dashboard/debates/create", {
+        topicId: item.id,
+        isPrivate,
+      });
+      toast.success("Debate created!", {
+        position: "top-right",
+        theme: "dark",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      setIsDialogOpen(false);
+      // TODO: Navigate user to the newly created debate page
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.message, {
+          position: "top-right",
+          theme: "dark",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    }
+  };
+
   return (
     <div className="dark">
       <Drawer direction={isMobile ? "bottom" : "right"}>
@@ -123,7 +171,39 @@ const TopicViewer = ({ item, title }: { item: TopicData; title: string }) => {
           <DrawerFooter>
             <Button variant="destructive">Report</Button>
             <Separator />
-            <Button variant="default">Create Debate</Button>
+            {/* Dialog for debate creation */}
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="default">Create Debate</Button>
+              </DialogTrigger>
+              <DialogContent className="dark w-80">
+                <DialogHeader>
+                  <DialogTitle>Choose your debate's privacy</DialogTitle>
+                  <div className="flex align-center mt-2 gap-2">
+                    <Label id="is-private-specific-topic">Private</Label>
+                    <Switch
+                      aria-label="is-private-specific-topic"
+                      checked={isPrivate}
+                      onCheckedChange={() => {
+                        setIsPrivate(!isPrivate);
+                      }}
+                    />
+                  </div>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsDialogOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button variant="default" onClick={handleCreate}>
+                    Create
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
             <DrawerClose asChild>
               <Button variant="outline">Close</Button>
             </DrawerClose>

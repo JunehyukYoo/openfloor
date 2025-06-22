@@ -5,7 +5,7 @@ import {
   IconUserCircle,
 } from "@tabler/icons-react";
 
-import { Avatar, AvatarImage } from "../../ui/avatar";
+import { Avatar, AvatarImage } from "../ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,16 +14,16 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../../ui/dropdown-menu";
+} from "../ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "../../ui/sidebar";
+} from "../ui/sidebar";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../../context/authContext";
-import api from "../../../../api/axios";
+import { useAuth } from "../../context/authContext";
+import api from "../../../api/axios";
 
 export function NavUser() {
   const { isMobile } = useSidebar();

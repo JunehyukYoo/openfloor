@@ -1,5 +1,5 @@
 // routes/topics.tsx
-import { SiteHeader as PageHeader } from "../../components/dashboard/topics/site-header";
+import { SiteHeader as PageHeader } from "../../components/dashboard/site-header";
 import { Badge } from "../../components/ui/badge";
 import { IconTrendingUp } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
@@ -89,7 +89,7 @@ const Topics = () => {
 
           {/* Recommended topics section */}
           <section className="flex flex-col p-2 gap-4">
-            <h1 className="text-4xl text-left">Recommended</h1>
+            <h1 className="text-4xl text-left">Never Debated</h1>
             <div className="grid 2xl:grid-cols-4 xl:grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-4">
               {topics.recommendedTopics.map((t) => {
                 return (

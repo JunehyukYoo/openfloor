@@ -11,12 +11,41 @@ const router = express.Router();
 
 // -- DEBATES --
 router.get("/debates", ensureAuthenticated, (req, res, next) => {
-  if (!req.user) {
-    res.status(401).json({ message: "User not authenticated." });
-    return;
-  }
   const user = req.user as User;
   res.json({ message: "testing" });
+});
+
+router.post("/debates/create", ensureAuthenticated, async (req, res, next) => {
+  const user = req.user as User;
+  const { topicId, isPrivate } = req.body;
+  if (!topicId || isNaN(topicId)) {
+    res.status(400).json({ error: "Invalid topic ID." });
+    return;
+  }
+  try {
+    const debate = await prisma.debate.create({
+      data: {
+        topicId,
+        creatorId: user.id,
+        private: isPrivate,
+      },
+    });
+    await prisma.participant.create({
+      data: {
+        userId: user.id,
+        debateId: debate.id,
+        role: "CREATOR",
+      },
+    });
+    res.status(201).json({ message: "Debate created", debateId: debate.id });
+    console.log(
+      `New ${isPrivate === true ? "private" : "public"} debate created by ${
+        user.username
+      } (id: ${user.id}) for topicId: ${topicId}`
+    );
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error." });
+  }
 });
 
 router.get(
@@ -53,10 +82,6 @@ router.get(
 
 // -- TOPICS --
 router.get("/topics", ensureAuthenticated, async (req, res, next) => {
-  if (!req.user) {
-    res.status(401).json({ message: "User not authenticated." });
-    return;
-  }
   const user = req.user as User;
   try {
     const [allTopicsRaw, trendingTopicsRaw] = await Promise.all([
@@ -206,12 +231,18 @@ router.get("/topics", ensureAuthenticated, async (req, res, next) => {
   }
 });
 
+// For creating a debate after selecting a topic
+router.get("/topics/all", ensureAuthenticated, async (req, res, next) => {
+  try {
+    const allTopics = await prisma.topic.findMany();
+    res.json({ allTopics });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error." });
+  }
+});
+
 // -- ANALYTICS --
 router.get("/analytics", ensureAuthenticated, async (req, res, next) => {
-  if (!req.user) {
-    res.status(401).json({ message: "User not authenticated." });
-    return;
-  }
   const user = req.user as User;
   try {
     // Run basic counts in parallel

@@ -15,6 +15,13 @@ export interface Debate {
   creatorId: string;
 }
 
+// SIDEBAR
+
+export interface TopicDataMini {
+  id: string;
+  title: string;
+}
+
 // TOPICS
 
 export interface DebateData {

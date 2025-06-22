@@ -21,10 +21,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
-
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,7 +31,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../../ui/dropdown-menu";
-
 import {
   Table,
   TableBody,
@@ -119,7 +116,7 @@ export const columns: ColumnDef<TopicData>[] = [
   },
 ];
 
-// Main table here
+// Table here
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
