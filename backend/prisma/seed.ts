@@ -1,6 +1,6 @@
 // seed.ts
 import "dotenv/config";
-import { PrismaClient } from "../generated/prisma";
+import { PrismaClient, Role } from "../generated/prisma";
 import bcrypt from "bcryptjs";
 import type { User } from "../types/index";
 
@@ -73,22 +73,22 @@ async function main() {
         userId: alice.id,
         debateId: debate1.id,
         stanceId: stances1[0].id,
-        role: "debater",
+        role: Role.DEBATER,
       },
       {
         userId: bob.id,
         debateId: debate1.id,
         stanceId: stances1[1].id,
-        role: "debater",
+        role: Role.DEBATER,
       },
       {
         userId: june.id,
         debateId: debate1.id,
         stanceId: stances1[2].id,
-        role: "debater",
+        role: Role.DEBATER,
       },
-      { userId: diana.id, debateId: debate1.id, role: "observer" },
-      { userId: eric.id, debateId: debate1.id, role: "admin" },
+      { userId: diana.id, debateId: debate1.id, role: Role.OBSERVER },
+      { userId: eric.id, debateId: debate1.id, role: Role.CREATOR },
     ],
   });
 
@@ -176,22 +176,22 @@ async function main() {
         userId: diana.id,
         debateId: debate2.id,
         stanceId: stances2[0].id,
-        role: "debater",
+        role: Role.DEBATER,
       },
       {
         userId: eric.id,
         debateId: debate2.id,
         stanceId: stances2[1].id,
-        role: "debater",
+        role: Role.DEBATER,
       },
       {
         userId: frank.id,
         debateId: debate2.id,
         stanceId: stances2[2].id,
-        role: "debater",
+        role: Role.DEBATER,
       },
-      { userId: bob.id, debateId: debate2.id, role: "observer" },
-      { userId: grace.id, debateId: debate2.id, role: "admin" },
+      { userId: bob.id, debateId: debate2.id, role: Role.OBSERVER },
+      { userId: grace.id, debateId: debate2.id, role: Role.CREATOR },
     ],
   });
 
@@ -276,16 +276,16 @@ async function main() {
         userId: grace.id,
         debateId: debate3.id,
         stanceId: stances3[0].id,
-        role: "debater",
+        role: Role.DEBATER,
       },
       {
         userId: helen.id,
         debateId: debate3.id,
         stanceId: stances3[1].id,
-        role: "debater",
+        role: Role.DEBATER,
       },
-      { userId: june.id, debateId: debate3.id, role: "admin" },
-      { userId: frank.id, debateId: debate3.id, role: "observer" },
+      { userId: june.id, debateId: debate3.id, role: Role.CREATOR },
+      { userId: frank.id, debateId: debate3.id, role: Role.OBSERVER },
     ],
   });
 
@@ -358,7 +358,7 @@ async function main() {
           userId: user.id,
           debateId: debate4.id,
           stanceId: stances4[idx % stances4.length].id,
-          role: "debater",
+          role: Role.DEBATER,
         },
       })
     )
@@ -442,7 +442,7 @@ async function main() {
         userId: user.id,
         debateId: debate.id,
         stanceId: stance.id,
-        role: "debater",
+        role: Role.DEBATER,
       });
     }
     await prisma.participant.createMany({ data: participants });

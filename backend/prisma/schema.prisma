@@ -8,6 +8,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  CREATOR   // Admin role but cannot be revoked by other admins
+  ADMIN     // Can create stances, justifications, vote, and comment
+  DEBATER   // Can create justifications, vote, and comment
+  OBSERVER  // May only observe
+}
+
 model User {
   id       String  @id @default(cuid())
   email    String  @unique
@@ -67,7 +74,7 @@ model Participant {
   debateId  String
   stanceId  Int?
 
-  role      String
+  role      Role     @default(OBSERVER)
   joinedAt  DateTime @default(now())
 
   user      User     @relation(fields: [userId], references: [id])
