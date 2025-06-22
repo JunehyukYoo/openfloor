@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useIsMobile } from "../../hooks/use-mobile";
-import type { TopicData } from "../../types";
-import { Label } from "../ui/label";
-import { Button } from "../ui/button";
-import { Switch } from "../ui/switch";
-import { Separator } from "../ui/separator";
+import { useIsMobile } from "../../../hooks/use-mobile";
+import type { TopicData } from "../../../types";
+import { Label } from "../../ui/label";
+import { Button } from "../../ui/button";
+import { Switch } from "../../ui/switch";
+import { Separator } from "../../ui/separator";
 import {
   Drawer,
   DrawerClose,
@@ -14,7 +14,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "../ui/drawer";
+} from "../../ui/drawer";
 import {
   Card,
   CardHeader,
@@ -22,8 +22,8 @@ import {
   CardContent,
   CardTitle,
   CardDescription,
-} from "../ui/card";
-import { Badge } from "../ui/badge";
+} from "../../ui/card";
+import { Badge } from "../../ui/badge";
 
 const TopicViewer = ({ item, title }: { item: TopicData; title: string }) => {
   const isMobile = useIsMobile();

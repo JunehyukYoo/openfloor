@@ -13,7 +13,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "../ui/sidebar";
+} from "../../ui/sidebar";
 
 const data = {
   user: {

@@ -1,5 +1,5 @@
 // routes/topics.tsx
-import { SiteHeader as PageHeader } from "../../components/dashboard/site-header";
+import { SiteHeader as PageHeader } from "../../components/dashboard/topics/site-header";
 import { Badge } from "../../components/ui/badge";
 import { IconTrendingUp } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
@@ -14,8 +14,11 @@ import {
   CardDescription,
 } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
-import TopicViewer from "../../components/dashboard/TopicViewer";
-import { DataTable, columns } from "../../components/dashboard/DataTable";
+import TopicViewer from "../../components/dashboard/topics/TopicViewer";
+import {
+  DataTable,
+  columns,
+} from "../../components/dashboard/topics/DataTable";
 import axios from "axios";
 import api from "../../../api/axios";
 

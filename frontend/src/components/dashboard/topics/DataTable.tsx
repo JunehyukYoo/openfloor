@@ -9,7 +9,7 @@ import {
   ArrowUpDown,
 } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
-import type { TopicData } from "../../types";
+import type { TopicData } from "../../../types";
 import type { SortingState, ColumnFiltersState } from "@tanstack/react-table";
 import TopicViewer from "./TopicViewer";
 import {
@@ -22,8 +22,8 @@ import {
 } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
+import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
 
 import {
   DropdownMenu,
@@ -32,7 +32,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "../../ui/dropdown-menu";
 
 import {
   Table,
@@ -41,7 +41,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../ui/table";
+} from "../../ui/table";
 
 // Table column definition
 export const columns: ColumnDef<TopicData>[] = [

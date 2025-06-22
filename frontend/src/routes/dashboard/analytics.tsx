@@ -7,8 +7,8 @@ import {
 } from "../../utils/processAnalytics";
 import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
-import RoleRadialChart from "../../components/analytics/RoleRadialChart";
-import ActivityGraph from "../../components/analytics/ActivityGraph";
+import RoleRadialChart from "../../components/dashboard/analytics/RoleRadialChart";
+import ActivityGraph from "../../components/dashboard/analytics/ActivityGraph";
 import { NumberTicker } from "../../components/magicui/number-ticker";
 import type {
   AnalyticsData,
@@ -16,7 +16,7 @@ import type {
   ActivityOverTime,
 } from "../../types";
 import { Card, CardTitle } from "../../components/ui/card";
-import { SiteHeader as PageHeader } from "../../components/dashboard/site-header";
+import { SiteHeader as PageHeader } from "../../components/dashboard/topics/site-header";
 
 const Analytics = () => {
   const [data, setData] = useState<AnalyticsData | null>(null);

@@ -1,10 +1,6 @@
-// import { useState } from "react";
-// import Sidebar from "./Sidebar";
 import { Outlet } from "react-router-dom";
-// import { IoChevronForward, IoChevronBack } from "react-icons/io5";
-
 import { SidebarInset, SidebarProvider } from "./ui/sidebar";
-import { AppSidebar } from "./dashboard/app-sidebar";
+import { AppSidebar } from "./dashboard/topics/app-sidebar";
 
 const DashboardLayout = () => {
   return (
