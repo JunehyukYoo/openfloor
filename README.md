@@ -53,3 +53,27 @@
 ## 🛠️ Development
 
 To run the app locally, setup instructions are available in the separate `/frontend` and `/backend` folders. More details are present in their respective README files.
+
+## 🤝 Contributing
+
+Contributions are welcome! Follow these steps to contribute:
+
+1. Fork the repository.
+2. Create a new branch for your feature or bugfix.
+3. Commit your changes and push them to your branch.
+4. Create a pull request describing your changes.
+
+## 🙏 Acknowledgments
+
+- Inspired by the drive to make personal growth fun, social, and intellectually engaging.
+- Built with love, late nights, and a vision for a more thoughtful and motivated world.
+- Thanks to the open source community and the educators who believe in the power of dialogue.
+
+## 📬 Contact
+
+For inquiries, suggestions, or support, reach out via:
+
+- Email: yoo.junehyuk@gmail.com
+- Discord: @notjune
+
+Debate, deliberate, and decide with **Openfloor**!
