@@ -108,7 +108,11 @@ const Analytics = () => {
               Activity
             </CardTitle>
             <Card className="w-full h-6/7 bg-gradient-to-t from-neutral-700/[0.1] to-neutral-800 rounded-lg">
-              <ActivityGraph data={graphData} />
+              {graphData.length > 0 ? (
+                <ActivityGraph data={graphData} />
+              ) : (
+                <p className="align-middle">No activity yet.</p>
+              )}
             </Card>
           </Card>
 
