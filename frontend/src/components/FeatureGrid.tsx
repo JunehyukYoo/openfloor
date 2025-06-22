@@ -216,7 +216,7 @@ const featuresAuth = [
       "Engage in debates with people from around the world and share your perspectives.",
     href: "/dashboard/debates",
     cta: "Go to debates",
-    className: "col-span-3 lg:col-span-1 bg-zinc-700 text-left",
+    className: "col-span-3 lg:col-span-1 bg-zinc-800 text-left",
     background: (
       <div className="blur-[0.5px] hover:blur-none hover:scale-130 transition-all duration-300 ease-out">
         <Globe
@@ -250,7 +250,7 @@ const featuresAuth = [
       "Browse and select from a variety of trending and thought-provoking debate topics.",
     href: "/dashboard/topics",
     cta: "Go to topics",
-    className: "col-span-3 lg:col-span-2 bg-zinc-600 text-left",
+    className: "col-span-3 lg:col-span-2 bg-zinc-800 text-left",
     background: (
       <Marquee
         pauseOnHover
@@ -286,7 +286,7 @@ const featuresAuth = [
       "Let the community decide the winner of debates through a voting system.",
     href: "/dashboard/debates",
     cta: "Go to debates",
-    className: "col-span-3 lg:col-span-2 bg-zinc-700 text-left",
+    className: "col-span-3 lg:col-span-2 bg-zinc-800 text-left",
     background: (
       <AnimatedList className="absolute right-2 top-4 h-[300px] w-full scale-75 border-none transition-all duration-300 ease-out [mask-image:linear-gradient(to_top,transparent_5%,#000_100%)] group-hover:scale-80">
         {notifications.map((notif, idx) => (
@@ -303,7 +303,7 @@ const featuresAuth = [
     name: "View your analytics",
     description: "See how good of a debater you are.",
     className:
-      "col-span-3 lg:col-span-1 bg-zinc-700/[0.8] text-left  group-hover:scale-90",
+      "col-span-3 lg:col-span-1 bg-zinc-800 text-left  group-hover:scale-90",
     href: "/dashboard/analytics",
     cta: "Go to analytics",
     background: (

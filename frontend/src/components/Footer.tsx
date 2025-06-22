@@ -1,20 +1,7 @@
 const Footer = () => {
   return (
-    <footer
-      style={{
-        backgroundColor: "#282c34",
-        color: "#ffffff",
-        padding: "20px",
-        textAlign: "center",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-around",
-          alignItems: "center",
-        }}
-      >
+    <footer className="bg-zinc-950 p-10 text-white">
+      <div className="flex justify-between">
         <p>Created with ❤️ by @notjune. All rights reserved.</p>
         <p>
           <a href="https://github.com/JunehyukYoo/openfloor">Github</a> {"| "}
