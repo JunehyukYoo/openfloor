@@ -1,6 +1,7 @@
 // dashboardRouter.ts
 import express from "express";
 import prisma from "../lib/prisma";
+import { Role } from "../generated/prisma/client";
 import {
   ensureAuthenticated,
   ensureDebateAuthenticated,
@@ -10,9 +11,35 @@ import type { User, Topic } from "../types/index";
 const router = express.Router();
 
 // -- DEBATES --
-router.get("/debates", ensureAuthenticated, (req, res, next) => {
+router.get("/debates", ensureAuthenticated, async (req, res, next) => {
   const user = req.user as User;
-  res.json({ message: "testing" });
+  try {
+    const createdDebates = await prisma.participant.findMany({
+      where: {
+        userId: user.id,
+        role: Role.CREATOR,
+      },
+      include: {
+        debate: true,
+      },
+    });
+    const joinedDebates = await prisma.participant.findMany({
+      where: {
+        userId: user.id,
+        debate: {
+          creatorId: {
+            not: user.id,
+          },
+        },
+      },
+      include: {
+        debate: true,
+      },
+    });
+    res.json({ createdDebates, joinedDebates });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error." });
+  }
 });
 
 router.post("/debates/create", ensureAuthenticated, async (req, res, next) => {
