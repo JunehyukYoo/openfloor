@@ -7,6 +7,7 @@ import {
 } from "../../utils/processAnalytics";
 import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
+import LoadingScreen from "../../components/LoadingScreen";
 import RoleRadialChart from "../../components/dashboard/analytics/RoleRadialChart";
 import ActivityGraph from "../../components/dashboard/analytics/ActivityGraph";
 import { NumberTicker } from "../../components/magicui/number-ticker";
@@ -55,8 +56,14 @@ const Analytics = () => {
     graphData = processActivityData(data);
   }
 
-  if (loading)
-    return <div className="text-white p-4">Loading analytics...</div>;
+  if (loading) {
+    return (
+      <div className="h-full w-full flex flex-col gap-4">
+        <PageHeader title="Analytics" />
+        <LoadingScreen />
+      </div>
+    );
+  }
 
   return (
     <section className="text-white pl-4 pr-4 pb-4 h-full w-full box-border flex flex-col gap-4">

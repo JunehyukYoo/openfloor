@@ -3,6 +3,7 @@ import { SiteHeader as PageHeader } from "../../components/dashboard/site-header
 import { Badge } from "../../components/ui/badge";
 import { IconTrendingUp } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
+import LoadingScreen from "../../components/LoadingScreen";
 import type { AllTopicData } from "../../types";
 import { toast } from "react-toastify";
 import {
@@ -24,6 +25,7 @@ import api from "../../../api/axios";
 
 const Topics = () => {
   const [topics, setTopics] = useState<AllTopicData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getTopics = async () => {
@@ -43,10 +45,20 @@ const Topics = () => {
             progress: undefined,
           });
         }
+      } finally {
+        setLoading(false);
       }
     };
     getTopics();
   }, []);
+  if (loading) {
+    return (
+      <div className="h-full w-full flex flex-col gap-4">
+        <PageHeader title="Topics" />
+        <LoadingScreen />
+      </div>
+    );
+  }
   return (
     <div className="pl-2 pr-2 flex flex-col gap-4">
       <PageHeader title="Topics" />

@@ -3,12 +3,14 @@ import { SiteHeader as PageHeader } from "../../components/dashboard/site-header
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import LoadingScreen from "../../components/LoadingScreen";
 import axios from "axios";
 import api from "../../../api/axios";
 import type { SingleDebateData } from "../../types";
 const DebatePage = () => {
   const { id } = useParams();
   const [debate, setDebate] = useState<SingleDebateData | null>(null);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const getDebate = async () => {
       try {
@@ -28,10 +30,21 @@ const DebatePage = () => {
             progress: undefined,
           });
         }
+      } finally {
+        setLoading(false);
       }
     };
     getDebate();
   }, [id]);
+  if (loading) {
+    return (
+      <div className="h-full w-full flex flex-col gap-4">
+        <PageHeader title="Debate" />
+        <LoadingScreen />
+      </div>
+    );
+  }
+
   return (
     <div>
       <PageHeader title="Debate" />
@@ -43,7 +56,9 @@ const DebatePage = () => {
           <p>Topic: {debate.topic.title}</p>
         </div>
       ) : (
-        <div className="text-red-500">Something went wrong</div>
+        <div>
+          <p>No debate found.</p>
+        </div>
       )}
     </div>
   );
