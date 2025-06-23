@@ -91,6 +91,7 @@ router.get(
           id: id,
         },
         include: {
+          topic: true,
           participants: {
             include: {
               user: true,

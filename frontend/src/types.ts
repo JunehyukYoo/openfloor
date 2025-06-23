@@ -12,13 +12,72 @@ export interface Debate {
   started: Date;
   closed: boolean;
   topicId: number;
+  topic?: Topic;
   creatorId: string;
+}
+
+export interface Participant {
+  id: number;
+  userId: string;
+  debateId: string;
+  stanceId?: number;
+  role: "CREATOR" | "ADMIN" | "DEBATER" | "OBSERVER";
+  joinedAt: Date;
+  user?: User;
+  debate?: Debate;
+  stance?: Stance;
+}
+
+export interface Topic {
+  id: number;
+  title: string;
+  debates?: Debate[];
 }
 
 export interface Stance {
   id: number;
   label: string;
-  topicId: number;
+  debateId: string;
+  debate?: Debate;
+  justifications?: Justification[];
+  participants?: Participant[];
+}
+
+export interface Justification {
+  id: number;
+  content: string;
+  stanceId: number;
+  createdAt: Date;
+  updatedAt: Date;
+  stance?: Stance;
+  votes?: Vote[];
+  comments?: Comment[];
+}
+
+export interface Vote {
+  id: number;
+  value: number; // 1 for upvote, -1 for downvote
+
+  userId: string;
+  user?: User;
+  createdAt: Date;
+
+  justificationId: number;
+  justification?: Justification;
+}
+
+export interface Comment {
+  id: number;
+  content: string;
+  justificationId: number;
+  justification?: Justification;
+  createdAt: Date;
+  updatedAt: Date;
+  authorId: string;
+  author?: User;
+  parentId: number | null;
+  parent?: Comment;
+  children?: Comment[];
 }
 
 // SIDEBAR
@@ -59,7 +118,7 @@ export interface SingleDebateData {
   topic: {
     id: number;
     title: string;
-    stances: Stance[];
+    debates: Debate[];
   };
   creator: User;
   creatorId: string;
@@ -71,6 +130,7 @@ export interface SingleDebateData {
     joinedAt: Date;
     user: User;
   }[];
+  stances: Stance[];
 }
 
 // TOPICS

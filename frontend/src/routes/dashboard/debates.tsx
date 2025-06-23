@@ -29,9 +29,18 @@ const Debates = () => {
       <div>
         {debates ? (
           <div>
-            {debates.createdDebates.map((d) => {
-              return <div>{d.debate.id}</div>;
-            })}
+            <div>
+              <h1 className="text-2xl">Created Debates</h1>
+              {debates.createdDebates.map((d) => {
+                return <div>{d.debate.id}</div>;
+              })}
+            </div>
+            <div>
+              <h1 className="text-2xl">Joined Debates</h1>
+              {debates.joinedDebates.map((d) => {
+                return <div>{d.debate.id}</div>;
+              })}
+            </div>
           </div>
         ) : (
           <div>Something went wrong</div>
