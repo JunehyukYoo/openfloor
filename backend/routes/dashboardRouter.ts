@@ -61,7 +61,7 @@ router.post("/debates/create", ensureAuthenticated, async (req, res, next) => {
       data: {
         userId: user.id,
         debateId: debate.id,
-        role: "CREATOR",
+        role: Role.CREATOR,
       },
     });
     res.status(201).json({ message: "Debate created", debateId: debate.id });
@@ -97,7 +97,11 @@ router.get(
             },
           },
           creator: true,
-          topic: true,
+          topic: {
+            include: {
+              stances: true,
+            },
+          },
         },
       });
       res.json({ debate });

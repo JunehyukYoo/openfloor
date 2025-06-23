@@ -15,6 +15,12 @@ export interface Debate {
   creatorId: string;
 }
 
+export interface Stance {
+  id: number;
+  label: string;
+  topicId: number;
+}
+
 // SIDEBAR
 
 export interface TopicDataMini {
@@ -40,6 +46,30 @@ export interface AllDebateData {
     role: "CREATOR" | "ADMIN" | "DEBATER" | "OBSERVER";
     joinedAt: Date;
     debate: Debate;
+  }[];
+}
+
+// TODO: Add justifications, comments, and votes to the debate data
+export interface SingleDebateData {
+  id: string;
+  private: boolean;
+  started: Date;
+  closed: boolean;
+  topicId: number;
+  topic: {
+    id: number;
+    title: string;
+    stances: Stance[];
+  };
+  creator: User;
+  creatorId: string;
+  participants: {
+    id: number;
+    userId: string;
+    stanceId?: number;
+    role: "CREATOR" | "ADMIN" | "DEBATER" | "OBSERVER";
+    joinedAt: Date;
+    user: User;
   }[];
 }
 

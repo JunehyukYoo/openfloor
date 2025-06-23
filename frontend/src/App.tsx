@@ -17,6 +17,7 @@ import Edit from "./routes/edit.tsx";
 import Topics from "./routes/dashboard/topics.tsx";
 import Debates from "./routes/dashboard/debates.tsx";
 import Analytics from "./routes/dashboard/analytics.tsx";
+import DebatePage from "./routes/dashboard/debate-page.tsx";
 
 import { useAuth } from "./context/authContext";
 import { ToastContainer } from "react-toastify";
@@ -51,6 +52,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path={"/dashboard/topics"} element={<Topics />} />
             <Route path={"/dashboard/debates"} element={<Debates />} />
+            <Route path={"/dashboard/debates/:id"} element={<DebatePage />} />
             <Route path={"/dashboard/analytics"} element={<Analytics />} />
           </Route>
         </Route>
