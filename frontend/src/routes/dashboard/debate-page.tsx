@@ -48,7 +48,10 @@ const DebatePage = () => {
 
   return (
     <div>
-      <PageHeader title="Debate" />
+      <PageHeader
+        title="Debates"
+        breadcrumb={`${debate?.creator.username}'s Debate`}
+      />
       <div className="flex items-center justify-between">
         <h1>Debate Page</h1>
         <Button
