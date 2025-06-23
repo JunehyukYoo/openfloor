@@ -44,6 +44,7 @@ model Debate {
   creator      User     @relation("DebateCreator", fields: [creatorId], references: [id])
   
   participants Participant[]
+  stances      Stance[]
 
   @@map("debates")
 }
@@ -51,7 +52,6 @@ model Debate {
 model Topic {
   id      Int      @id @default(autoincrement())
   title   String
-  stances Stance[]
   debates Debate[]
 
   @@map("topics")
@@ -60,8 +60,10 @@ model Topic {
 model Stance {
   id             Int             @id @default(autoincrement())
   label          String
-  topicId        Int
-  topic          Topic           @relation(fields: [topicId], references: [id])
+
+  debateId       String          
+  debate         Debate          @relation(fields: [debateId], references: [id])
+
   justifications Justification[]
   participants   Participant[]
 

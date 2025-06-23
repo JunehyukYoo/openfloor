@@ -46,18 +46,6 @@ async function main() {
     data: { title: "Are private schools better than public schools?" },
   });
 
-  await prisma.stance.createMany({
-    data: [
-      { label: "Private schools are better", topicId: topic1.id },
-      { label: "Public schools are more equitable", topicId: topic1.id },
-      { label: "The issue is too nuanced to generalize", topicId: topic1.id },
-    ],
-  });
-
-  const stances1 = await prisma.stance.findMany({
-    where: { topicId: topic1.id },
-  });
-
   const debate1 = await prisma.debate.create({
     data: {
       private: true,
@@ -65,6 +53,18 @@ async function main() {
       closed: false,
       creatorId: eric.id,
     },
+  });
+
+  await prisma.stance.createMany({
+    data: [
+      { label: "Private schools are better", debateId: debate1.id },
+      { label: "Public schools are more equitable", debateId: debate1.id },
+      { label: "The issue is too nuanced to generalize", debateId: debate1.id },
+    ],
+  });
+
+  const stances1 = await prisma.stance.findMany({
+    where: { debateId: debate1.id },
   });
 
   await prisma.participant.createMany({
@@ -148,18 +148,6 @@ async function main() {
     data: { title: "Should college be free for everyone?" },
   });
 
-  await prisma.stance.createMany({
-    data: [
-      { label: "Yes, education is a human right", topicId: topic2.id },
-      { label: "No, it should be merit-based", topicId: topic2.id },
-      { label: "Only for low-income families", topicId: topic2.id },
-    ],
-  });
-
-  const stances2 = await prisma.stance.findMany({
-    where: { topicId: topic2.id },
-  });
-
   const debate2 = await prisma.debate.create({
     data: {
       private: true,
@@ -168,6 +156,18 @@ async function main() {
       started: daysAgo(2),
       creatorId: alice.id,
     },
+  });
+
+  await prisma.stance.createMany({
+    data: [
+      { label: "Yes, education is a human right", debateId: debate2.id },
+      { label: "No, it should be merit-based", debateId: debate2.id },
+      { label: "Only for low-income families", debateId: debate2.id },
+    ],
+  });
+
+  const stances2 = await prisma.stance.findMany({
+    where: { debateId: debate2.id },
   });
 
   await prisma.participant.createMany({
@@ -249,17 +249,6 @@ async function main() {
     data: { title: "Should AI be regulated by governments?" },
   });
 
-  await prisma.stance.createMany({
-    data: [
-      { label: "Yes, to ensure ethical use", topicId: topic3.id },
-      { label: "No, it will hinder innovation", topicId: topic3.id },
-    ],
-  });
-
-  const stances3 = await prisma.stance.findMany({
-    where: { topicId: topic3.id },
-  });
-
   const debate3 = await prisma.debate.create({
     data: {
       private: true,
@@ -268,6 +257,17 @@ async function main() {
       started: daysAgo(2),
       creatorId: june.id,
     },
+  });
+
+  await prisma.stance.createMany({
+    data: [
+      { label: "Yes, to ensure ethical use", debateId: debate3.id },
+      { label: "No, it will hinder innovation", debateId: debate3.id },
+    ],
+  });
+
+  const stances3 = await prisma.stance.findMany({
+    where: { debateId: debate3.id },
   });
 
   await prisma.participant.createMany({
@@ -328,19 +328,6 @@ async function main() {
     data: { title: "What's the most important global issue today?" },
   });
 
-  await prisma.stance.createMany({
-    data: [
-      { label: "Climate change", topicId: topic4.id },
-      { label: "AI safety", topicId: topic4.id },
-      { label: "Global inequality", topicId: topic4.id },
-      { label: "Authoritarianism", topicId: topic4.id },
-    ],
-  });
-
-  const stances4 = await prisma.stance.findMany({
-    where: { topicId: topic4.id },
-  });
-
   const debate4 = await prisma.debate.create({
     data: {
       private: true,
@@ -348,6 +335,19 @@ async function main() {
       closed: false,
       creatorId: june.id,
     },
+  });
+
+  await prisma.stance.createMany({
+    data: [
+      { label: "Climate change", debateId: debate4.id },
+      { label: "AI safety", debateId: debate4.id },
+      { label: "Global inequality", debateId: debate4.id },
+      { label: "Authoritarianism", debateId: debate4.id },
+    ],
+  });
+
+  const stances4 = await prisma.stance.findMany({
+    where: { debateId: debate4.id },
   });
 
   let allUsers = [alice, bob, june, diana, eric, frank, grace, helen];
@@ -393,32 +393,11 @@ async function main() {
     ],
   ];
 
-  // Create stances for each topic
-  await Promise.all(
-    extraTopics.map((topic, i) =>
-      prisma.stance.createMany({
-        data: extraStanceLabels[i].map((label) => ({
-          label,
-          topicId: topic.id,
-        })),
-      })
-    )
-  );
-
-  // Fetch all stances per topic
-  const allExtraStances = await Promise.all(
-    extraTopics.map((topic) =>
-      prisma.stance.findMany({
-        where: { topicId: topic.id },
-      })
-    )
-  );
-
   let userCursor = 0;
+
   for (let i = 0; i < 50; i++) {
     const topicIndex = i % extraTopics.length;
     const topic = extraTopics[topicIndex];
-    const stances = allExtraStances[topicIndex];
 
     const creator = allUsers[userCursor % allUsers.length];
     userCursor++;
@@ -433,11 +412,24 @@ async function main() {
       },
     });
 
+    // Create stances for this debate
+    await prisma.stance.createMany({
+      data: extraStanceLabels[topicIndex].map((label) => ({
+        label,
+        debateId: debate.id,
+      })),
+    });
+
+    // Fetch the newly created stances for this debate
+    const createdStances = await prisma.stance.findMany({
+      where: { debateId: debate.id },
+    });
+
     // Pick 3 debaters
     const participants = [];
     for (let j = 0; j < 3; j++) {
       const user = allUsers[(userCursor + j) % allUsers.length];
-      const stance = stances[j % stances.length];
+      const stance = createdStances[j % createdStances.length];
       participants.push({
         userId: user.id,
         debateId: debate.id,

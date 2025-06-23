@@ -97,9 +97,9 @@ router.get(
             },
           },
           creator: true,
-          topic: {
+          stances: {
             include: {
-              stances: true,
+              justifications: { include: { votes: true, comments: true } },
             },
           },
         },
@@ -273,10 +273,11 @@ router.get("/topics/all", ensureAuthenticated, async (req, res, next) => {
 });
 
 // -- ANALYTICS --
-router.get("/analytics", ensureAuthenticated, async (req, res, next) => {
+router.get("/analytics", ensureAuthenticated, async (req, res) => {
   const user = req.user as User;
+
   try {
-    // Run basic counts in parallel
+    // === BASIC COUNTS IN PARALLEL ===
     const [
       totalDebates,
       participantStats,
@@ -297,16 +298,10 @@ router.get("/analytics", ensureAuthenticated, async (req, res, next) => {
         _count: true,
       }),
       prisma.participant.count({
-        where: {
-          userId: user.id,
-          debate: { closed: false },
-        },
+        where: { userId: user.id, debate: { closed: false } },
       }),
       prisma.participant.count({
-        where: {
-          userId: user.id,
-          debate: { private: true },
-        },
+        where: { userId: user.id, debate: { private: true } },
       }),
       prisma.justification.count({ where: { authorId: user.id } }),
       prisma.comment.count({ where: { authorId: user.id } }),
@@ -315,135 +310,35 @@ router.get("/analytics", ensureAuthenticated, async (req, res, next) => {
         where: { creatorId: user.id },
         select: { started: true },
       }),
-
       prisma.justification.findMany({
         where: { authorId: user.id },
         select: { createdAt: true },
       }),
-
       prisma.comment.findMany({
         where: { authorId: user.id },
         select: { createdAt: true },
       }),
-
       prisma.vote.findMany({
         where: { userId: user.id },
         select: { createdAt: true },
       }),
     ]);
 
-    // Topic most participated in
-    const userParticipations = await prisma.participant.findMany({
-      where: { userId: user.id },
-      include: {
-        debate: {
-          include: { topic: true },
-        },
-      },
+    // TOPIC MOST PARTICIPATED IN
+    const mostParticipatedTopic = await getMostParticipatedTopic(user.id);
+
+    // VOTES PER JUSTIFICATION & MOST UPVOTED
+    const { avgVotesPerJustification, topJustification } =
+      await getJustificationStats(user.id);
+
+    // ACTIVITY OVER TIME
+    const activityOverTime = buildActivityOverTime({
+      debates: debateActivity,
+      justifications: justificationActivity,
+      comments: commentActivity,
+      votes: voteActivity,
     });
 
-    const topicMap = new Map<string, { count: number; topic: Topic }>();
-    for (const p of userParticipations) {
-      const topicId = p.debate.topic.id.toString();
-      const existing = topicMap.get(topicId);
-      if (existing) {
-        existing.count++;
-      } else {
-        topicMap.set(topicId, { count: 1, topic: p.debate.topic });
-      }
-    }
-
-    const sorted = [...topicMap.values()].sort((a, b) => b.count - a.count);
-    const mostParticipatedTopic = sorted.length > 0 ? sorted[0] : null;
-
-    // Avg votes per justification + most upvoted justification
-    const justifications = await prisma.justification.findMany({
-      where: { authorId: user.id },
-      include: {
-        votes: true,
-        stance: {
-          include: { topic: true },
-        },
-      },
-    });
-
-    const totalVoteValue = justifications.reduce(
-      (sum, j) => sum + j.votes.reduce((vSum, v) => vSum + v.value, 0),
-      0
-    );
-    const avgVotes =
-      justifications.length > 0
-        ? Math.round((totalVoteValue / justifications.length) * 100) / 100
-        : 0;
-
-    let topJustification = null;
-    let maxVotes = -Infinity;
-
-    for (const j of justifications) {
-      const voteSum = j.votes.reduce((sum, v) => sum + v.value, 0);
-      if (voteSum > maxVotes) {
-        maxVotes = voteSum;
-        topJustification = {
-          id: j.id,
-          content: j.content,
-          voteSum,
-          stance: j.stance?.label || null,
-          topic: j.stance?.topic?.title || null,
-        };
-      }
-    }
-
-    // Activity over time (for graph)
-    const allEvents = [
-      ...debateActivity.map((d) => ({ createdAt: d.started, type: "debate" })),
-      ...justificationActivity.map((j) => ({
-        createdAt: j.createdAt,
-        type: "justification",
-      })),
-      ...commentActivity.map((c) => ({
-        createdAt: c.createdAt,
-        type: "comment",
-      })),
-      ...voteActivity.map((v) => ({ createdAt: v.createdAt, type: "vote" })),
-    ];
-
-    // Accumulate counts by date and type
-    const activityMap = allEvents.reduce(
-      (acc, { createdAt, type }) => {
-        const date = createdAt.toISOString().split("T")[0];
-        if (!acc[date]) {
-          acc[date] = {
-            date,
-            debates: 0,
-            justifications: 0,
-            comments: 0,
-            votes: 0,
-          };
-        }
-        if (type === "debate") acc[date].debates++;
-        if (type === "justification") acc[date].justifications++;
-        if (type === "comment") acc[date].comments++;
-        if (type === "vote") acc[date].votes++;
-        return acc;
-      },
-      {} as Record<
-        string,
-        {
-          date: string;
-          debates: number;
-          justifications: number;
-          comments: number;
-          votes: number;
-        }
-      >
-    );
-
-    // Convert to sorted array
-    const activityOverTime = Object.values(activityMap).sort(
-      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
-
-    // Send final structured response
     res.json({
       participation: {
         totalDebates,
@@ -458,7 +353,7 @@ router.get("/analytics", ensureAuthenticated, async (req, res, next) => {
       },
       highlights: {
         mostParticipatedTopic,
-        avgVotesPerJustification: avgVotes,
+        avgVotesPerJustification,
         topJustification,
       },
       activityOverTime,
@@ -467,5 +362,116 @@ router.get("/analytics", ensureAuthenticated, async (req, res, next) => {
     res.status(500).json({ message: "Internal server error." });
   }
 });
+
+async function getMostParticipatedTopic(userId: string) {
+  const userParticipations = await prisma.participant.findMany({
+    where: { userId },
+    include: { debate: { include: { topic: true } } },
+  });
+
+  const topicCountMap = new Map<string, { count: number; topic: Topic }>();
+
+  for (const p of userParticipations) {
+    const topicId = p.debate.topic.id.toString();
+    const existing = topicCountMap.get(topicId);
+    if (existing) {
+      existing.count++;
+    } else {
+      topicCountMap.set(topicId, { count: 1, topic: p.debate.topic });
+    }
+  }
+
+  const sorted = [...topicCountMap.values()].sort((a, b) => b.count - a.count);
+  return sorted.length > 0 ? sorted[0] : null;
+}
+
+async function getJustificationStats(userId: string) {
+  const justifications = await prisma.justification.findMany({
+    where: { authorId: userId },
+    include: {
+      votes: true,
+      stance: {
+        include: {
+          debate: {
+            include: { topic: true },
+          },
+        },
+      },
+    },
+  });
+
+  const totalVoteValue = justifications.reduce(
+    (sum, j) => sum + j.votes.reduce((vSum, v) => vSum + v.value, 0),
+    0
+  );
+
+  const avgVotesPerJustification =
+    justifications.length > 0
+      ? Math.round((totalVoteValue / justifications.length) * 100) / 100
+      : 0;
+
+  let topJustification = null;
+  let maxVotes = -Infinity;
+
+  for (const j of justifications) {
+    const voteSum = j.votes.reduce((sum, v) => sum + v.value, 0);
+    if (voteSum > maxVotes) {
+      maxVotes = voteSum;
+      topJustification = {
+        id: j.id,
+        content: j.content,
+        voteSum,
+        stance: j.stance?.label || null,
+        topic: j.stance?.debate?.topic?.title || null,
+      };
+    }
+  }
+
+  return { avgVotesPerJustification, topJustification };
+}
+
+function buildActivityOverTime({
+  debates,
+  justifications,
+  comments,
+  votes,
+}: {
+  debates: { started: Date }[];
+  justifications: { createdAt: Date }[];
+  comments: { createdAt: Date }[];
+  votes: { createdAt: Date }[];
+}) {
+  const allEvents = [
+    ...debates.map((d) => ({ createdAt: d.started, type: "debate" })),
+    ...justifications.map((j) => ({
+      createdAt: j.createdAt,
+      type: "justification",
+    })),
+    ...comments.map((c) => ({ createdAt: c.createdAt, type: "comment" })),
+    ...votes.map((v) => ({ createdAt: v.createdAt, type: "vote" })),
+  ];
+
+  const activityMap = allEvents.reduce((acc, { createdAt, type }) => {
+    const date = createdAt.toISOString().split("T")[0];
+    if (!acc[date]) {
+      acc[date] = {
+        date,
+        debates: 0,
+        justifications: 0,
+        comments: 0,
+        votes: 0,
+      };
+    }
+    if (type === "debate") acc[date].debates++;
+    if (type === "justification") acc[date].justifications++;
+    if (type === "comment") acc[date].comments++;
+    if (type === "vote") acc[date].votes++;
+    return acc;
+  }, {} as Record<string, { date: string; debates: number; justifications: number; comments: number; votes: number }>);
+
+  return Object.values(activityMap).sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+}
 
 export default router;
