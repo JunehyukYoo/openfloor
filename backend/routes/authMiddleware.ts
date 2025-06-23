@@ -32,7 +32,7 @@ export async function ensureDebateAuthenticated(
     if (!debate) {
       res.status(400).send({ message: "Debate ID does not exist." });
       return;
-    } else if (!debate.private) {
+    } else if (debate.private) {
       const user = req.user as User;
       const valid = await prisma.participant.findUnique({
         where: { userId_debateId: { userId: user.id, debateId: id } },

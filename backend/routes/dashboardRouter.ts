@@ -105,7 +105,18 @@ router.get(
           },
         },
       });
-      res.json({ debate });
+      const userRole = await prisma.participant.findUnique({
+        where: {
+          userId_debateId: {
+            userId: (req.user as User).id,
+            debateId: id,
+          },
+        },
+        select: {
+          role: true,
+        },
+      });
+      res.json({ debate, userRole: userRole?.role || Role.OBSERVER });
     } catch (error) {
       res.status(500).json({ message: "Internal server error." });
     }
