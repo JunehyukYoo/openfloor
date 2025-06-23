@@ -2,6 +2,7 @@
 // See https://ui.shadcn.com/docs for more
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "../../../hooks/use-mobile";
 import type { TopicData } from "../../../types";
 import { Label } from "../../ui/label";
@@ -44,6 +45,7 @@ const TopicViewer = ({ item, title }: { item: TopicData; title: string }) => {
   const [showClosed, setShowClosed] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
+  const navigate = useNavigate();
 
   const handleCreate = async () => {
     try {
@@ -63,8 +65,12 @@ const TopicViewer = ({ item, title }: { item: TopicData; title: string }) => {
       });
       setIsDialogOpen(false);
       // TODO: Navigate user to the newly created debate page
+      setTimeout(() => {
+        navigate(`/dashboard/debates/${item.id}`);
+      }, 1000);
     } catch (error) {
       if (axios.isAxiosError(error)) {
+        console.error(error);
         toast.error(error.message, {
           position: "top-right",
           theme: "dark",
@@ -127,6 +133,9 @@ const TopicViewer = ({ item, title }: { item: TopicData; title: string }) => {
                         <Card
                           key={d.creatorId + idx}
                           className="gap-4 bg-neutral-800 opacity-40 col-span-1 hover:scale-102 hover:opacity-60 transition:all duration-300"
+                          onClick={() => {
+                            navigate(`/dashboard/debates/${d.id}`);
+                          }}
                         >
                           <CardHeader>
                             <CardAction>
@@ -147,6 +156,9 @@ const TopicViewer = ({ item, title }: { item: TopicData; title: string }) => {
                         <Card
                           key={d.creatorId + idx}
                           className="gap-4 bg-neutral-800 col-span-1 hover:scale-102 transition:all duration-300"
+                          onClick={() => {
+                            navigate(`/dashboard/debates/${d.id}`);
+                          }}
                         >
                           <CardHeader>
                             <CardAction>

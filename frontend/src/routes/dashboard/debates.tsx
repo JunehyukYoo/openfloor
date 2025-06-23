@@ -1,6 +1,7 @@
 // routes/dashboard/debates.tsx
 import { useState, useEffect } from "react";
 import { SiteHeader as PageHeader } from "../../components/dashboard/site-header";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import LoadingScreen from "../../components/LoadingScreen";
 import axios from "axios";
@@ -10,6 +11,7 @@ import type { AllDebateData } from "../../types";
 const Debates = () => {
   const [debates, setDebates] = useState<AllDebateData | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getDebates = async () => {
@@ -45,7 +47,11 @@ const Debates = () => {
               <h1 className="text-2xl">Created Debates</h1>
               {debates.createdDebates.length > 0 ? (
                 debates.createdDebates.map((d) => {
-                  return <div>{d.debate.id}</div>;
+                  return (
+                    <div onClick={() => navigate(`${d.debate.id}`)}>
+                      {d.debate.id}
+                    </div>
+                  );
                 })
               ) : (
                 <div>No debates created yet.</div>
@@ -55,7 +61,11 @@ const Debates = () => {
               <h1 className="text-2xl">Joined Debates</h1>
               {debates.joinedDebates.length > 0 ? (
                 debates.joinedDebates.map((d) => {
-                  return <div>{d.debate.id}</div>;
+                  return (
+                    <div onClick={() => navigate(`${d.debate.id}`)}>
+                      {d.debate.id}
+                    </div>
+                  );
                 })
               ) : (
                 <div>No debates joined yet.</div>

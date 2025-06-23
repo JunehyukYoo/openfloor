@@ -1,7 +1,8 @@
 // routes/dashboard/debate-page.tsx
 import { SiteHeader as PageHeader } from "../../components/dashboard/site-header";
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { Button } from "../../components/ui/button";
 import { toast } from "react-toastify";
 import LoadingScreen from "../../components/LoadingScreen";
 import axios from "axios";
@@ -11,11 +12,11 @@ const DebatePage = () => {
   const { id } = useParams();
   const [debate, setDebate] = useState<SingleDebateData | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
   useEffect(() => {
     const getDebate = async () => {
       try {
         const { data } = await api.get(`/dashboard/debates/${id}`);
-        console.log(id, data);
         setDebate(data.debate);
       } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -48,12 +49,21 @@ const DebatePage = () => {
   return (
     <div>
       <PageHeader title="Debate" />
-      <h1>Debate Page</h1>
+      <div className="flex items-center justify-between">
+        <h1>Debate Page</h1>
+        <Button
+          variant="default"
+          onClick={() => navigate("/dashboard/debates")}
+        >
+          Back to Debates
+        </Button>
+      </div>
       <p>Individual debate page.</p>
       {debate ? (
         <div>
           <h2>Debate ID: {debate.id}</h2>
           <p>Topic: {debate.topic.title}</p>
+          <p>Privacy: {debate.private ? "Private" : "Public"}</p>
         </div>
       ) : (
         <div>
