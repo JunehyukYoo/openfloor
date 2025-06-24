@@ -1,4 +1,4 @@
-// routes/home.tsx
+// pages/home.tsx
 import Footer from "../components/Footer";
 import RevealOnScroll from "../components/RevealOnScroll";
 // @/* pathing doesn't work for some reason so doing it manually to get rid of errors

@@ -1,4 +1,4 @@
-// routes/edit.tsx
+// pages/edit.tsx
 import React, { useState } from "react";
 import RevealOnScroll from "../components/RevealOnScroll";
 import { useAuth } from "../context/authContext";

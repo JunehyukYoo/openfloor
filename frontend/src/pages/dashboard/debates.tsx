@@ -1,4 +1,4 @@
-// routes/dashboard/debates.tsx
+// pages/dashboard/debates.tsx
 import { useState, useEffect } from "react";
 import { SiteHeader as PageHeader } from "../../components/dashboard/site-header";
 import { toast } from "react-toastify";

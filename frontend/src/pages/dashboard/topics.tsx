@@ -1,4 +1,4 @@
-// routes/dashboard/topics.tsx
+// pages/dashboard/topics.tsx
 import { SiteHeader as PageHeader } from "../../components/dashboard/site-header";
 import { Badge } from "../../components/ui/badge";
 import { IconTrendingUp } from "@tabler/icons-react";
