@@ -335,11 +335,12 @@ router.get(
       };
 
       const responseMap: Record<string, string> = {};
+      const FRONTEND_URL = process.env.FRONTEND_URL;
       tokens.forEach((token) => {
         const label = labelMap[token.role as keyof typeof labelMap];
-        responseMap[label] = `${req.protocol}://${req.get(
-          "host"
-        )}/dashboard/debates/${id}?invite=${token.token}`;
+        responseMap[
+          label
+        ] = `${FRONTEND_URL}/dashboard/debates/${id}?invite=${token.token}`;
       });
 
       res.json(responseMap);
