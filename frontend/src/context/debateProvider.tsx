@@ -50,6 +50,34 @@ export const DebateProvider = ({
   useEffect(() => {
     getDebate();
   }, [getDebate]);
+
+  // Autojoining for invite token usage
+  useEffect(() => {
+    if (debate && !userDetails && inviteToken && debate.private) {
+      const autoJoin = async () => {
+        try {
+          await api.post(`/debates/${debateId}/join`);
+          await getDebate();
+          toast.success("Successfully joined the debate!");
+        } catch (error) {
+          console.error("Auto-join failed:", error);
+          toast.error("Failed to auto-join the debate.", {
+            position: "top-right",
+            theme: "dark",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
+      };
+
+      autoJoin();
+    }
+  }, [debate, userDetails, inviteToken, getDebate, debateId]);
+
   if (loading)
     return (
       <div className="h-full w-full flex flex-col gap-4">

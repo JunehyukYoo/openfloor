@@ -70,7 +70,7 @@ const InviteLinks = () => {
       });
 
       setLinks(newLinks);
-      toast.success("All invite links copied to clipboard!", {
+      toast.success("Invite links successfully created.", {
         position: "top-right",
         theme: "dark",
         autoClose: 5000,
