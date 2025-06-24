@@ -5,15 +5,15 @@ import prisma from "../lib/prisma";
 import bcrypt from "bcryptjs";
 import type { User } from "../types/index";
 
-const indexRouter = express.Router();
+const router = express.Router();
 
 // PING
-indexRouter.get("/ping", (_req, res, next) => {
+router.get("/ping", (_req, res, next) => {
   res.status(200).json({ message: "Server alive!" });
 });
 
 // REGISTER
-indexRouter.post("/register", async (req, res, next) => {
+router.post("/register", async (req, res, next) => {
   const { email, password, username } = req.body;
   try {
     const existingEmail = await prisma.user.findUnique({
@@ -58,7 +58,7 @@ indexRouter.post("/register", async (req, res, next) => {
 });
 
 // LOGIN;
-indexRouter.post("/login", (req, res, next) => {
+router.post("/login", (req, res, next) => {
   passport.authenticate(
     "local",
     (err: any, user: User | false, info?: { message: string }) => {
@@ -83,7 +83,7 @@ indexRouter.post("/login", (req, res, next) => {
 });
 
 // LOGOUT
-indexRouter.post("/logout", (req, res, next) => {
+router.post("/logout", (req, res, next) => {
   req.logout((err) => {
     if (err) {
       res.status(500).json({ message: "Logout failed" });
@@ -93,10 +93,25 @@ indexRouter.post("/logout", (req, res, next) => {
   });
 });
 
+// QUOTE (for debates page)
+router.get("/quote", async (req, res) => {
+  try {
+    const response = await fetch(
+      "https://thequoteshub.com/api/tags/knowledge?page=1&page_size=50&format=json"
+    );
+    const data = await response.json();
+    const randomQuote =
+      data.quotes[Math.floor(Math.random() * data.quotes.length)];
+    res.json(randomQuote);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch quote" });
+  }
+});
+
 // AUTH & PROFILE ROUTES
 
 // Check if user is logged in
-indexRouter.get("/me", (req, res, next) => {
+router.get("/me", (req, res, next) => {
   if (req.user) {
     const { password, ...safeUser } = req.user as User;
     res.status(200).json({ user: safeUser });
@@ -106,8 +121,8 @@ indexRouter.get("/me", (req, res, next) => {
 });
 
 // Raw session data
-indexRouter.get("/session", (req, res, next) => {
+router.get("/session", (req, res, next) => {
   res.json({ session: req.session });
 });
 
-export default indexRouter;
+export default router;

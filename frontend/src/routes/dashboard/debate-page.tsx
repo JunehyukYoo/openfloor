@@ -20,7 +20,7 @@ import { toast } from "react-toastify";
 import LoadingScreen from "../../components/LoadingScreen";
 import axios from "axios";
 import api from "../../../api/axios";
-import type { SingleDebateData } from "../../types";
+import type { DebateDataFull } from "../../types";
 import { Separator } from "../../components/ui/separator";
 
 function hasAdminPermissions(role: string): boolean {
@@ -29,7 +29,7 @@ function hasAdminPermissions(role: string): boolean {
 
 const DebatePage = () => {
   const { id } = useParams();
-  const [debate, setDebate] = useState<SingleDebateData | null>(null);
+  const [debate, setDebate] = useState<DebateDataFull | null>(null);
   const [userRole, setUserRole] = useState<string>("OBSERVER");
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -74,12 +74,11 @@ const DebatePage = () => {
       </div>
     );
   }
-  console.log(userRole);
   return (
     <div>
       <PageHeader
         title="Debates"
-        breadcrumb={`${debate?.creator.username}'s Debate`}
+        breadcrumb={`${debate.creator.username}'s Debate`}
       />
       <div className="flex flex-col p-4 gap-4">
         <h1 className="text-left scroll-m-20 text-4xl font-bold text-balance">
@@ -100,7 +99,7 @@ const DebatePage = () => {
                       key={stance.id}
                       className="p-4 bg-neutral-800/[0.5] rounded-lg hover:bg-neutral-800 transition duration-300"
                     >
-                      <h3 className="text-lg text-left font-semibold">
+                      <h3 className="text-lg text-center font-semibold">
                         {stance.label}
                       </h3>
                     </Card>
@@ -122,12 +121,11 @@ const DebatePage = () => {
                   {hasAdminPermissions(userRole) && (
                     <TabsTrigger value="invite">Invite</TabsTrigger>
                   )}
-                  <TabsTrigger value="participants">
-                    Participants ({debate.participants.length})
-                  </TabsTrigger>
+                  <TabsTrigger value="participants">Participants</TabsTrigger>
                   <TabsTrigger value="settings">Settings</TabsTrigger>
                 </TabsList>
               </CardHeader>
+              {/* Debate tab */}
               <TabsContent value="debate">
                 <CardContent className="flex flex-col gap-4">
                   <div className="flex flex-col gap-2 text-left">
@@ -165,8 +163,9 @@ const DebatePage = () => {
                   </div>
                 </CardContent>
               </TabsContent>
+              {/* Invite tab */}
               <TabsContent value="invite">
-                <CardContent className="flex flex-col gap-4">
+                <CardContent className="flex flex-col gap-2">
                   <h2 className="text-xl font-semibold">Invite Participants</h2>
                   <CardDescription className="text-sm text-muted-foreground">
                     Invite participants to join the debate by sharing the debate
@@ -174,19 +173,21 @@ const DebatePage = () => {
                   </CardDescription>
                 </CardContent>
               </TabsContent>
+              {/* Setting Tab */}
               <TabsContent value="settings">
-                <CardContent className="flex gap-4">
-                  <h2 className="text-xl font-semibold">Settings</h2>
+                <CardContent className="flex flex-col gap-2">
+                  <h2 className="text-left text-xl font-semibold">Settings</h2>
                   <CardDescription className="flex gap-4">
                     <p>
-                      Your role: <span className="font-medium">{userRole}</span>
+                      <span className="font-medium">Your role:</span>
+                      {" " + userRole}
                     </p>
-                    {userRole === "CREATOR" ? (
-                      <Button variant="destructive">End Debate</Button>
-                    ) : (
-                      <Button variant="destructive">Leave Debate</Button>
-                    )}
                   </CardDescription>
+                  {userRole === "CREATOR" ? (
+                    <Button variant="destructive">End Debate</Button>
+                  ) : (
+                    <Button variant="destructive">Leave Debate</Button>
+                  )}
                 </CardContent>
               </TabsContent>
             </Card>

@@ -14,6 +14,7 @@ export interface Debate {
   topicId: number;
   topic?: Topic;
   creatorId: string;
+  creator?: User;
 }
 
 export interface Participant {
@@ -89,27 +90,25 @@ export interface TopicDataMini {
 
 // DEBATES
 
-export interface AllDebateData {
-  createdDebates: {
-    id: number;
-    userId: string;
-    stanceId?: number;
-    role: "CREATOR" | "ADMIN" | "DEBATER" | "OBSERVER";
-    joinedAt: Date;
-    debate: Debate;
-  }[];
-  joinedDebates: {
-    id: number;
-    userId: string;
-    stanceId?: number;
-    role: "CREATOR" | "ADMIN" | "DEBATER" | "OBSERVER";
-    joinedAt: Date;
-    debate: Debate;
-  }[];
+export interface DebateDataMini {
+  id: number;
+  userId: string;
+  stanceId?: number;
+  role: "CREATOR" | "ADMIN" | "DEBATER" | "OBSERVER";
+  joinedAt: Date;
+  debate: Debate;
+}
+
+export interface Quote {
+  text: string;
+  author: string;
+  tags?: string[];
+  id?: number;
+  author_id?: string;
 }
 
 // TODO: Add justifications, comments, and votes to the debate data
-export interface SingleDebateData {
+export interface DebateDataFull {
   id: string;
   private: boolean;
   started: Date;

@@ -20,7 +20,12 @@ router.get("/debates", ensureAuthenticated, async (req, res, next) => {
         role: Role.CREATOR,
       },
       include: {
-        debate: true,
+        debate: {
+          include: {
+            creator: true,
+            topic: true,
+          },
+        },
       },
     });
     const joinedDebates = await prisma.participant.findMany({
@@ -33,7 +38,12 @@ router.get("/debates", ensureAuthenticated, async (req, res, next) => {
         },
       },
       include: {
-        debate: true,
+        debate: {
+          include: {
+            creator: true,
+            topic: true,
+          },
+        },
       },
     });
     res.json({ createdDebates, joinedDebates });
