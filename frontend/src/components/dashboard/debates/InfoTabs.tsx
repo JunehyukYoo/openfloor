@@ -18,14 +18,22 @@ import api from "../../../../api/axios";
 import axios from "axios";
 import { toast } from "react-toastify";
 
+// Some things to note:
+// 1. The `RoleCombobox` component is assumed to be a custom component that
+//    allows admins (CREATOR/ADMIN) to change the role of participants in the debate.
+// 2. For public debates, users are defaulted to VIEWER role, but may join as a
+//    PARTICIPANT with the role of DEBATER.
 const InfoTabs = ({
   debate,
   userDetails,
 }: {
   debate: DebateDataFull;
-  userDetails: Participant;
+  userDetails: Participant | null;
 }) => {
-  const userIsAdmin = hasAdminPermissions(userDetails.role);
+  const isViewer = !userDetails;
+  const userIsAdmin = !isViewer && hasAdminPermissions(userDetails.role);
+
+  // Admin controls
   const handleRoleChange = async (participantId: number, newRole: string) => {
     try {
       await api.put(`/participants/${participantId}/role`, {
@@ -44,6 +52,39 @@ const InfoTabs = ({
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("Error updating role:", error);
+        toast.error(error.message, {
+          position: "top-right",
+          theme: "dark",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    }
+  };
+
+  const handleJoinDebate = async () => {
+    try {
+      await api.post(`/dashboard/debates/${debate.id}/join`);
+      toast.success("Successfully joined debate. Reloading the page.", {
+        position: "top-right",
+        theme: "dark",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Error joining debate:", error);
         toast.error(error.message, {
           position: "top-right",
           theme: "dark",
@@ -205,25 +246,41 @@ const InfoTabs = ({
             <CardTitle className="text-left text-xl font-semibold">
               Settings
             </CardTitle>
-            <CardDescription className="flex flex-col text-left">
-              <p>
-                <span className="font-medium">Your role:</span>
-                {" " + userDetails!.role.toLowerCase()}
-              </p>
-              <p>
-                <span className="font-medium">Joined:</span>
-                {" " +
-                  new Date(userDetails!.joinedAt).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-              </p>
-            </CardDescription>
-            {userDetails!.role === "CREATOR" ? (
-              <Button variant="destructive">End Debate</Button>
+            {isViewer ? (
+              <div className="flex flex-col gap-2">
+                <CardDescription className="flex flex-col text-left">
+                  You are currently viewing this debate as a guest.
+                </CardDescription>
+                <Button variant="default" onClick={handleJoinDebate}>
+                  Join debate as a Debater
+                </Button>
+              </div>
             ) : (
-              <Button variant="destructive">Leave Debate</Button>
+              <>
+                <CardDescription className="flex flex-col text-left">
+                  <p>
+                    <span className="font-medium">Your role:</span>
+                    {" " + userDetails!.role.toLowerCase()}
+                  </p>
+                  <p>
+                    <span className="font-medium">Joined:</span>
+                    {" " +
+                      new Date(userDetails!.joinedAt).toLocaleDateString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )}
+                  </p>
+                </CardDescription>
+                {userDetails!.role === "CREATOR" ? (
+                  <Button variant="destructive">End Debate</Button>
+                ) : (
+                  <Button variant="destructive">Leave Debate</Button>
+                )}
+              </>
             )}
           </CardContent>
         </TabsContent>

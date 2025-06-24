@@ -131,6 +131,39 @@ router.get(
   }
 );
 
+// NOTE: Can only join public debates, no need to check for debate authentication
+router.post("/debates/:id/join", ensureAuthenticated, async (req, res) => {
+  if (!req.user) {
+    res.status(401).json({ message: "User not authenticated." });
+    return;
+  }
+  const { id } = req.params;
+  const user = req.user as User;
+
+  try {
+    const existingParticipant = await prisma.participant.findUnique({
+      where: { userId_debateId: { userId: user.id, debateId: id } },
+    });
+
+    if (existingParticipant) {
+      res.status(400).json({ message: "You are already a participant." });
+      return;
+    }
+    await prisma.participant.create({
+      data: {
+        userId: user.id,
+        debateId: id,
+        role: "DEBATER",
+      },
+    });
+
+    res.status(200).json({ message: "Successfully joined the debate." });
+  } catch (error) {
+    console.error("Error joining debate:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+});
+
 // -- TOPICS --
 router.get("/topics", ensureAuthenticated, async (req, res, next) => {
   const user = req.user as User;

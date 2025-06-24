@@ -105,7 +105,7 @@ const DebatePage = () => {
             </CardContent>
           </Card>
           {/* Info section (w/ tabs) */}
-          <InfoTabs debate={debate} userDetails={userDetails!} />
+          <InfoTabs debate={debate} userDetails={userDetails} />
         </div>
       </div>
     </div>
