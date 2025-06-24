@@ -124,6 +124,7 @@ export interface DebateDataFull {
   participants: {
     id: number;
     userId: string;
+    debateId: string;
     stanceId?: number;
     role: "CREATOR" | "ADMIN" | "DEBATER" | "OBSERVER";
     joinedAt: Date;

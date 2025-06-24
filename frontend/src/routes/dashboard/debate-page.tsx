@@ -5,39 +5,31 @@ import { useParams } from "react-router-dom";
 import {
   Card,
   CardContent,
-  CardDescription,
+  //   CardDescription,
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
-import { Button } from "../../components/ui/button";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "../../components/ui/tabs";
+// import { Button } from "../../components/ui/button";
+import InfoTabs from "../../components/dashboard/debates/InfoTabs";
 import { toast } from "react-toastify";
 import LoadingScreen from "../../components/LoadingScreen";
 import axios from "axios";
 import api from "../../../api/axios";
-import type { DebateDataFull } from "../../types";
+import type { DebateDataFull, Participant } from "../../types";
 import { Separator } from "../../components/ui/separator";
-
-function hasAdminPermissions(role: string): boolean {
-  return role === "ADMIN" || role === "CREATOR";
-}
+import { hasAdminPermissions } from "../../utils/debateUtils";
 
 const DebatePage = () => {
   const { id } = useParams();
   const [debate, setDebate] = useState<DebateDataFull | null>(null);
-  const [userRole, setUserRole] = useState<string>("OBSERVER");
+  const [userDetails, setUserDetails] = useState<Participant | null>(null);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const getDebate = async () => {
       try {
         const { data } = await api.get(`/dashboard/debates/${id}`);
         setDebate(data.debate);
-        setUserRole(data.userRole);
+        setUserDetails(data.userDetails);
       } catch (error) {
         if (axios.isAxiosError(error)) {
           toast.error(error.message, {
@@ -105,7 +97,7 @@ const DebatePage = () => {
                     </Card>
                   );
                 })
-              ) : hasAdminPermissions(userRole) ? (
+              ) : hasAdminPermissions(userDetails!.role) ? (
                 <p>Add a new stance!</p>
               ) : (
                 <p>No stances yet avaliable.</p>
@@ -113,85 +105,7 @@ const DebatePage = () => {
             </CardContent>
           </Card>
           {/* Info section (w/ tabs) */}
-          <Tabs>
-            <Card className="bg-neutral-900">
-              <CardHeader>
-                <TabsList defaultValue="debate">
-                  <TabsTrigger value="debate">Debate</TabsTrigger>
-                  {hasAdminPermissions(userRole) && (
-                    <TabsTrigger value="invite">Invite</TabsTrigger>
-                  )}
-                  <TabsTrigger value="participants">Participants</TabsTrigger>
-                  <TabsTrigger value="settings">Settings</TabsTrigger>
-                </TabsList>
-              </CardHeader>
-              {/* Debate tab */}
-              <TabsContent value="debate">
-                <CardContent className="flex flex-col gap-4">
-                  <div className="flex flex-col gap-2 text-left">
-                    <h2 className="text-xl font-semibold">Debate Details</h2>
-                    <CardDescription>
-                      <p>
-                        <span className="font-medium">Debate ID:</span>{" "}
-                        {debate.id}
-                      </p>
-                      <p>
-                        <span className="font-medium">Topic ID:</span>{" "}
-                        {debate.topic.id}
-                      </p>
-                      <p>
-                        <span className="font-medium">Creator:</span>{" "}
-                        {debate.creator.username}
-                      </p>
-                      <p>
-                        <span className="font-medium">Started:</span>{" "}
-                        {new Date(debate.started).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                      </p>
-                      <p>
-                        <span className="font-medium">Status:</span>{" "}
-                        {debate.closed ? "Closed" : "Open"}
-                      </p>
-                      <p>
-                        <span className="font-medium">Participants:</span>{" "}
-                        {debate.participants.length}
-                      </p>
-                    </CardDescription>
-                  </div>
-                </CardContent>
-              </TabsContent>
-              {/* Invite tab */}
-              <TabsContent value="invite">
-                <CardContent className="flex flex-col gap-2">
-                  <h2 className="text-xl font-semibold">Invite Participants</h2>
-                  <CardDescription className="text-sm text-muted-foreground">
-                    Invite participants to join the debate by sharing the debate
-                    link or by entering their email addresses below. Todo later.
-                  </CardDescription>
-                </CardContent>
-              </TabsContent>
-              {/* Setting Tab */}
-              <TabsContent value="settings">
-                <CardContent className="flex flex-col gap-2">
-                  <h2 className="text-left text-xl font-semibold">Settings</h2>
-                  <CardDescription className="flex gap-4">
-                    <p>
-                      <span className="font-medium">Your role:</span>
-                      {" " + userRole}
-                    </p>
-                  </CardDescription>
-                  {userRole === "CREATOR" ? (
-                    <Button variant="destructive">End Debate</Button>
-                  ) : (
-                    <Button variant="destructive">Leave Debate</Button>
-                  )}
-                </CardContent>
-              </TabsContent>
-            </Card>
-          </Tabs>
+          <InfoTabs debate={debate} userDetails={userDetails!} />
         </div>
       </div>
     </div>
