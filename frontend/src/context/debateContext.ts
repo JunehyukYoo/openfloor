@@ -5,6 +5,7 @@ import type { DebateDataFull, Participant } from "../types";
 interface DebateContextType {
   debate: DebateDataFull | null;
   userDetails: Participant | null;
+  inviteToken?: string | null;
   refreshDebate: () => Promise<void>;
 }
 

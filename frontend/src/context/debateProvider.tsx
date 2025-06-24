@@ -12,9 +12,11 @@ import type { DebateDataFull, Participant } from "../types";
 export const DebateProvider = ({
   debateId,
   children,
+  inviteToken,
 }: {
   debateId: string;
   children: ReactNode;
+  inviteToken?: string | null;
 }) => {
   const [debate, setDebate] = useState<DebateDataFull | null>(null);
   const [userDetails, setUserDetails] = useState<Participant | null>(null);
@@ -22,7 +24,9 @@ export const DebateProvider = ({
 
   const getDebate = useCallback(async () => {
     try {
-      const { data } = await api.get(`/debates/${debateId}`);
+      const { data } = await api.get(
+        `/debates/${debateId}${inviteToken ? `?invite=${inviteToken}` : ""}`
+      );
       setDebate(data.debate);
       setUserDetails(data.userDetails);
     } catch (error) {
@@ -41,7 +45,7 @@ export const DebateProvider = ({
     } finally {
       setLoading(false);
     }
-  }, [debateId]);
+  }, [debateId, inviteToken]);
 
   useEffect(() => {
     getDebate();

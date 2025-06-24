@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
 import { SiteHeader as PageHeader } from "../site-header";
 import { useDebateContext } from "../../../context/debateContext";
 import RoleCombobox from "./RoleCombobox";
+import InviteLinks from "./InviteLinks";
 import { Separator } from "../../ui/separator";
 import { Avatar, AvatarImage } from "../../ui/avatar";
 import api from "../../../../api/axios";
@@ -237,10 +238,7 @@ const InfoTabs = () => {
             <CardTitle className="text-xl text-left font-semibold">
               Invite Participants
             </CardTitle>
-            <CardDescription className="text-sm text-muted-foreground">
-              Invite participants to join the debate by sharing the debate link
-              or by entering their email addresses below. Todo later.
-            </CardDescription>
+            <InviteLinks />
           </CardContent>
         </TabsContent>
         {/* Pariticipants tab */}

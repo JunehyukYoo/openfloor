@@ -153,7 +153,7 @@ router.post("/:id/join", ensureAuthenticated, async (req, res) => {
       },
     });
 
-    res.status(200).json({ message: "Successfully joined the debate." });
+    res.json({ message: "Successfully joined the debate." });
   } catch (error) {
     console.error("Error joining debate:", error);
     res.status(500).json({ message: "Internal server error." });
@@ -207,7 +207,7 @@ router.put(
           where: { id },
           data: { closed: true },
         });
-        res.status(200).json({ message: "Debate ended successfully." });
+        res.json({ message: "Debate ended successfully." });
       } else {
         res
           .status(401)
@@ -220,8 +220,9 @@ router.put(
   }
 );
 
+// Create token
 router.post(
-  "/:id/invite",
+  "/:id/invites",
   ensureAuthenticated,
   ensureDebateAuthenticated,
   async (req, res) => {
@@ -271,6 +272,7 @@ router.post(
   }
 );
 
+// Join via token
 router.post("/:id/join-via-token", ensureAuthenticated, async (req, res) => {
   const { id } = req.params;
   const { token } = req.body;
@@ -302,11 +304,50 @@ router.post("/:id/join-via-token", ensureAuthenticated, async (req, res) => {
       data: { userId: user.id, debateId: id, role: invite.role },
     });
 
-    res.status(200).json({ message: "Successfully joined the debate." });
+    res.json({ message: "Successfully joined the debate." });
   } catch (error) {
     console.error("Error joining debate via token:", error);
     res.status(500).json({ message: "Internal server error." });
   }
 });
+
+// Get active tokens
+router.get(
+  "/:id/invites",
+  ensureAuthenticated,
+  ensureDebateAuthenticated,
+  async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const tokens = await prisma.inviteToken.findMany({
+        where: { debateId: id, expiresAt: { gt: new Date() } }, // Only return non-expired tokens
+        select: {
+          token: true,
+          role: true,
+        },
+      });
+
+      const labelMap = {
+        ADMIN: "Admin",
+        DEBATER: "Debater",
+        OBSERVER: "Observer",
+      };
+
+      const responseMap: Record<string, string> = {};
+      tokens.forEach((token) => {
+        const label = labelMap[token.role as keyof typeof labelMap];
+        responseMap[label] = `${req.protocol}://${req.get(
+          "host"
+        )}/dashboard/debates/${id}?invite=${token.token}`;
+      });
+
+      res.json(responseMap);
+    } catch (error) {
+      console.error("Error fetching invite tokens:", error);
+      res.status(500).json({ message: "Internal server error." });
+    }
+  }
+);
 
 export default router;

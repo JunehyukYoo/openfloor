@@ -32,15 +32,19 @@ export async function ensureDebateAuthenticated(
       return;
     }
 
+    // Public debates are always viewable
     if (!debate.private) {
       return next();
     }
 
     const user = req.user as User;
-    const valid = await prisma.participant.findUnique({
+
+    // Check if user is a participant
+    const validParticipant = await prisma.participant.findUnique({
       where: { userId_debateId: { userId: user.id, debateId: id } },
     });
 
+    // Check if user has a valid invite token
     const validInviteToken = token
       ? await prisma.inviteToken.findFirst({
           where: {
@@ -51,11 +55,10 @@ export async function ensureDebateAuthenticated(
         })
       : null;
 
-    if (!valid && !validInviteToken) {
+    if (!validParticipant && !validInviteToken) {
       res.status(401).send({
         message: "Lack permissions to view or participate in debate.",
       });
-      return;
     }
 
     return next();
