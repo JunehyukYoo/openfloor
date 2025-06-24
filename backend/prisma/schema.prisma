@@ -143,6 +143,7 @@ model Comment {
 model InviteToken {
   id         Int      @id @default(autoincrement())
   token      String   @unique
+  role       Role     @default(OBSERVER)
   debateId   String
   debate     Debate   @relation(fields: [debateId], references: [id])
   createdAt  DateTime @default(now())
