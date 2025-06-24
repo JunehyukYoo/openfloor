@@ -168,7 +168,7 @@ const InfoTabs = ({
 
   return (
     <Tabs>
-      <Card className="bg-neutral-900">
+      <Card className="bg-neutral-900 min-h-[250px]">
         <CardHeader>
           <TabsList defaultValue="debate">
             <TabsTrigger value="debate">Debate</TabsTrigger>

@@ -15,6 +15,7 @@ export interface Debate {
   topic?: Topic;
   creatorId: string;
   creator?: User;
+  stances?: Stance[];
 }
 
 export interface Participant {

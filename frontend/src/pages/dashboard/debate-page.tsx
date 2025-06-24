@@ -2,14 +2,7 @@
 import { SiteHeader as PageHeader } from "../../components/dashboard/site-header";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-  //   CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../../components/ui/card";
-// import { Button } from "../../components/ui/button";
+import StancesCard from "../../components/dashboard/debatePage/StancesCard";
 import InfoTabs from "../../components/dashboard/debatePage/InfoTabs";
 import { toast } from "react-toastify";
 import LoadingScreen from "../../components/LoadingScreen";
@@ -17,7 +10,6 @@ import axios from "axios";
 import api from "../../../api/axios";
 import type { DebateDataFull, Participant } from "../../types";
 import { Separator } from "../../components/ui/separator";
-import { hasAdminPermissions } from "../../utils/debateUtils";
 
 const DebatePage = () => {
   const { id } = useParams();
@@ -81,31 +73,7 @@ const DebatePage = () => {
         <Separator />
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Stances Section */}
-          <Card className="bg-neutral-900">
-            <CardHeader>
-              <CardTitle className="text-2xl font-semibold">Stances</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-2">
-              {debate.stances.length > 0 ? (
-                debate.stances.map((stance) => {
-                  return (
-                    <Card
-                      key={stance.id}
-                      className="p-4 bg-neutral-800/[0.5] rounded-lg hover:bg-neutral-800 transition duration-300"
-                    >
-                      <h3 className="text-lg text-center font-semibold">
-                        {stance.label}
-                      </h3>
-                    </Card>
-                  );
-                })
-              ) : hasAdminPermissions(userDetails!.role) ? (
-                <p>Add a new stance!</p>
-              ) : (
-                <p>No stances yet avaliable.</p>
-              )}
-            </CardContent>
-          </Card>
+          <StancesCard debate={debate} userDetails={userDetails} />
           {/* Info section (w/ tabs) */}
           <InfoTabs debate={debate} userDetails={userDetails} />
         </div>
