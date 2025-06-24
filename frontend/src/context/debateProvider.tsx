@@ -27,7 +27,16 @@ export const DebateProvider = ({
       setUserDetails(data.userDetails);
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        toast.error(error.message);
+        toast.error(error.message, {
+          position: "top-right",
+          theme: "dark",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
       }
     } finally {
       setLoading(false);

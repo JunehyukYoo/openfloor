@@ -18,3 +18,13 @@ export const useDebateContext = () => {
     throw new Error("useDebateContext must be used within a DebateProvider");
   return context;
 };
+export function useDebateContextNonNull() {
+  const context = useDebateContext();
+  if (!context.debate) {
+    throw new Error("Debate data is not loaded.");
+  }
+  return {
+    ...context,
+    debate: context.debate,
+  };
+}
