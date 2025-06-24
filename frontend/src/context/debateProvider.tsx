@@ -58,7 +58,16 @@ export const DebateProvider = ({
         try {
           await api.post(`/debates/${debateId}/join`);
           await getDebate();
-          toast.success("Successfully joined the debate!");
+          toast.success("Successfully joined the debate!", {
+            position: "top-right",
+            theme: "dark",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
         } catch (error) {
           console.error("Auto-join failed:", error);
           toast.error("Failed to auto-join the debate.", {

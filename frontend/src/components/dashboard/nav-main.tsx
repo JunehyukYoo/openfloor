@@ -54,7 +54,7 @@ export function NavMain({
       return;
     }
     try {
-      await api.post("/debates/create", {
+      const { data } = await api.post("/debates/create", {
         topicId: selectedTopic.id,
         isPrivate,
       });
@@ -69,7 +69,7 @@ export function NavMain({
         progress: undefined,
       });
       setIsDialogOpen(false);
-      // TODO: Navigate user to the newly created debate page
+      navigate(`/dashboard/debates/${data.debateId}`);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error(error.message, {
