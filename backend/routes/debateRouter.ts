@@ -133,10 +133,6 @@ router.get(
 
 // NOTE: Can only join public debates, no need to check for debate authentication
 router.post("/:id/join", ensureAuthenticated, async (req, res) => {
-  if (!req.user) {
-    res.status(401).json({ message: "User not authenticated." });
-    return;
-  }
   const { id } = req.params;
   const user = req.user as User;
 
@@ -163,5 +159,71 @@ router.post("/:id/join", ensureAuthenticated, async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 });
+
+router.delete(
+  "/:id/leave",
+  ensureAuthenticated,
+  ensureDebateAuthenticated,
+  async (req, res) => {
+    const { id } = req.params;
+    const user = req.user as User;
+    try {
+      await prisma.participant.delete({
+        where: {
+          userId_debateId: {
+            userId: user.id,
+            debateId: id,
+          },
+        },
+      });
+      res.status(200).json({ message: "Successfully left the debate." });
+    } catch (error) {
+      console.error("Error leaving debate:", error);
+      res.status(500).json({ message: "Internal server error." });
+    }
+  }
+);
+
+router.put(
+  "/:id/end",
+  ensureAuthenticated,
+  ensureDebateAuthenticated,
+  async (req, res) => {
+    const { id } = req.params;
+    const user = req.user as User;
+
+    try {
+      // Check if the user is the creator
+      const participant = await prisma.participant.findUnique({
+        where: {
+          userId_debateId: {
+            userId: user.id,
+            debateId: id,
+          },
+        },
+      });
+
+      if (!participant) {
+        res.status(404).json({ message: "Participant not found." });
+        return;
+      }
+
+      if (participant.role === "CREATOR" || participant.role === "ADMIN") {
+        await prisma.debate.update({
+          where: { id },
+          data: { closed: true },
+        });
+        res.status(200).json({ message: "Debate ended successfully." });
+      } else {
+        res
+          .status(401)
+          .json({ message: "You do not have permissions to end the debate." });
+      }
+    } catch (error) {
+      console.error("Error leaving debate:", error);
+      res.status(500).json({ message: "Internal server error." });
+    }
+  }
+);
 
 export default router;

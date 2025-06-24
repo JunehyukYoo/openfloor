@@ -17,12 +17,13 @@ import { Avatar, AvatarImage } from "../../ui/avatar";
 import api from "../../../../api/axios";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 // Some things to note:
-// 1. The `RoleCombobox` component is assumed to be a custom component that
-//    allows admins (CREATOR/ADMIN) to change the role of participants in the debate.
+// 1. The `RoleCombobox` component is a custom component that allows admins
+//    (CREATOR/ADMIN roles) to change the role of participants in the debate.
 // 2. For public debates, users are defaulted to VIEWER role, but may join as a
-//    PARTICIPANT with the role of DEBATER.
+//    participant with the role of DEBATER.
 const InfoTabs = ({
   debate,
   userDetails,
@@ -32,6 +33,7 @@ const InfoTabs = ({
 }) => {
   const isViewer = !userDetails;
   const userIsAdmin = !isViewer && hasAdminPermissions(userDetails.role);
+  const navigate = useNavigate();
 
   // Admin controls
   const handleRoleChange = async (participantId: number, newRole: string) => {
@@ -66,6 +68,7 @@ const InfoTabs = ({
     }
   };
 
+  // Joining a public debate as a debater
   const handleJoinDebate = async () => {
     try {
       await api.post(`/debates/${debate.id}/join`);
@@ -81,10 +84,74 @@ const InfoTabs = ({
       });
       setTimeout(() => {
         window.location.reload();
-      }, 2000);
+      }, 1000);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("Error joining debate:", error);
+        toast.error(error.message, {
+          position: "top-right",
+          theme: "dark",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    }
+  };
+
+  // Leaving a debate
+  const handleLeaveDebate = async () => {
+    try {
+      await api.delete(`/debates/${debate.id}/leave`);
+      toast.success("Successfully left debate", {
+        position: "top-right",
+        theme: "dark",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      navigate("/dashboard/debates");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Error leaving debate:", error);
+        toast.error(error.message, {
+          position: "top-right",
+          theme: "dark",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    }
+  };
+
+  // Ending a debate as a creator/admin
+  const handleEndDebate = async () => {
+    try {
+      await api.put(`/debates/${debate.id}/end`);
+      toast.success("Successfully ended debate", {
+        position: "top-right",
+        theme: "dark",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      navigate("/dashboard/debates");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Error ending debate:", error);
         toast.error(error.message, {
           position: "top-right",
           theme: "dark",
@@ -275,10 +342,14 @@ const InfoTabs = ({
                       )}
                   </p>
                 </CardDescription>
-                {userDetails!.role === "CREATOR" ? (
-                  <Button variant="destructive">End Debate</Button>
+                {userIsAdmin ? (
+                  <Button variant="destructive" onClick={handleEndDebate}>
+                    End Debate
+                  </Button>
                 ) : (
-                  <Button variant="destructive">Leave Debate</Button>
+                  <Button variant="destructive" onClick={handleLeaveDebate}>
+                    Leave Debate
+                  </Button>
                 )}
               </>
             )}

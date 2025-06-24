@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "../../components/ui/card";
 // import { Button } from "../../components/ui/button";
-import InfoTabs from "../../components/dashboard/debates/InfoTabs";
+import InfoTabs from "../../components/dashboard/debatePage/InfoTabs";
 import { toast } from "react-toastify";
 import LoadingScreen from "../../components/LoadingScreen";
 import axios from "axios";
