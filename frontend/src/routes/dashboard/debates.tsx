@@ -33,10 +33,10 @@ const Debates = () => {
   useEffect(() => {
     const getDebates = async () => {
       try {
-        const { data } = await api.get("dashboard/debates");
+        const { data } = await api.get("/debates");
         setCreatedDebates(data.createdDebates);
         setJoinedDebates(data.joinedDebates);
-        const quoteData = await api.get("quote");
+        const quoteData = await api.get("/quote");
         setQuote(quoteData.data);
       } catch (error) {
         if (axios.isAxiosError(error)) {

@@ -59,12 +59,16 @@ if (process.env.NODE_ENV === "production") {
 const indexRouter = require("./routes/indexRouter").default;
 const uploadRouter = require("./routes/uploadRouter").default;
 const profileRouter = require("./routes/profileRouter").default;
-const dashboardRouter = require("./routes/dashboardRouter").default;
+const analyticsRouter = require("./routes/analyticsRouter").default;
+const debateRouter = require("./routes/debateRouter").default;
+const topicRouter = require("./routes/topicRouter").default;
 const participantRouter = require("./routes/participantRouter").default;
 app.use("/api", indexRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/profile", profileRouter);
-app.use("/api/dashboard", dashboardRouter);
+app.use("/api/analytics", analyticsRouter);
+app.use("/api/debates", debateRouter);
+app.use("/api/topics", topicRouter);
 app.use("/api/participants", participantRouter);
 
 // Handle uncaught errors

@@ -24,10 +24,11 @@ const DebatePage = () => {
   const [debate, setDebate] = useState<DebateDataFull | null>(null);
   const [userDetails, setUserDetails] = useState<Participant | null>(null);
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const getDebate = async () => {
       try {
-        const { data } = await api.get(`/dashboard/debates/${id}`);
+        const { data } = await api.get(`/debates/${id}`);
         setDebate(data.debate);
         setUserDetails(data.userDetails);
       } catch (error) {
@@ -49,6 +50,7 @@ const DebatePage = () => {
     };
     getDebate();
   }, [id]);
+
   if (loading) {
     return (
       <div className="h-full w-full flex flex-col gap-4">

@@ -30,7 +30,7 @@ const Topics = () => {
   useEffect(() => {
     const getTopics = async () => {
       try {
-        const { data } = await api.get("/dashboard/topics");
+        const { data } = await api.get("/topics");
         setTopics(data);
       } catch (error) {
         if (axios.isAxiosError(error)) {

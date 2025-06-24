@@ -26,7 +26,7 @@ const Analytics = () => {
   useEffect(() => {
     const getAnalytics = async () => {
       try {
-        const res = await api.get("/dashboard/analytics");
+        const res = await api.get("/analytics");
         setData(res.data);
       } catch (error) {
         if (axios.isAxiosError(error)) {

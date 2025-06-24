@@ -68,7 +68,7 @@ const InfoTabs = ({
 
   const handleJoinDebate = async () => {
     try {
-      await api.post(`/dashboard/debates/${debate.id}/join`);
+      await api.post(`/debates/${debate.id}/join`);
       toast.success("Successfully joined debate. Reloading the page.", {
         position: "top-right",
         theme: "dark",

@@ -54,7 +54,7 @@ export function NavMain({
       return;
     }
     try {
-      await api.post("/dashboard/debates/create", {
+      await api.post("/debates/create", {
         topicId: selectedTopic.id,
         isPrivate,
       });
@@ -89,7 +89,7 @@ export function NavMain({
   useEffect(() => {
     const getTopics = async () => {
       try {
-        const { data } = await api.get("/dashboard/topics/all");
+        const { data } = await api.get("/topics/all");
         setAllTopics(data.allTopics);
       } catch (error) {
         if (axios.isAxiosError(error)) {

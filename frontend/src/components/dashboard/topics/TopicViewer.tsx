@@ -49,7 +49,7 @@ const TopicViewer = ({ item, title }: { item: TopicData; title: string }) => {
 
   const handleCreate = async () => {
     try {
-      await api.post("/dashboard/debates/create", {
+      await api.post("/debates/create", {
         topicId: item.id,
         isPrivate,
       });
@@ -66,7 +66,7 @@ const TopicViewer = ({ item, title }: { item: TopicData; title: string }) => {
       setIsDialogOpen(false);
       // TODO: Navigate user to the newly created debate page
       setTimeout(() => {
-        navigate(`/dashboard/debates/${item.id}`);
+        navigate(`/debates/${item.id}`);
       }, 1000);
     } catch (error) {
       if (axios.isAxiosError(error)) {
