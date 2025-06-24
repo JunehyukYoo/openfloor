@@ -24,10 +24,12 @@ const roles = [
 const RoleCombobox = ({
   participant,
   isAdmin,
+  isClosed,
   onRoleChange,
 }: {
   participant: Participant;
   isAdmin: boolean;
+  isClosed: boolean;
   onRoleChange: (participantId: number, newRole: string) => void;
 }) => {
   const [open, setOpen] = useState<boolean>(false);
@@ -49,12 +51,14 @@ const RoleCombobox = ({
           role="combobox"
           aria-expanded={open}
           className="justify-between"
-          disabled={isDisabled || !isAdmin}
+          disabled={isDisabled || !isAdmin || isClosed}
         >
           {value
             ? roles.find((role) => role.value === value)?.label
             : "Select role..."}
-          {!isDisabled && isAdmin && <ChevronsUpDown className="opacity-50" />}
+          {!isDisabled && isAdmin && !isClosed && (
+            <ChevronsUpDown className="opacity-50" />
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" sideOffset={8} className="dark w-[200px] p-0">

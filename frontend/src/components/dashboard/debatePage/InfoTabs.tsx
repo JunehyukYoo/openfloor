@@ -172,7 +172,9 @@ const InfoTabs = ({
         <CardHeader>
           <TabsList defaultValue="debate">
             <TabsTrigger value="debate">Debate</TabsTrigger>
-            {userIsAdmin && <TabsTrigger value="invite">Invite</TabsTrigger>}
+            {userIsAdmin && !debate.closed && (
+              <TabsTrigger value="invite">Invite</TabsTrigger>
+            )}
             <TabsTrigger value="participants">Participants</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
@@ -206,7 +208,11 @@ const InfoTabs = ({
                 </p>
                 <p>
                   <span className="font-medium">Status:</span>{" "}
-                  {debate.closed ? "Closed" : "Open"}
+                  {debate.closed ? (
+                    <span className="text-red-500">Closed</span>
+                  ) : (
+                    <span className="text-green-500">Open</span>
+                  )}
                 </p>
                 <p>
                   <span className="font-medium">Participants:</span>{" "}
@@ -262,6 +268,7 @@ const InfoTabs = ({
                           <RoleCombobox
                             participant={participant}
                             isAdmin={userIsAdmin}
+                            isClosed={debate.closed}
                             onRoleChange={handleRoleChange}
                           />
                         </div>
@@ -293,6 +300,7 @@ const InfoTabs = ({
                           <RoleCombobox
                             participant={participant}
                             isAdmin={userIsAdmin}
+                            isClosed={debate.closed}
                             onRoleChange={handleRoleChange}
                           />
                         </div>
@@ -313,45 +321,51 @@ const InfoTabs = ({
             <CardTitle className="text-left text-xl font-semibold">
               Settings
             </CardTitle>
-            {isViewer ? (
-              <div className="flex flex-col gap-2">
-                <CardDescription className="flex flex-col text-left">
-                  You are currently viewing this debate as a guest.
-                </CardDescription>
-                <Button variant="default" onClick={handleJoinDebate}>
-                  Join debate as a Debater
-                </Button>
-              </div>
+            {!debate.closed ? (
+              isViewer ? (
+                <div className="flex flex-col gap-2">
+                  <CardDescription className="flex flex-col text-left">
+                    You are currently viewing this debate as a guest.
+                  </CardDescription>
+                  <Button variant="default" onClick={handleJoinDebate}>
+                    Join debate as a Debater
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <CardDescription className="flex flex-col text-left">
+                    <p>
+                      <span className="font-medium">Your role:</span>
+                      {" " + userDetails!.role.toLowerCase()}
+                    </p>
+                    <p>
+                      <span className="font-medium">Joined:</span>
+                      {" " +
+                        new Date(userDetails!.joinedAt).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          }
+                        )}
+                    </p>
+                  </CardDescription>
+                  {userIsAdmin ? (
+                    <Button variant="destructive" onClick={handleEndDebate}>
+                      End Debate
+                    </Button>
+                  ) : (
+                    <Button variant="destructive" onClick={handleLeaveDebate}>
+                      Leave Debate
+                    </Button>
+                  )}
+                </>
+              )
             ) : (
-              <>
-                <CardDescription className="flex flex-col text-left">
-                  <p>
-                    <span className="font-medium">Your role:</span>
-                    {" " + userDetails!.role.toLowerCase()}
-                  </p>
-                  <p>
-                    <span className="font-medium">Joined:</span>
-                    {" " +
-                      new Date(userDetails!.joinedAt).toLocaleDateString(
-                        "en-US",
-                        {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        }
-                      )}
-                  </p>
-                </CardDescription>
-                {userIsAdmin ? (
-                  <Button variant="destructive" onClick={handleEndDebate}>
-                    End Debate
-                  </Button>
-                ) : (
-                  <Button variant="destructive" onClick={handleLeaveDebate}>
-                    Leave Debate
-                  </Button>
-                )}
-              </>
+              <CardDescription className="flex flex-col text-left">
+                Debate is closed. You can no longer join or leave.
+              </CardDescription>
             )}
           </CardContent>
         </TabsContent>
