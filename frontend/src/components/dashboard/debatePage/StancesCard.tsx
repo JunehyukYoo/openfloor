@@ -7,17 +7,25 @@ import {
   CardTitle,
 } from "../../ui/card";
 import { hasAdminPermissions } from "../../../utils/debateUtils";
-import type { Debate, Participant } from "../../../types";
+import { useDebateContext } from "../../../context/debateContext";
 import { Button } from "../../ui/button";
+import { SiteHeader as PageHeader } from "../site-header";
 
-const StancesCard = ({
-  debate,
-  userDetails,
-}: {
-  debate: Debate;
-  userDetails: Participant | null;
-}) => {
+const StancesCard = () => {
+  const { debate, userDetails } = useDebateContext();
   const isAdmin = userDetails && hasAdminPermissions(userDetails.role);
+
+  if (!debate) {
+    return (
+      <div className="h-full w-full flex flex-col gap-4">
+        <PageHeader title="Debate" breadcrumb="Invalid" />
+        <div className="flex items-center justify-center h-full">
+          <p className="text-lg">Debate not found.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Card className="bg-neutral-900 min-h-[250px]">
       <CardHeader>

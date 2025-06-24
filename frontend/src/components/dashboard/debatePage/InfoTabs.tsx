@@ -10,7 +10,8 @@ import {
 import { Button } from "../../ui/button";
 import { hasAdminPermissions } from "../../../utils/debateUtils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
-import type { DebateDataFull, Participant } from "../../../types";
+import { SiteHeader as PageHeader } from "../site-header";
+import { useDebateContext } from "../../../context/debateContext";
 import RoleCombobox from "./RoleCombobox";
 import { Separator } from "../../ui/separator";
 import { Avatar, AvatarImage } from "../../ui/avatar";
@@ -24,16 +25,22 @@ import { useNavigate } from "react-router-dom";
 //    (CREATOR/ADMIN roles) to change the role of participants in the debate.
 // 2. For public debates, users are defaulted to VIEWER role, but may join as a
 //    participant with the role of DEBATER.
-const InfoTabs = ({
-  debate,
-  userDetails,
-}: {
-  debate: DebateDataFull;
-  userDetails: Participant | null;
-}) => {
+const InfoTabs = () => {
+  const { debate, userDetails, refreshDebate } = useDebateContext();
   const isViewer = !userDetails;
   const userIsAdmin = !isViewer && hasAdminPermissions(userDetails.role);
   const navigate = useNavigate();
+
+  if (!debate) {
+    return (
+      <div className="h-full w-full flex flex-col gap-4">
+        <PageHeader title="Debate" breadcrumb="Invalid" />
+        <div className="flex items-center justify-center h-full">
+          <p className="text-lg">Debate not found.</p>
+        </div>
+      </div>
+    );
+  }
 
   // Admin controls
   const handleRoleChange = async (participantId: number, newRole: string) => {
@@ -83,7 +90,7 @@ const InfoTabs = ({
         progress: undefined,
       });
       setTimeout(() => {
-        window.location.reload();
+        refreshDebate();
       }, 1000);
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -116,6 +123,7 @@ const InfoTabs = ({
         draggable: true,
         progress: undefined,
       });
+      refreshDebate();
       navigate("/dashboard/debates");
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -148,6 +156,7 @@ const InfoTabs = ({
         draggable: true,
         progress: undefined,
       });
+      refreshDebate();
       navigate("/dashboard/debates");
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -167,10 +176,10 @@ const InfoTabs = ({
   };
 
   return (
-    <Tabs>
+    <Tabs defaultValue="debate">
       <Card className="bg-neutral-900 min-h-[250px]">
         <CardHeader>
-          <TabsList defaultValue="debate">
+          <TabsList>
             <TabsTrigger value="debate">Debate</TabsTrigger>
             {userIsAdmin && !debate.closed && (
               <TabsTrigger value="invite">Invite</TabsTrigger>
