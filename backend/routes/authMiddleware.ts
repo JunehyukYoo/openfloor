@@ -19,34 +19,48 @@ export async function ensureDebateAuthenticated(
   next: NextFunction
 ) {
   const { id } = req.params;
+  const token = req.query.invite as string | undefined;
+
   try {
     const debate = await prisma.debate.findUnique({
-      where: {
-        id: id,
-      },
-      include: {
-        participants: true,
-      },
+      where: { id },
+      include: { participants: true },
     });
 
     if (!debate) {
       res.status(400).send({ message: "Debate ID does not exist." });
       return;
-    } else if (debate.private) {
-      const user = req.user as User;
-      const valid = await prisma.participant.findUnique({
-        where: { userId_debateId: { userId: user.id, debateId: id } },
-      });
-      if (!valid) {
-        res
-          .status(401)
-          .send({ message: "Lack permissions to participate in debate." });
-        return;
-      }
     }
-    next();
+
+    if (!debate.private) {
+      return next();
+    }
+
+    const user = req.user as User;
+    const valid = await prisma.participant.findUnique({
+      where: { userId_debateId: { userId: user.id, debateId: id } },
+    });
+
+    const validInviteToken = token
+      ? await prisma.inviteToken.findFirst({
+          where: {
+            token,
+            debateId: id,
+            expiresAt: { gt: new Date() },
+          },
+        })
+      : null;
+
+    if (!valid && !validInviteToken) {
+      res.status(401).send({
+        message: "Lack permissions to view or participate in debate.",
+      });
+      return;
+    }
+
+    return next();
   } catch (error) {
+    console.error("Error in ensureDebateAuthenticated:", error);
     res.status(500).json({ message: "Internal server error." });
-    return;
   }
 }

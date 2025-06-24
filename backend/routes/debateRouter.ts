@@ -221,7 +221,7 @@ router.put(
 );
 
 router.post(
-  "/invites/:id",
+  "/:id/invite",
   ensureAuthenticated,
   ensureDebateAuthenticated,
   async (req, res) => {
@@ -271,46 +271,42 @@ router.post(
   }
 );
 
-router.post(
-  "/debates/:id/join-via-token",
-  ensureAuthenticated,
-  async (req, res) => {
-    const { id } = req.params;
-    const { token } = req.body;
-    const user = req.user as User;
+router.post("/:id/join-via-token", ensureAuthenticated, async (req, res) => {
+  const { id } = req.params;
+  const { token } = req.body;
+  const user = req.user as User;
 
-    try {
-      // Validate token
-      const invite = await prisma.inviteToken.findFirst({
-        where: { token, debateId: id, expiresAt: { gt: new Date() } },
-      });
+  try {
+    // Validate token
+    const invite = await prisma.inviteToken.findFirst({
+      where: { token, debateId: id, expiresAt: { gt: new Date() } },
+    });
 
-      if (!invite) {
-        res.status(400).json({ message: "Invalid or expired invite token." });
-        return;
-      }
-
-      // Check if user is already a participant
-      const existingParticipant = await prisma.participant.findUnique({
-        where: { userId_debateId: { userId: user.id, debateId: id } },
-      });
-
-      if (existingParticipant) {
-        res.status(400).json({ message: "You are already a participant." });
-        return;
-      }
-
-      // Add user as observer (public debates do not need tokens)
-      await prisma.participant.create({
-        data: { userId: user.id, debateId: id, role: invite.role },
-      });
-
-      res.status(200).json({ message: "Successfully joined the debate." });
-    } catch (error) {
-      console.error("Error joining debate via token:", error);
-      res.status(500).json({ message: "Internal server error." });
+    if (!invite) {
+      res.status(400).json({ message: "Invalid or expired invite token." });
+      return;
     }
+
+    // Check if user is already a participant
+    const existingParticipant = await prisma.participant.findUnique({
+      where: { userId_debateId: { userId: user.id, debateId: id } },
+    });
+
+    if (existingParticipant) {
+      res.status(400).json({ message: "You are already a participant." });
+      return;
+    }
+
+    // Add user as observer (public debates do not need tokens)
+    await prisma.participant.create({
+      data: { userId: user.id, debateId: id, role: invite.role },
+    });
+
+    res.status(200).json({ message: "Successfully joined the debate." });
+  } catch (error) {
+    console.error("Error joining debate via token:", error);
+    res.status(500).json({ message: "Internal server error." });
   }
-);
+});
 
 export default router;
