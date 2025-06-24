@@ -9,15 +9,15 @@ import PublicLayout from "./components/PublicLayout.tsx";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // Routes
-import Home from "./routes/home";
-import Login from "./routes/login";
-import Register from "./routes/register";
-import Profile from "./routes/profile";
-import Edit from "./routes/edit.tsx";
-import Topics from "./routes/dashboard/topics.tsx";
-import Debates from "./routes/dashboard/debates.tsx";
-import Analytics from "./routes/dashboard/analytics.tsx";
-import DebatePage from "./routes/dashboard/debate-page.tsx";
+import Home from "./pages/home.tsx";
+import Login from "./pages/login.tsx";
+import Register from "./pages/register.tsx";
+import Profile from "./pages/profile.tsx";
+import Edit from "./pages/edit.tsx";
+import Topics from "./pages/dashboard/topics.tsx";
+import Debates from "./pages/dashboard/debates.tsx";
+import Analytics from "./pages/dashboard/analytics.tsx";
+import DebatePage from "./pages/dashboard/debate-page.tsx";
 
 import { useAuth } from "./context/authContext";
 import { ToastContainer } from "react-toastify";
