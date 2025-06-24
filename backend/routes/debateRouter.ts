@@ -11,7 +11,7 @@ import type { User, Topic } from "../types/index";
 
 const router = express.Router();
 
-router.get("/", ensureAuthenticated, async (req, res, next) => {
+router.get("/", ensureAuthenticated, async (req, res) => {
   const user = req.user as User;
   try {
     const createdDebates = await prisma.participant.findMany({
@@ -52,7 +52,7 @@ router.get("/", ensureAuthenticated, async (req, res, next) => {
   }
 });
 
-router.post("/create", ensureAuthenticated, async (req, res, next) => {
+router.post("/create", ensureAuthenticated, async (req, res) => {
   const user = req.user as User;
   const { topicId, isPrivate } = req.body;
   if (!topicId || isNaN(topicId)) {
@@ -89,7 +89,7 @@ router.get(
   "/:id",
   ensureAuthenticated,
   ensureDebateAuthenticated,
-  async (req, res, next) => {
+  async (req, res) => {
     if (!req.user) {
       res.status(401).json({ message: "User not authenticated." });
       return;
@@ -193,7 +193,6 @@ router.put(
     const user = req.user as User;
 
     try {
-      // Check if the user is the creator
       const participant = await prisma.participant.findUnique({
         where: {
           userId_debateId: {
@@ -203,12 +202,7 @@ router.put(
         },
       });
 
-      if (!participant) {
-        res.status(404).json({ message: "Participant not found." });
-        return;
-      }
-
-      if (participant.role === "CREATOR" || participant.role === "ADMIN") {
+      if (participant!.role === "CREATOR" || participant!.role === "ADMIN") {
         await prisma.debate.update({
           where: { id },
           data: { closed: true },
@@ -221,6 +215,99 @@ router.put(
       }
     } catch (error) {
       console.error("Error leaving debate:", error);
+      res.status(500).json({ message: "Internal server error." });
+    }
+  }
+);
+
+router.post(
+  "/invites/:id",
+  ensureAuthenticated,
+  ensureDebateAuthenticated,
+  async (req, res) => {
+    const user = req.user as User;
+    const { id } = req.params;
+    const { role } = req.body;
+
+    try {
+      const participant = await prisma.participant.findUnique({
+        where: {
+          userId_debateId: {
+            userId: user.id,
+            debateId: id,
+          },
+        },
+      });
+
+      if (participant!.role !== "CREATOR" && participant!.role !== "ADMIN") {
+        res.status(401).json({
+          message: "You do not have the permissions to create an invite link.",
+        });
+        return;
+      }
+
+      if (!["ADMIN", "DEBATER", "OBSERVER"].includes(role)) {
+        res.status(400).json({ message: "Invalid role." });
+        return;
+      }
+
+      const token = crypto.randomUUID();
+      const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24-hour expiry
+
+      const invite = await prisma.inviteToken.create({
+        data: {
+          token,
+          debateId: id,
+          expiresAt,
+          role,
+        },
+      });
+
+      res.status(201).json({ token: invite.token });
+    } catch (error) {
+      console.error("Error creating invite token:", error);
+      res.status(500).json("Internal server error.");
+    }
+  }
+);
+
+router.post(
+  "/debates/:id/join-via-token",
+  ensureAuthenticated,
+  async (req, res) => {
+    const { id } = req.params;
+    const { token } = req.body;
+    const user = req.user as User;
+
+    try {
+      // Validate token
+      const invite = await prisma.inviteToken.findFirst({
+        where: { token, debateId: id, expiresAt: { gt: new Date() } },
+      });
+
+      if (!invite) {
+        res.status(400).json({ message: "Invalid or expired invite token." });
+        return;
+      }
+
+      // Check if user is already a participant
+      const existingParticipant = await prisma.participant.findUnique({
+        where: { userId_debateId: { userId: user.id, debateId: id } },
+      });
+
+      if (existingParticipant) {
+        res.status(400).json({ message: "You are already a participant." });
+        return;
+      }
+
+      // Add user as observer (public debates do not need tokens)
+      await prisma.participant.create({
+        data: { userId: user.id, debateId: id, role: invite.role },
+      });
+
+      res.status(200).json({ message: "Successfully joined the debate." });
+    } catch (error) {
+      console.error("Error joining debate via token:", error);
       res.status(500).json({ message: "Internal server error." });
     }
   }
