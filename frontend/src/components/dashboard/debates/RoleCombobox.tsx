@@ -24,9 +24,11 @@ const roles = [
 const RoleCombobox = ({
   participant,
   isAdmin,
+  onRoleChange,
 }: {
   participant: Participant;
   isAdmin: boolean;
+  onRoleChange: (participantId: number, newRole: string) => void;
 }) => {
   const [open, setOpen] = useState<boolean>(false);
   const [value, setValue] = useState<string>("");
@@ -61,24 +63,29 @@ const RoleCombobox = ({
           <CommandList>
             <CommandEmpty>No roles found.</CommandEmpty>
             <CommandGroup>
-              {roles.map((role) => (
-                <CommandItem
-                  key={role.value}
-                  value={role.value}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue);
-                    setOpen(false);
-                  }}
-                >
-                  {role.label}
-                  <Check
-                    className={cn(
-                      "ml-auto",
-                      value === role.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                </CommandItem>
-              ))}
+              {roles.map((role) => {
+                if (role.value !== "CREATOR") {
+                  return (
+                    <CommandItem
+                      key={role.value}
+                      value={role.value}
+                      onSelect={(currentValue) => {
+                        setValue(currentValue);
+                        setOpen(false);
+                        onRoleChange(participant.id, currentValue);
+                      }}
+                    >
+                      {role.label}
+                      <Check
+                        className={cn(
+                          "ml-auto",
+                          value === role.value ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                    </CommandItem>
+                  );
+                }
+              })}
             </CommandGroup>
           </CommandList>
         </Command>

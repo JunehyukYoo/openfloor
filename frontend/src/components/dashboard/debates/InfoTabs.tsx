@@ -14,6 +14,9 @@ import type { DebateDataFull, Participant } from "../../../types";
 import RoleCombobox from "./RoleCombobox";
 import { Separator } from "../../ui/separator";
 import { Avatar, AvatarImage } from "../../ui/avatar";
+import api from "../../../../api/axios";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const InfoTabs = ({
   debate,
@@ -23,6 +26,38 @@ const InfoTabs = ({
   userDetails: Participant;
 }) => {
   const userIsAdmin = hasAdminPermissions(userDetails.role);
+  const handleRoleChange = async (participantId: number, newRole: string) => {
+    try {
+      await api.put(`/participants/${participantId}/role`, {
+        role: newRole,
+      });
+      toast.success("Role updated successfully.", {
+        position: "top-right",
+        theme: "dark",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Error updating role:", error);
+        toast.error(error.message, {
+          position: "top-right",
+          theme: "dark",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    }
+  };
+
   return (
     <Tabs>
       <Card className="bg-neutral-900">
@@ -119,6 +154,7 @@ const InfoTabs = ({
                           <RoleCombobox
                             participant={participant}
                             isAdmin={userIsAdmin}
+                            onRoleChange={handleRoleChange}
                           />
                         </div>
                       </div>
@@ -149,6 +185,7 @@ const InfoTabs = ({
                           <RoleCombobox
                             participant={participant}
                             isAdmin={userIsAdmin}
+                            onRoleChange={handleRoleChange}
                           />
                         </div>
                       </div>
