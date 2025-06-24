@@ -42,9 +42,10 @@ model Debate {
 
   creatorId    String
   creator      User     @relation("DebateCreator", fields: [creatorId], references: [id])
-  
+
   participants Participant[]
   stances      Stance[]
+  inviteTokens InviteToken[]
 
   @@map("debates")
 }
@@ -138,3 +139,15 @@ model Comment {
 
   @@map("comments")
 }
+
+model InviteToken {
+  id         Int      @id @default(autoincrement())
+  token      String   @unique
+  debateId   String
+  debate     Debate   @relation(fields: [debateId], references: [id])
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+
+  @@map("invite_tokens")
+}
+
