@@ -15,6 +15,8 @@ const InviteLinks = () => {
     Debater: "",
     Observer: "",
   });
+  const [expiresAt, setExpiresAt] = useState<string>("");
+  const [timeLeft, setTimeLeft] = useState<number>(0);
 
   // Fetches invite links if they exist
   useEffect(() => {
@@ -25,8 +27,9 @@ const InviteLinks = () => {
         if (data) {
           setLinks((prev) => ({
             ...prev,
-            ...data,
+            ...data.responseMap,
           }));
+          setExpiresAt(data.expiresAt);
         }
       } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -56,20 +59,32 @@ const InviteLinks = () => {
         DEBATER: "Debater",
         OBSERVER: "Observer",
       };
+      let newExpiresAt = "";
       const responses = await Promise.all(
         roles.map((role) =>
-          api.post(`/debates/${debate.id}/invites`, { role }).then((res) => ({
-            label: labelMap[role as keyof typeof labelMap],
-            link: `${window.location.origin}/dashboard/debates/${debate.id}?invite=${res.data.token}`,
-          }))
+          api.post(`/debates/${debate.id}/invites`, { role }).then((res) => {
+            newExpiresAt = res.data.expiresAt;
+            return {
+              label: labelMap[role as keyof typeof labelMap],
+              link: `${window.location.origin}/dashboard/debates/${debate.id}?invite=${res.data.token}`,
+            };
+          })
         )
       );
+
       const newLinks: Record<string, string> = {};
       responses.forEach(({ label, link }) => {
         newLinks[label] = link;
       });
 
       setLinks(newLinks);
+      setExpiresAt(newExpiresAt);
+      setTimeLeft(
+        Math.floor(
+          (new Date(newExpiresAt).getTime() - new Date().getTime()) / 1000
+        )
+      );
+
       toast.success("Invite links successfully created.", {
         position: "top-right",
         theme: "dark",
@@ -97,16 +112,47 @@ const InviteLinks = () => {
     }
   };
 
+  useEffect(() => {
+    if (!expiresAt) return;
+
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const expiry = new Date(expiresAt).getTime();
+      const diff = Math.max(Math.floor((expiry - now) / 1000), 0); // in seconds
+      setTimeLeft(diff);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [expiresAt]);
+
+  const formatTime = (seconds: number) => {
+    if (seconds <= 0) return "Expired";
+
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    return `${hours > 0 ? `${hours}h ` : ""}${minutes}m ${
+      secs < 10 ? "0" : ""
+    }${secs}s`;
+  };
   return (
     <>
-      {links["Admin"].length > 0 ? (
-        <ScriptCopyBtn
-          showMultiplePackageOptions={true}
-          codeLanguage="text"
-          lightTheme=""
-          darkTheme=""
-          commandMap={links}
-        />
+      {links["Admin"].length > 0 && timeLeft > 0 ? (
+        <>
+          <div className="text-left">
+            <ScriptCopyBtn
+              showMultiplePackageOptions={true}
+              codeLanguage="text"
+              lightTheme=""
+              darkTheme=""
+              commandMap={links}
+            />
+          </div>
+          <p className="text-left text-sm text-muted-foreground">
+            Expires in: {formatTime(timeLeft)}
+          </p>
+        </>
       ) : (
         <Button variant="default" onClick={handleGenerateInvites}>
           Generate Invite links

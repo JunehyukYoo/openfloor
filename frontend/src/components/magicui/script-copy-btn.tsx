@@ -35,10 +35,7 @@ export function ScriptCopyBtn({
 
   return (
     <div
-      className={cn(
-        "mx-auto flex max-w-md items-center justify-center",
-        className
-      )}
+      className={cn("m-0 flex max-w-md items-center justify-start", className)}
     >
       <div className="w-full space-y-2">
         <div className="mb-2 flex items-center justify-between">
@@ -81,7 +78,7 @@ export function ScriptCopyBtn({
           )}
         </div>
         <div className="relative flex items-center">
-          <div className="min-w-[300px] grow font-mono">
+          <div className="min-w-[100px] grow font-mono">
             <div
               className={`[&>pre]:overflow-x-scroll [&>pre]:rounded-md [&>pre]:p-2 [&>pre]:px-4 [&>pre]:font-mono bg-zinc-800 rounded-lg`}
             />
