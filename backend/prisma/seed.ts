@@ -138,8 +138,21 @@ async function main() {
 
   await prisma.vote.createMany({
     data: [
+      // Eric's votes
       { userId: eric.id, justificationId: just1.id, value: 1 },
       { userId: eric.id, justificationId: just2.id, value: -1 },
+
+      // Alice's votes
+      { userId: alice.id, justificationId: just1.id, value: 1 },
+      { userId: alice.id, justificationId: just3.id, value: 1 },
+
+      // Bob's votes
+      { userId: bob.id, justificationId: just2.id, value: 1 },
+      { userId: bob.id, justificationId: just3.id, value: -1 },
+
+      // June's votes
+      { userId: june.id, justificationId: just3.id, value: 1 },
+      { userId: june.id, justificationId: just1.id, value: -1 },
     ],
   });
 

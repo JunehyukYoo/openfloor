@@ -131,6 +131,56 @@ router.get(
   }
 );
 
+router.get(
+  "/:id/support",
+  ensureAuthenticated,
+  ensureDebateAuthenticated,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const user = req.user as User;
+      const justificationVotes = await prisma.vote.groupBy({
+        by: ["justificationId"],
+        _sum: { value: true },
+      });
+
+      const justifications = await prisma.justification.findMany({
+        where: { stance: { debateId: id } },
+        select: { id: true, stanceId: true },
+      });
+
+      const stanceSupportMap: Record<number, number> = {};
+
+      justifications.forEach((justification) => {
+        const voteSum =
+          justificationVotes.find((v) => v.justificationId === justification.id)
+            ?._sum.value || 0;
+
+        if (stanceSupportMap[justification.stanceId]) {
+          stanceSupportMap[justification.stanceId] += voteSum;
+        } else {
+          stanceSupportMap[justification.stanceId] = voteSum;
+        }
+      });
+
+      const stances = await prisma.stance.findMany({
+        where: { debateId: id },
+        select: { id: true, label: true },
+      });
+
+      const supportMap = stances.map((stance) => ({
+        stanceId: stance.id,
+        stanceLabel: stance.label,
+        supportCount: stanceSupportMap[stance.id] || 0,
+      }));
+      res.json({ supportMap });
+    } catch (error) {
+      console.error("Error deleting debate:", error);
+      res.status(500).json({ message: "Internal server error." });
+    }
+  }
+);
+
 router.delete(
   "/:id",
   ensureAuthenticated,
