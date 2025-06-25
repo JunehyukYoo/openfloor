@@ -38,7 +38,7 @@ model Debate {
   closed    Boolean    @default(false)
 
   topicId   Int
-  topic     Topic      @relation(fields: [topicId], references: [id])
+  topic     Topic      @relation(fields: [topicId], references: [id], onDelete: Cascade)
 
   creatorId    String
   creator      User     @relation("DebateCreator", fields: [creatorId], references: [id])
@@ -63,7 +63,7 @@ model Stance {
   label          String
 
   debateId       String          
-  debate         Debate          @relation(fields: [debateId], references: [id])
+  debate         Debate          @relation(fields: [debateId], references: [id], onDelete: Cascade)
 
   justifications Justification[]
   participants   Participant[]
@@ -81,8 +81,8 @@ model Participant {
   joinedAt  DateTime @default(now())
 
   user      User     @relation(fields: [userId], references: [id])
-  debate    Debate   @relation(fields: [debateId], references: [id])
-  stance    Stance?  @relation(fields: [stanceId], references: [id])
+  debate    Debate   @relation(fields: [debateId], references: [id], onDelete: Cascade)
+  stance    Stance?  @relation(fields: [stanceId], references: [id], onDelete: SetNull)
 
   @@unique([userId, debateId])
 
@@ -98,7 +98,7 @@ model Justification {
   author      User     @relation(fields: [authorId], references: [id])
 
   stanceId    Int
-  stance      Stance   @relation(fields: [stanceId], references: [id])
+  stance      Stance   @relation(fields: [stanceId], references: [id], onDelete: Cascade)
 
   votes       Vote[]
   comments    Comment[] @relation("JustificationComments")
@@ -115,7 +115,7 @@ model Vote {
   createdAt       DateTime @default(now())
 
   justificationId Int
-  justification   Justification @relation(fields: [justificationId], references: [id])
+  justification   Justification @relation(fields: [justificationId], references: [id], onDelete: Cascade)
 
   @@unique([userId, justificationId])
 
@@ -131,10 +131,10 @@ model Comment {
   author           User     @relation(fields: [authorId], references: [id])
 
   justificationId  Int
-  justification    Justification @relation("JustificationComments", fields: [justificationId], references: [id])
+  justification    Justification @relation("JustificationComments", fields: [justificationId], references: [id], onDelete: Cascade)
 
   parentId         Int?
-  parent           Comment?  @relation("CommentHierarchy", fields: [parentId], references: [id])
+  parent           Comment?  @relation("CommentHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
   children         Comment[] @relation("CommentHierarchy")
 
   @@map("comments")
@@ -145,7 +145,7 @@ model InviteToken {
   token      String   @unique
   role       Role     @default(OBSERVER)
   debateId   String
-  debate     Debate   @relation(fields: [debateId], references: [id])
+  debate     Debate   @relation(fields: [debateId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
   expiresAt  DateTime
 
