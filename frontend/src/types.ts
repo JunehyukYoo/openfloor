@@ -134,6 +134,12 @@ export interface DebateDataFull {
   stances: Stance[];
 }
 
+export interface SupportDetails {
+  stanceId: number;
+  stanceLabel: string;
+  supportCount: number;
+}
+
 // TOPICS
 
 export interface DebateData {

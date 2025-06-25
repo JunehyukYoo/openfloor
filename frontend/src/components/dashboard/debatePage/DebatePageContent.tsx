@@ -1,12 +1,45 @@
 // components/dashboard/debatePage/DebatePageContent.tsx
+import { useState, useEffect } from "react";
 import { SiteHeader as PageHeader } from "../../dashboard/site-header";
-import { useDebateContext } from "../../../context/debateContext";
+import { useDebateContextNonNull } from "../../../context/debateContext";
 import StancesCard from "../../dashboard/debatePage/StancesCard";
 import InfoTabs from "../../dashboard/debatePage/InfoTabs";
 import { Separator } from "../../ui/separator";
+import SupportOverview from "./SupportOverview";
+import type { SupportDetails } from "../../../types";
+import api from "../../../../api/axios";
+import axios from "axios";
+import { toast } from "react-toastify";
+import LoadingScreen from "../../LoadingScreen";
 
 const DebatePageContent = () => {
-  const { debate } = useDebateContext();
+  const { debate } = useDebateContextNonNull();
+  const [supportMap, setSupportMap] = useState<SupportDetails[] | null>(null);
+
+  useEffect(() => {
+    const getSupportOverview = async () => {
+      try {
+        const { data } = await api.get(`/debates/${debate.id}/support`);
+        console.log(data);
+        setSupportMap(data.supportMap);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.error("Error loading support details:", error);
+          toast.error("Error loading support details.", {
+            position: "top-right",
+            theme: "dark",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
+      }
+    };
+    getSupportOverview();
+  }, [debate.id]);
 
   if (!debate) {
     return (
@@ -31,9 +64,14 @@ const DebatePageContent = () => {
         </h1>
         <Separator />
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
-          <StancesCard />
+          {supportMap ? (
+            <SupportOverview chartData={supportMap} />
+          ) : (
+            <LoadingScreen />
+          )}
           <InfoTabs />
         </div>
+        <StancesCard />
       </div>
     </div>
   );
