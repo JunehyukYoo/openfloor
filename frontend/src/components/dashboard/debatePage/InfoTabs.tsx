@@ -92,7 +92,7 @@ const InfoTabs = () => {
       });
       setTimeout(() => {
         refreshDebate();
-      }, 1000);
+      }, 500);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("Error joining debate:", error);
@@ -178,7 +178,7 @@ const InfoTabs = () => {
 
   return (
     <Tabs defaultValue="debate">
-      <Card className="bg-neutral-900 min-h-[250px]">
+      <Card className="bg-neutral-900 min-h-[250px] overflow-x-scroll">
         <CardHeader>
           <TabsList>
             <TabsTrigger value="debate">Debate</TabsTrigger>
