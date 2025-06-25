@@ -131,6 +131,44 @@ router.get(
   }
 );
 
+router.delete(
+  "/:id",
+  ensureAuthenticated,
+  ensureDebateAuthenticated,
+  async (req, res) => {
+    const { id } = req.params;
+    const user = req.user as User;
+
+    try {
+      const participant = await prisma.participant.findUnique({
+        where: {
+          userId_debateId: {
+            userId: user.id,
+            debateId: id,
+          },
+        },
+      });
+
+      if (participant!.role !== "CREATOR" && participant!.role !== "ADMIN") {
+        res.status(401).json({
+          message: "You do not have permissions to delete the debate.",
+        });
+        return;
+      }
+
+      await prisma.debate.delete({
+        where: {
+          id,
+        },
+      });
+      res.json({ message: "Debate successfully deleted." });
+    } catch (error) {
+      console.error("Error deleting debate:", error);
+      res.status(500).json({ message: "Internal server error." });
+    }
+  }
+);
+
 // NOTE: Can only join public debates, no need to check for debate authentication
 router.post("/:id/join", ensureAuthenticated, async (req, res) => {
   const { id } = req.params;
