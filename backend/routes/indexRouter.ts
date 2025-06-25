@@ -94,14 +94,28 @@ router.post("/logout", (req, res, next) => {
 });
 
 // QUOTE (for debates page)
+let cachedQuote: any = null;
+let cachedAt: number | null = null;
 router.get("/quote", async (req, res) => {
   try {
+    const now = Date.now();
+    const ONE_DAY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+    if (cachedQuote && cachedAt && now - cachedAt < ONE_DAY) {
+      res.json(cachedQuote);
+      return;
+    }
+
     const response = await fetch(
       "https://thequoteshub.com/api/tags/knowledge?page=1&page_size=50&format=json"
     );
     const data = await response.json();
     const randomQuote =
       data.quotes[Math.floor(Math.random() * data.quotes.length)];
+
+    cachedQuote = randomQuote;
+    cachedAt = now;
+
     res.json(randomQuote);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch quote" });
