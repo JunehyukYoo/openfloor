@@ -9,10 +9,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "../../components/ui/tabs";
-import {
-  DebateTable,
-  columns,
-} from "../../components/dashboard/debates/DebateTable";
+import { DebatesTable } from "../../components/dashboard/debates/DebatesTable";
 import axios from "axios";
 import api from "../../../api/axios";
 import type { DebateDataMini, Quote } from "../../types";
@@ -30,26 +27,28 @@ const Debates = () => {
   });
   const [loading, setLoading] = useState(true);
 
+  const fetchDebates = async () => {
+    try {
+      const { data } = await api.get("/debates");
+      setCreatedDebates(data.createdDebates);
+      setJoinedDebates(data.joinedDebates);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Error fetching debates:", error);
+        toast.error("Error fetching debates.");
+      }
+    }
+  };
+
   useEffect(() => {
     const getDebates = async () => {
+      await fetchDebates();
       try {
-        const { data } = await api.get("/debates");
-        setCreatedDebates(data.createdDebates);
-        setJoinedDebates(data.joinedDebates);
         const quoteData = await api.get("/quote");
         setQuote(quoteData.data);
       } catch (error) {
         if (axios.isAxiosError(error)) {
-          toast.error(error.message, {
-            position: "top-right",
-            theme: "dark",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          toast.error(error.message);
         }
       } finally {
         setLoading(false);
@@ -86,14 +85,20 @@ const Debates = () => {
             </TabsList>
             <TabsContent value="created">
               {createdDebates ? (
-                <DebateTable data={createdDebates} columns={columns} />
+                <DebatesTable
+                  data={createdDebates}
+                  refreshDebates={fetchDebates}
+                />
               ) : (
                 <div>No created debates found.</div>
               )}
             </TabsContent>
             <TabsContent value="joined">
               {joinedDebates ? (
-                <DebateTable data={joinedDebates} columns={columns} />
+                <DebatesTable
+                  data={joinedDebates}
+                  refreshDebates={fetchDebates}
+                />
               ) : (
                 <div>No joined debates found.</div>
               )}
