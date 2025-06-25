@@ -176,6 +176,39 @@ const InfoTabs = () => {
     }
   };
 
+  // Deleting a debate
+  const handleDeleteDebate = async () => {
+    try {
+      navigate("/dashboard/debates");
+      await api.delete(`/debates/${debate.id}`);
+      toast.success("Successfully deleted debate", {
+        position: "top-right",
+        theme: "dark",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      refreshDebate();
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Error deleting debate:", error);
+        toast.error(error.message, {
+          position: "top-right",
+          theme: "dark",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    }
+  };
+
   return (
     <Tabs defaultValue="debate">
       <Card className="bg-neutral-900 min-h-[250px] overflow-x-scroll">
@@ -359,12 +392,17 @@ const InfoTabs = () => {
                     </p>
                   </CardDescription>
                   {userIsAdmin ? (
-                    <Button variant="destructive" onClick={handleEndDebate}>
+                    <Button variant="default" onClick={handleEndDebate}>
                       End Debate
                     </Button>
                   ) : (
-                    <Button variant="destructive" onClick={handleLeaveDebate}>
+                    <Button variant="default" onClick={handleLeaveDebate}>
                       Leave Debate
+                    </Button>
+                  )}
+                  {userDetails.role === "CREATOR" && (
+                    <Button variant="destructive" onClick={handleDeleteDebate}>
+                      Delete Debate
                     </Button>
                   )}
                 </>
