@@ -1,5 +1,3 @@
-// components/dashboard/debatePage/InviteLinks.tsx
-
 import { useState, useEffect } from "react";
 import { useDebateContextNonNull } from "../../../context/debateContext";
 import { Button } from "../../ui/button";
@@ -7,6 +5,7 @@ import { ScriptCopyBtn } from "../../magicui/script-copy-btn";
 import api from "../../../../api/axios";
 import axios from "axios";
 import { toast } from "react-toastify";
+import LoadingScreen from "../../LoadingScreen";
 
 const InviteLinks = () => {
   const { debate } = useDebateContextNonNull();
@@ -17,6 +16,18 @@ const InviteLinks = () => {
   });
   const [expiresAt, setExpiresAt] = useState<string>("");
   const [timeLeft, setTimeLeft] = useState<number>(0);
+  const [status, setStatus] = useState<"loading" | "hasLinks" | "noLinks">(
+    "loading"
+  );
+  const [minLoadingDone, setMinLoadingDone] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMinLoadingDone(true);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Fetches invite links if they exist
   useEffect(() => {
@@ -24,12 +35,15 @@ const InviteLinks = () => {
       try {
         const { data } = await api.get(`/debates/${debate.id}/invites`);
 
-        if (data) {
+        if (data && Object.keys(data.responseMap).length > 0) {
           setLinks((prev) => ({
             ...prev,
             ...data.responseMap,
           }));
           setExpiresAt(data.expiresAt);
+          setStatus("hasLinks");
+        } else {
+          setStatus("noLinks");
         }
       } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -45,6 +59,7 @@ const InviteLinks = () => {
             progress: undefined,
           });
         }
+        setStatus("noLinks");
       }
     };
 
@@ -84,6 +99,7 @@ const InviteLinks = () => {
           (new Date(newExpiresAt).getTime() - new Date().getTime()) / 1000
         )
       );
+      setStatus("hasLinks");
 
       toast.success("Invite links successfully created.", {
         position: "top-right",
@@ -118,7 +134,7 @@ const InviteLinks = () => {
     const interval = setInterval(() => {
       const now = new Date().getTime();
       const expiry = new Date(expiresAt).getTime();
-      const diff = Math.max(Math.floor((expiry - now) / 1000), 0); // in seconds
+      const diff = Math.max(Math.floor((expiry - now) / 1000), 0);
       setTimeLeft(diff);
     }, 1000);
 
@@ -136,29 +152,34 @@ const InviteLinks = () => {
       secs < 10 ? "0" : ""
     }${secs}s`;
   };
+
+  if (status === "loading" || !minLoadingDone) {
+    return <LoadingScreen />;
+  }
+
+  if (status === "hasLinks" && timeLeft > 0) {
+    return (
+      <>
+        <div className="text-left">
+          <ScriptCopyBtn
+            showMultiplePackageOptions={true}
+            codeLanguage="text"
+            lightTheme=""
+            darkTheme=""
+            commandMap={links}
+          />
+        </div>
+        <p className="text-left text-sm text-muted-foreground">
+          Expires in: {formatTime(timeLeft)}
+        </p>
+      </>
+    );
+  }
+
   return (
-    <>
-      {links["Admin"].length > 0 && timeLeft > 0 ? (
-        <>
-          <div className="text-left">
-            <ScriptCopyBtn
-              showMultiplePackageOptions={true}
-              codeLanguage="text"
-              lightTheme=""
-              darkTheme=""
-              commandMap={links}
-            />
-          </div>
-          <p className="text-left text-sm text-muted-foreground">
-            Expires in: {formatTime(timeLeft)}
-          </p>
-        </>
-      ) : (
-        <Button variant="default" onClick={handleGenerateInvites}>
-          Generate Invite links
-        </Button>
-      )}
-    </>
+    <Button variant="default" onClick={handleGenerateInvites}>
+      Generate Invite links
+    </Button>
   );
 };
 

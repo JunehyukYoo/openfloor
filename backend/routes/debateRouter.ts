@@ -264,7 +264,7 @@ router.post(
         },
       });
 
-      res.status(201).json({ token: invite.token });
+      res.status(201).json({ token: invite.token, expiresAt });
     } catch (error) {
       console.error("Error creating invite token:", error);
       res.status(500).json("Internal server error.");
@@ -325,6 +325,7 @@ router.get(
         select: {
           token: true,
           role: true,
+          expiresAt: true,
         },
       });
 
@@ -343,7 +344,7 @@ router.get(
         ] = `${FRONTEND_URL}/dashboard/debates/${id}?invite=${token.token}`;
       });
 
-      res.json(responseMap);
+      res.json({ responseMap, expiresAt: tokens[0].expiresAt });
     } catch (error) {
       console.error("Error fetching invite tokens:", error);
       res.status(500).json({ message: "Internal server error." });
