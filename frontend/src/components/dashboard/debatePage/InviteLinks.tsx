@@ -47,17 +47,20 @@ const InviteLinks = () => {
         }
       } catch (error) {
         if (axios.isAxiosError(error)) {
-          console.error("Error fetching invite links:", error);
-          toast.error("Error loading invite links.", {
-            position: "top-right",
-            theme: "dark",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          // 404 means that user has not yet generated any tokens in the db
+          if (error.status !== 404) {
+            console.error("Error loading invite links:", error);
+            toast.error("Error loading invite links.", {
+              position: "top-right",
+              theme: "dark",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+          }
         }
         setStatus("noLinks");
       }

@@ -367,6 +367,13 @@ router.get(
         },
       });
 
+      if (tokens.length === 0) {
+        res
+          .status(404)
+          .json({ message: "You need to create new invite links." });
+        return;
+      }
+
       const labelMap = {
         ADMIN: "Admin",
         DEBATER: "Debater",
