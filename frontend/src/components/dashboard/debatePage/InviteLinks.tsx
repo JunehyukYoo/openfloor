@@ -178,15 +178,23 @@ const InviteLinks = () => {
         </div>
         <p className="text-left text-sm text-muted-foreground">
           Expires in: {formatTime(timeLeft)}
+          <br />
+          Note: Users must be logged in to join the debate.
         </p>
       </>
     );
   }
 
   return (
-    <Button variant="default" onClick={handleGenerateInvites}>
-      Generate Invite links
-    </Button>
+    <div className="flex flex-col gap-4 align-middle text-left">
+      <p>
+        You do not have any invite links generated or your previous links have
+        expired. Click below to generate links that will last for 24 hours.
+      </p>
+      <Button variant="default" onClick={handleGenerateInvites}>
+        Generate Invite links
+      </Button>
+    </div>
   );
 };
 
