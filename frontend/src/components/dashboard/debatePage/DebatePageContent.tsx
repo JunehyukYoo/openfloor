@@ -16,11 +16,11 @@ const DebatePageContent = () => {
   const { debate } = useDebateContextNonNull();
   const [supportMap, setSupportMap] = useState<SupportDetails[] | null>(null);
 
+  // Retrieve support overview data
   useEffect(() => {
     const getSupportOverview = async () => {
       try {
         const { data } = await api.get(`/debates/${debate.id}/support`);
-        console.log(data);
         setSupportMap(data.supportMap);
       } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -63,7 +63,7 @@ const DebatePageContent = () => {
           {debate.topic.title}
         </h1>
         <Separator />
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 grid-rows-1 items-stretch gap-4">
           {supportMap ? (
             <SupportOverview chartData={supportMap} />
           ) : (

@@ -65,16 +65,16 @@ const SupportOverview = ({ chartData }: { chartData: SupportDetails[] }) => {
   );
 
   return (
-    <Card className="flex flex-col bg-neutral-900">
+    <Card className="flex flex-col bg-neutral-900 col-span-1 row-span-1">
       <CardHeader className="items-center pb-0">
-        <CardTitle className="text-xl">Support Overview</CardTitle>
+        <CardTitle className="text-xl">Overview</CardTitle>
       </CardHeader>
       {totalSupport > 0 ? (
         <>
           <CardContent className="flex-1 pb-0">
             <ChartContainer
               config={chartConfig}
-              className="[&_.recharts-pie-label-text]:fill-foreground mx-auto aspect-square max-h-[250px] pb-0"
+              className="[&_.recharts-pie-label-text]:fill-foreground mx-auto aspect-square max-h-[300px] pb-0"
             >
               <PieChart>
                 <ChartTooltip content={<ChartTooltipContent hideLabel />} />
@@ -100,7 +100,7 @@ const SupportOverview = ({ chartData }: { chartData: SupportDetails[] }) => {
               {leadingStance ? leadingStance.stanceLabel : "N/A"}
             </div>
             <div className="text-muted-foreground leading-none">
-              Showing stances and their justification vote counts.
+              Showing stances and their justifications' vote counts.
             </div>
           </CardFooter>
         </>

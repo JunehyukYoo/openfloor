@@ -157,7 +157,11 @@ const InviteLinks = () => {
   };
 
   if (status === "loading" || !minLoadingDone) {
-    return <LoadingScreen />;
+    return (
+      <div className="h-full translate-y-8">
+        <LoadingScreen />
+      </div>
+    );
   }
 
   if (status === "hasLinks" && timeLeft > 0) {

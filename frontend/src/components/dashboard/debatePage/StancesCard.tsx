@@ -27,7 +27,7 @@ const StancesCard = () => {
   }
 
   return (
-    <Card className="bg-neutral-900 min-h-[250px]">
+    <Card className="bg-neutral-900">
       <CardHeader>
         <CardTitle className="text-2xl font-semibold">Stances</CardTitle>
       </CardHeader>

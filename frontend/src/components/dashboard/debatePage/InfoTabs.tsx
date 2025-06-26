@@ -211,12 +211,12 @@ const InfoTabs = () => {
 
   return (
     <Tabs defaultValue="debate">
-      <Card className="bg-neutral-900 min-h-[250px] overflow-x-scroll">
+      <Card className="bg-neutral-900 h-full overflow-x-scroll">
         <CardHeader>
           <TabsList>
             <TabsTrigger value="debate">Debate</TabsTrigger>
             {userIsAdmin && !debate.closed && (
-              <TabsTrigger value="invite">Invite</TabsTrigger>
+              <TabsTrigger value="invite">Invites</TabsTrigger>
             )}
             <TabsTrigger value="participants">Participants</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
@@ -229,7 +229,7 @@ const InfoTabs = () => {
               <CardTitle className="text-xl font-semibold">
                 Debate Details
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-md">
                 <p>
                   <span className="font-medium">Debate ID:</span> {debate.id}
                 </p>
@@ -269,7 +269,7 @@ const InfoTabs = () => {
         <TabsContent value="invite">
           <CardContent className="flex flex-col gap-2">
             <CardTitle className="text-xl text-left font-semibold">
-              Invite Participants
+              Invites
             </CardTitle>
             <InviteLinks />
           </CardContent>
@@ -281,12 +281,12 @@ const InfoTabs = () => {
               Participants
             </CardTitle>
             {debate.participants.length > 0 ? (
-              <Card className="bg-neutral-800/[0.5] max-h-65 p-4 rounded-lg flex flex-col gap-4 overflow-y-scroll">
+              <Card className="bg-neutral-800/[0.5] max-h-80 p-4 rounded-lg flex flex-col gap-4 overflow-y-scroll">
                 {debate.participants.map((participant, idx) => {
                   if (idx === debate.participants.length - 1) {
                     return (
                       <div key={participant.id}>
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between gap-2">
                           <div className="flex gap-4">
                             <Avatar className="h-10 w-10">
                               <AvatarImage
@@ -364,7 +364,7 @@ const InfoTabs = () => {
             {!debate.closed ? (
               isViewer ? (
                 <div className="flex flex-col gap-2">
-                  <CardDescription className="flex flex-col text-left">
+                  <CardDescription className="flex flex-col text-left text-md">
                     You are currently viewing this debate as a guest.
                   </CardDescription>
                   <Button variant="default" onClick={handleJoinDebate}>
@@ -373,7 +373,7 @@ const InfoTabs = () => {
                 </div>
               ) : (
                 <>
-                  <CardDescription className="flex flex-col text-left">
+                  <CardDescription className="flex flex-col text-left text-md">
                     <p>
                       <span className="font-medium">Your role:</span>
                       {" " + userDetails!.role.toLowerCase()}
