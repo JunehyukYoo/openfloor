@@ -63,7 +63,6 @@ const InfoTabs = () => {
         draggable: true,
         progress: undefined,
       });
-      refreshDebate();
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("Error updating role:", error);
@@ -95,6 +94,7 @@ const InfoTabs = () => {
         draggable: true,
         progress: undefined,
       });
+      refreshDebate();
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("Error deleting participant:", error);
