@@ -158,7 +158,7 @@ const InviteLinks = () => {
 
   if (status === "loading" || !minLoadingDone) {
     return (
-      <div className="h-full translate-y-8">
+      <div className="h-full">
         <LoadingScreen />
       </div>
     );

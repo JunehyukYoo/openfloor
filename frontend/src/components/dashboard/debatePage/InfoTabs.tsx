@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../../ui/card";
+import { IconX } from "@tabler/icons-react";
 import { Button } from "../../ui/button";
 import { hasAdminPermissions } from "../../../utils/debateUtils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
@@ -46,9 +47,12 @@ const InfoTabs = () => {
   // Admin controls
   const handleRoleChange = async (participantId: number, newRole: string) => {
     try {
-      await api.put(`/participants/${participantId}/role`, {
-        role: newRole,
-      });
+      await api.put(
+        `/debates/${debate.id}/participants/${participantId}/role`,
+        {
+          role: newRole,
+        }
+      );
       toast.success("Role updated successfully.", {
         position: "top-right",
         theme: "dark",
@@ -283,6 +287,7 @@ const InfoTabs = () => {
             {debate.participants.length > 0 ? (
               <Card className="bg-neutral-800/[0.5] max-h-80 p-4 rounded-lg flex flex-col gap-4 overflow-y-scroll">
                 {debate.participants.map((participant, idx) => {
+                  // The last participant doesn't have a separator at the end
                   if (idx === debate.participants.length - 1) {
                     return (
                       <div key={participant.id}>
@@ -304,13 +309,20 @@ const InfoTabs = () => {
                               </span>
                             </div>
                           </div>
-                          {/* Add control here */}
-                          <RoleCombobox
-                            participant={participant}
-                            isAdmin={userIsAdmin}
-                            isClosed={debate.closed}
-                            onRoleChange={handleRoleChange}
-                          />
+                          {/* Role controls */}
+                          <div className="flex gap-1">
+                            <RoleCombobox
+                              participant={participant}
+                              isAdmin={userIsAdmin}
+                              isClosed={debate.closed}
+                              onRoleChange={handleRoleChange}
+                            />
+                            {userIsAdmin && participant.role !== "CREATOR" && (
+                              <Button variant="ghost">
+                                <IconX stroke={3} className="stroke-red-400" />
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     );
@@ -336,13 +348,20 @@ const InfoTabs = () => {
                               </span>
                             </div>
                           </div>
-                          {/* Add control here */}
-                          <RoleCombobox
-                            participant={participant}
-                            isAdmin={userIsAdmin}
-                            isClosed={debate.closed}
-                            onRoleChange={handleRoleChange}
-                          />
+                          {/* Role controls */}
+                          <div className="flex">
+                            <RoleCombobox
+                              participant={participant}
+                              isAdmin={userIsAdmin}
+                              isClosed={debate.closed}
+                              onRoleChange={handleRoleChange}
+                            />
+                            {userIsAdmin && participant.role !== "CREATOR" && (
+                              <Button variant="ghost">
+                                <IconX stroke={3} className="stroke-red-400" />
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       </div>
                       <Separator />

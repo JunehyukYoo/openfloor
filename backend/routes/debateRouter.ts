@@ -447,4 +447,33 @@ router.get(
   }
 );
 
+router.put(
+  "/:debateId/participants/:participantId/role",
+  ensureAuthenticated,
+  async (req, res) => {
+    const { participantId } = req.params;
+    const { role } = req.body;
+
+    if (!Object.values(Role).includes(role)) {
+      res.status(400).json({ message: "Invalid role." });
+      return;
+    }
+    if (!participantId || isNaN(Number(participantId))) {
+      res.status(400).json({ message: "Invalid participant ID." });
+      return;
+    }
+    try {
+      const participant = await prisma.participant.update({
+        where: { id: Number(participantId) },
+        data: { role },
+      });
+
+      res.status(200).json(participant);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Failed to update participant role." });
+    }
+  }
+);
+
 export default router;
