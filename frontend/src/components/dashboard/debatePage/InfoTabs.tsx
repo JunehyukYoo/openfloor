@@ -44,7 +44,7 @@ const InfoTabs = () => {
     );
   }
 
-  // Admin controls
+  // Admin controls for participants tab
   const handleRoleChange = async (participantId: number, newRole: string) => {
     try {
       await api.put(
@@ -63,9 +63,41 @@ const InfoTabs = () => {
         draggable: true,
         progress: undefined,
       });
+      refreshDebate();
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error("Error updating role:", error);
+        toast.error(error.message, {
+          position: "top-right",
+          theme: "dark",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    }
+  };
+
+  // Remove participant in participants tab
+  const handleRemoveParticipant = async (participantId: number) => {
+    try {
+      await api.delete(`/debates/${debate.id}/participants/${participantId}`);
+      toast.success("Participant deleted successfully.", {
+        position: "top-right",
+        theme: "dark",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Error deleting participant:", error);
         toast.error(error.message, {
           position: "top-right",
           theme: "dark",
@@ -318,7 +350,12 @@ const InfoTabs = () => {
                               onRoleChange={handleRoleChange}
                             />
                             {userIsAdmin && participant.role !== "CREATOR" && (
-                              <Button variant="ghost">
+                              <Button
+                                variant="ghost"
+                                onClick={() =>
+                                  handleRemoveParticipant(participant.id)
+                                }
+                              >
                                 <IconX stroke={3} className="stroke-red-400" />
                               </Button>
                             )}
@@ -357,7 +394,12 @@ const InfoTabs = () => {
                               onRoleChange={handleRoleChange}
                             />
                             {userIsAdmin && participant.role !== "CREATOR" && (
-                              <Button variant="ghost">
+                              <Button
+                                variant="ghost"
+                                onClick={() =>
+                                  handleRemoveParticipant(participant.id)
+                                }
+                              >
                                 <IconX stroke={3} className="stroke-red-400" />
                               </Button>
                             )}

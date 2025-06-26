@@ -447,6 +447,8 @@ router.get(
   }
 );
 
+// PARTICIPANT ROUTES
+
 router.put(
   "/:debateId/participants/:participantId/role",
   ensureAuthenticated,
@@ -472,6 +474,50 @@ router.put(
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Failed to update participant role." });
+    }
+  }
+);
+
+router.delete(
+  "/:debateId/participants/:participantId",
+  ensureAuthenticated,
+  async (req, res) => {
+    try {
+      const { debateId, participantId } = req.params;
+
+      // Check if the participant exists in this debate
+      const participant = await prisma.participant.findUnique({
+        where: { id: Number(participantId) },
+      });
+
+      if (!participant) {
+        res.status(404).json({ message: "Participant not found." });
+        return;
+      }
+
+      // Check if participant is actually in this debate
+      if (participant.debateId !== debateId) {
+        res
+          .status(400)
+          .json({ message: "Participant does not belong to this debate." });
+        return;
+      }
+
+      // Prevent removing the debate creator
+      if (participant.role === "CREATOR") {
+        res.status(403).json({ message: "Cannot remove the debate creator." });
+        return;
+      }
+
+      // Delete the participant
+      await prisma.participant.delete({
+        where: { id: Number(participantId) },
+      });
+
+      res.status(200).json({ message: "Participant removed successfully." });
+    } catch (error) {
+      console.error("Error removing participant:", error);
+      res.status(500).json({ message: "Internal server error." });
     }
   }
 );
