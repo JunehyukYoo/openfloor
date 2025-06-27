@@ -450,7 +450,7 @@ router.get(
 );
 
 // PARTICIPANT ROUTES
-
+// Change participant role
 router.put(
   "/:debateId/participants/:participantId/role",
   ensureAuthenticated,
@@ -480,6 +480,7 @@ router.put(
   }
 );
 
+// Remove participant
 router.delete(
   "/:debateId/participants/:participantId",
   ensureAuthenticated,
@@ -524,6 +525,88 @@ router.delete(
   }
 );
 
+// STANCE ROUTES
+// Stance edit form submission
+router.put("/:debateId/stances", ensureAuthenticated, async (req, res) => {
+  try {
+    const { debateId } = req.params;
+    const { updatedStances, stancesToDelete } = req.body;
+
+    // Validate arrays
+    if (!Array.isArray(updatedStances) || !Array.isArray(stancesToDelete)) {
+      res.status(400).json({ message: "Invalid input format." });
+      return;
+    }
+
+    // Update stance labels
+    for (const stance of updatedStances) {
+      await prisma.stance.update({
+        where: { id: stance.id },
+        data: { label: stance.label },
+      });
+    }
+
+    // Delete stances
+    if (stancesToDelete.length > 0) {
+      await prisma.stance.deleteMany({
+        where: {
+          id: { in: stancesToDelete },
+          debateId: debateId,
+        },
+      });
+    }
+
+    res.status(200).json({ message: "Stances updated successfully." });
+  } catch (error) {
+    console.error("Error updating stances:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+});
+
+router.post("/:debateId/stances", ensureAuthenticated, async (req, res) => {
+  try {
+    const { debateId } = req.params;
+    const { stances } = req.body;
+
+    // Validate request body
+    if (
+      !Array.isArray(stances) ||
+      stances.some(
+        (label) => typeof label !== "string" || label.trim().length === 0
+      )
+    ) {
+      res.status(400).json({ message: "Stances must be non-empty strings." });
+      return;
+    }
+
+    // Enforce character limit
+    const MAX_LENGTH = 100;
+    if (stances.some((label) => label.length > MAX_LENGTH)) {
+      res
+        .status(400)
+        .json({ message: `Stances cannot exceed ${MAX_LENGTH} characters.` });
+      return;
+    }
+
+    // Create new stances
+    const newStances = await prisma.stance.createMany({
+      data: stances.map((label) => ({
+        label: label.trim(),
+        debateId: debateId,
+      })),
+    });
+
+    res.status(201).json({
+      message: "Stances created successfully.",
+      stances: newStances,
+    });
+  } catch (error) {
+    console.error("Error adding stances:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+});
+
+// VOTE ROUTES
 // Create Vote
 router.post(
   "/:debateId/justification/:justificationId/votes",

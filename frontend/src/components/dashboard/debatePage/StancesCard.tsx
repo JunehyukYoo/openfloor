@@ -1,5 +1,11 @@
 // components/dashboard/debatePage/StancesCard.tsx
-import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "../../ui/card";
 import {
   Accordion,
   AccordionContent,
@@ -23,6 +29,7 @@ import { Avatar, AvatarImage } from "../../ui/avatar";
 import type { Vote } from "../../../types";
 import api from "../../../../api/axios";
 import { toast } from "react-toastify";
+import { EditStances, AddStances } from "./StancesDialogs";
 
 const StancesCard = () => {
   const { debate, userDetails, refreshDebate } = useDebateContextNonNull();
@@ -90,11 +97,11 @@ const StancesCard = () => {
       <CardContent className="flex flex-col gap-2">
         {debate.stances.length > 0 ? (
           <Accordion type="multiple" className="w-full">
-            {debate.stances.map((stance) => {
+            {debate.stances.map((stance, i) => {
               return (
                 <AccordionItem key={stance.id} value={`stance-${stance.id}`}>
                   <AccordionTrigger className="text-lg">
-                    {stance.label}
+                    {stance.label} {i === 0 && "(leading)"}
                   </AccordionTrigger>
                   <AccordionContent className="flex flex-col gap-4">
                     <Card className="p-4 bg-neutral-800/[0.9]">
@@ -199,7 +206,6 @@ const StancesCard = () => {
                       )}
                     </Card>
                     <div className="flex justify-end">
-                      {canDebate && <Button>Add justification</Button>}
                       <Button variant="link">View details</Button>
                     </div>
                   </AccordionContent>
@@ -213,11 +219,14 @@ const StancesCard = () => {
           <p>No stances yet avaliable.</p>
         )}
       </CardContent>
-      {isAdmin && (
-        <Button variant="outline" className="ml-6 mr-6">
-          Edit
-        </Button>
-      )}
+      <CardFooter className="w-full flex justify-end">
+        {isAdmin && (
+          <div className="flex gap-2">
+            <AddStances />
+            <EditStances />
+          </div>
+        )}
+      </CardFooter>
     </Card>
   );
 };
