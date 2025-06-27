@@ -7,7 +7,7 @@ import api from "../../api/axios";
 import { toast } from "react-toastify";
 import LoadingScreen from "../components/LoadingScreen";
 import { SiteHeader as PageHeader } from "../components/dashboard/site-header";
-import type { DebateDataFull, Participant } from "../types";
+import type { DebateDataFull, Participant, SupportDetails } from "../types";
 import { useNavigate } from "react-router-dom";
 
 export const DebateProvider = ({
@@ -22,7 +22,17 @@ export const DebateProvider = ({
   const [debate, setDebate] = useState<DebateDataFull | null>(null);
   const [userDetails, setUserDetails] = useState<Participant | null>(null);
   const [loading, setLoading] = useState(true);
+  const [supportMap, setSupportMap] = useState<SupportDetails[] | null>(null);
   const navigate = useNavigate();
+
+  const getSupportOverview = useCallback(async () => {
+    try {
+      const { data } = await api.get(`/debates/${debateId}/support`);
+      setSupportMap(data.supportMap);
+    } catch (error) {
+      console.error("Error loading support overview:", error);
+    }
+  }, [debateId]);
 
   const getDebate = useCallback(async () => {
     try {
@@ -31,6 +41,7 @@ export const DebateProvider = ({
       );
       setDebate(data.debate);
       setUserDetails(data.userDetails);
+      await getSupportOverview();
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 400 || error.response?.status === 404) {
@@ -54,7 +65,7 @@ export const DebateProvider = ({
     } finally {
       setLoading(false);
     }
-  }, [debateId, inviteToken, navigate]);
+  }, [debateId, inviteToken, navigate, getSupportOverview]);
 
   useEffect(() => {
     getDebate();
@@ -106,7 +117,7 @@ export const DebateProvider = ({
 
   return (
     <DebateContext.Provider
-      value={{ debate, userDetails, refreshDebate: getDebate }}
+      value={{ debate, userDetails, supportMap, refreshDebate: getDebate }}
     >
       {children}
     </DebateContext.Provider>

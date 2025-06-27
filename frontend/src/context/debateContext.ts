@@ -1,11 +1,12 @@
 // context/debateContext.tsx
 import { createContext, useContext } from "react";
-import type { DebateDataFull, Participant } from "../types";
+import type { DebateDataFull, Participant, SupportDetails } from "../types";
 
 interface DebateContextType {
   debate: DebateDataFull | null;
   userDetails: Participant | null;
   inviteToken?: string | null;
+  supportMap?: SupportDetails[] | null;
   refreshDebate: () => Promise<void>;
 }
 

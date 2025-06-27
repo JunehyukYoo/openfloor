@@ -1,45 +1,14 @@
 // components/dashboard/debatePage/DebatePageContent.tsx
-import { useState, useEffect } from "react";
 import { SiteHeader as PageHeader } from "../../dashboard/site-header";
 import { useDebateContextNonNull } from "../../../context/debateContext";
 import StancesCard from "../../dashboard/debatePage/StancesCard";
 import InfoTabs from "../../dashboard/debatePage/InfoTabs";
 import { Separator } from "../../ui/separator";
 import SupportOverview from "./SupportOverview";
-import type { SupportDetails } from "../../../types";
-import api from "../../../../api/axios";
-import axios from "axios";
-import { toast } from "react-toastify";
 import LoadingScreen from "../../LoadingScreen";
 
 const DebatePageContent = () => {
-  const { debate } = useDebateContextNonNull();
-  const [supportMap, setSupportMap] = useState<SupportDetails[] | null>(null);
-
-  // Retrieve support overview data
-  useEffect(() => {
-    const getSupportOverview = async () => {
-      try {
-        const { data } = await api.get(`/debates/${debate.id}/support`);
-        setSupportMap(data.supportMap);
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          console.error("Error loading support details:", error);
-          toast.error("Error loading support details.", {
-            position: "top-right",
-            theme: "dark",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-        }
-      }
-    };
-    getSupportOverview();
-  }, [debate.id]);
+  const { debate, supportMap } = useDebateContextNonNull();
 
   if (!debate) {
     return (
