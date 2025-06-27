@@ -27,6 +27,16 @@ import { useNavigate } from "react-router-dom";
 //    (CREATOR/ADMIN roles) to change the role of participants in the debate.
 // 2. For public debates, users are defaulted to VIEWER role, but may join as a
 //    participant with the role of DEBATER.
+const ROLE_DESCRIPTIONS = {
+  CREATOR:
+    "As a creator you have all admin controls with unique the ability to delete debates.",
+  ADMIN:
+    "You may add/modify/delete stances, justifications, and comments as well as participate in the debate as usual. However, you may not change or remove peoples votes.",
+  DEBATER:
+    "You may add justifications, vote freely, and comment under justifications (or comments). You may only modify/delete your own inputs.",
+  OBSERVER: "You may only observe and cannot participate in the debate.",
+};
+
 const InfoTabs = () => {
   const { debate, userDetails, refreshDebate } = useDebateContext();
   const isViewer = !userDetails;
@@ -437,7 +447,9 @@ const InfoTabs = () => {
                   <CardDescription className="flex flex-col text-left text-md">
                     <p>
                       <span className="font-medium">Your role:</span>
-                      {" " + userDetails!.role.toLowerCase()}
+                      {" " + userDetails!.role}
+                      <br />
+                      {ROLE_DESCRIPTIONS[userDetails!.role]}
                     </p>
                     <p>
                       <span className="font-medium">Joined:</span>
