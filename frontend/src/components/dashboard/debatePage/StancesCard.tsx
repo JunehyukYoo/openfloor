@@ -26,8 +26,10 @@ import { toast } from "react-toastify";
 
 const StancesCard = () => {
   const { debate, userDetails, refreshDebate } = useDebateContextNonNull();
-  const isAdmin = userDetails && hasAdminPermissions(userDetails.role);
-  const canDebate = userDetails && hasDebatePermissions(userDetails.role);
+  const isAdmin =
+    userDetails && !debate.closed && hasAdminPermissions(userDetails.role);
+  const canDebate =
+    userDetails && !debate.closed && hasDebatePermissions(userDetails.role);
 
   const handleVote = async (
     justificationId: number,
@@ -137,10 +139,12 @@ const StancesCard = () => {
                                   <IconArrowBigUp
                                     size={24}
                                     onClick={() =>
-                                      canDebate && handleVote(j.id, 1, userVote)
+                                      !debate.closed &&
+                                      canDebate &&
+                                      handleVote(j.id, 1, userVote)
                                     }
                                     className={
-                                      canDebate
+                                      !debate.closed && canDebate
                                         ? "hover:scale-110 transition-all duration-200 ease"
                                         : ""
                                     }
