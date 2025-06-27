@@ -139,7 +139,7 @@ const StancesCard = () => {
                                 </div>
                               </h3>
                               <h3 className="text-[18px] grow pt-2">
-                                <span className="underline">
+                                <span className="underline text-sm">
                                   {idx === 0
                                     ? "TOP Justification"
                                     : `Justification #${idx + 1}`}
