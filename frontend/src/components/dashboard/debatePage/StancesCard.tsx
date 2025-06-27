@@ -99,7 +99,10 @@ const StancesCard = () => {
           <Accordion type="multiple" className="w-full">
             {debate.stances.map((stance, i) => {
               return (
-                <AccordionItem key={stance.id} value={`stance-${stance.id}`}>
+                <AccordionItem
+                  key={`s-${stance.id}-accordion`}
+                  value={`stance-${stance.id}`}
+                >
                   <AccordionTrigger className="text-lg">
                     {stance.label} {i === 0 && "(leading)"}
                   </AccordionTrigger>
@@ -114,7 +117,10 @@ const StancesCard = () => {
                           const isUpvoted = userVote?.value === 1;
                           const isDownvoted = userVote?.value === -1;
                           return (
-                            <div className="flex gap-4">
+                            <div
+                              key={`j-${j.id}-accordion`}
+                              className="flex gap-4"
+                            >
                               <h3 className="flex gap-2">
                                 <Avatar className="h-10 w-10">
                                   <AvatarImage
