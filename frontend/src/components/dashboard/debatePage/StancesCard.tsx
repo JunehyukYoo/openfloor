@@ -12,7 +12,10 @@ import {
   IconArrowBigUpFilled,
   IconArrowBigDownFilled,
 } from "@tabler/icons-react";
-import { hasAdminPermissions } from "../../../utils/debateUtils";
+import {
+  hasAdminPermissions,
+  hasDebatePermissions,
+} from "../../../utils/debateUtils";
 import { useDebateContextNonNull } from "../../../context/debateContext";
 import { Button } from "../../ui/button";
 import { SiteHeader as PageHeader } from "../site-header";
@@ -24,6 +27,7 @@ import { toast } from "react-toastify";
 const StancesCard = () => {
   const { debate, userDetails, refreshDebate } = useDebateContextNonNull();
   const isAdmin = userDetails && hasAdminPermissions(userDetails.role);
+  const canDebate = userDetails && hasDebatePermissions(userDetails.role);
 
   const handleVote = async (
     justificationId: number,
@@ -133,16 +137,25 @@ const StancesCard = () => {
                                   <IconArrowBigUp
                                     size={24}
                                     onClick={() =>
-                                      handleVote(j.id, 1, userVote)
+                                      canDebate && handleVote(j.id, 1, userVote)
                                     }
-                                    className="hover:scale-110 transition-all duration-200 ease"
+                                    className={
+                                      canDebate
+                                        ? "hover:scale-110 transition-all duration-200 ease"
+                                        : ""
+                                    }
                                   />
                                 ) : (
                                   <IconArrowBigUpFilled
                                     size={24}
                                     onClick={() =>
-                                      handleVote(j.id, 1, userVote)
-                                    } // Clicking again deletes it
+                                      canDebate && handleVote(j.id, 1, userVote)
+                                    }
+                                    className={
+                                      canDebate
+                                        ? "hover:scale-110 transition-all duration-200 ease"
+                                        : ""
+                                    }
                                   />
                                 )}
 
@@ -150,16 +163,27 @@ const StancesCard = () => {
                                   <IconArrowBigDown
                                     size={24}
                                     onClick={() =>
+                                      canDebate &&
                                       handleVote(j.id, -1, userVote)
                                     }
-                                    className="hover:scale-110 transition-all duration-200 ease"
+                                    className={
+                                      canDebate
+                                        ? "hover:scale-110 transition-all duration-200 ease"
+                                        : ""
+                                    }
                                   />
                                 ) : (
                                   <IconArrowBigDownFilled
                                     size={24}
                                     onClick={() =>
+                                      canDebate &&
                                       handleVote(j.id, -1, userVote)
-                                    } // Clicking again deletes it
+                                    }
+                                    className={
+                                      canDebate
+                                        ? "hover:scale-110 transition-all duration-200 ease"
+                                        : ""
+                                    }
                                   />
                                 )}
                               </h3>
@@ -170,9 +194,10 @@ const StancesCard = () => {
                         <p>No justifications yet.</p>
                       )}
                     </Card>
-                    <Button variant="link" className="justify-end">
-                      View details
-                    </Button>
+                    <div className="flex justify-end">
+                      {canDebate && <Button>Add justification</Button>}
+                      <Button variant="link">View details</Button>
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
               );
