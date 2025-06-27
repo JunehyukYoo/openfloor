@@ -6,16 +6,64 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../../ui/accordion";
-import { IconArrowBigUp, IconArrowBigDown } from "@tabler/icons-react";
+import {
+  IconArrowBigUp,
+  IconArrowBigDown,
+  IconArrowBigUpFilled,
+  IconArrowBigDownFilled,
+} from "@tabler/icons-react";
 import { hasAdminPermissions } from "../../../utils/debateUtils";
 import { useDebateContextNonNull } from "../../../context/debateContext";
 import { Button } from "../../ui/button";
 import { SiteHeader as PageHeader } from "../site-header";
 import { Avatar, AvatarImage } from "../../ui/avatar";
+import type { Vote } from "../../../types";
+import api from "../../../../api/axios";
+import { toast } from "react-toastify";
 
 const StancesCard = () => {
-  const { debate, userDetails } = useDebateContextNonNull();
+  const { debate, userDetails, refreshDebate } = useDebateContextNonNull();
   const isAdmin = userDetails && hasAdminPermissions(userDetails.role);
+
+  const handleVote = async (
+    justificationId: number,
+    value: number,
+    userVote: Vote | undefined
+  ) => {
+    try {
+      if (!userVote) {
+        // User hasn't voted yet: create vote
+        await api.post(
+          `/debates/${debate.id}/justification/${justificationId}/votes`,
+          { value }
+        );
+      } else if (userVote.value === value) {
+        // User clicked the same vote: delete (toggle off)
+        await api.delete(
+          `/debates/${debate.id}/justification/${justificationId}/votes/${userVote.id}`
+        );
+      } else {
+        // User switches vote direction: update
+        await api.put(
+          `/debates/${debate.id}/justification/${justificationId}/votes/${userVote.id}`,
+          { value }
+        );
+      }
+      refreshDebate();
+    } catch (error) {
+      console.error("Error processing vote:", error);
+      toast.error("Error processing vote.", {
+        position: "top-right",
+        theme: "dark",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  };
 
   if (!debate) {
     return (
@@ -47,6 +95,11 @@ const StancesCard = () => {
                       {stance.justifications &&
                       stance.justifications.length > 0 ? (
                         stance.justifications.map((j, idx) => {
+                          const userVote = j.votes?.find(
+                            (v) => v.userId === userDetails!.userId
+                          );
+                          const isUpvoted = userVote?.value === 1;
+                          const isDownvoted = userVote?.value === -1;
                           return (
                             <div className="flex gap-4">
                               <h3 className="flex gap-2">
@@ -76,14 +129,39 @@ const StancesCard = () => {
                               </h3>
                               <h3 className="flex gap-1 items-center">
                                 {j.votes?.reduce((acc, v) => acc + v.value, 0)}
-                                <IconArrowBigUp
-                                  size={24}
-                                  className="hover:scale-110 transition-all duration-200 ease"
-                                />
-                                <IconArrowBigDown
-                                  size={24}
-                                  className="hover:scale-110 transition-all duration-200 ease"
-                                />
+                                {!isUpvoted ? (
+                                  <IconArrowBigUp
+                                    size={24}
+                                    onClick={() =>
+                                      handleVote(j.id, 1, userVote)
+                                    }
+                                    className="hover:scale-110 transition-all duration-200 ease"
+                                  />
+                                ) : (
+                                  <IconArrowBigUpFilled
+                                    size={24}
+                                    onClick={() =>
+                                      handleVote(j.id, 1, userVote)
+                                    } // Clicking again deletes it
+                                  />
+                                )}
+
+                                {!isDownvoted ? (
+                                  <IconArrowBigDown
+                                    size={24}
+                                    onClick={() =>
+                                      handleVote(j.id, -1, userVote)
+                                    }
+                                    className="hover:scale-110 transition-all duration-200 ease"
+                                  />
+                                ) : (
+                                  <IconArrowBigDownFilled
+                                    size={24}
+                                    onClick={() =>
+                                      handleVote(j.id, -1, userVote)
+                                    } // Clicking again deletes it
+                                  />
+                                )}
                               </h3>
                             </div>
                           );

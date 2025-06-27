@@ -524,4 +524,114 @@ router.delete(
   }
 );
 
+// Create Vote
+router.post(
+  "/:debateId/justification/:justificationId/votes",
+  ensureAuthenticated,
+  async (req, res) => {
+    try {
+      const { debateId, justificationId } = req.params;
+      const { value } = req.body;
+      const user = req.user as User;
+
+      // Check if user already voted here (double protection)
+      const existingVote = await prisma.vote.findUnique({
+        where: {
+          userId_justificationId: {
+            userId: user.id,
+            justificationId: Number(justificationId),
+          },
+        },
+      });
+
+      if (existingVote) {
+        res
+          .status(400)
+          .json({ message: "You have already voted on this justification." });
+        return;
+      }
+
+      const vote = await prisma.vote.create({
+        data: {
+          userId: user.id,
+          justificationId: Number(justificationId),
+          value,
+        },
+      });
+
+      res.status(201).json({ vote });
+    } catch (error) {
+      console.error("Error creating vote:", error);
+      res.status(500).json({ message: "Internal server error." });
+    }
+  }
+);
+
+// Delete Vote
+router.delete(
+  "/:debateId/justification/:justificationId/votes/:voteId",
+  ensureAuthenticated,
+  async (req, res) => {
+    try {
+      const { debateId, justificationId, voteId } = req.params;
+      const user = req.user as User;
+
+      // Optional: Make sure the vote belongs to this user
+      const vote = await prisma.vote.findUnique({
+        where: { id: Number(voteId) },
+      });
+
+      if (!vote || vote.userId !== user.id) {
+        res
+          .status(403)
+          .json({ message: "Not authorized to delete this vote." });
+        return;
+      }
+
+      await prisma.vote.delete({
+        where: { id: Number(voteId) },
+      });
+
+      res.status(200).json({ message: "Vote deleted successfully." });
+    } catch (error) {
+      console.error("Error deleting vote:", error);
+      res.status(500).json({ message: "Internal server error." });
+    }
+  }
+);
+
+// Update Vote
+router.put(
+  "/:debateId/justification/:justificationId/votes/:voteId",
+  ensureAuthenticated,
+  async (req, res) => {
+    try {
+      const { debateId, justificationId, voteId } = req.params;
+      const { value } = req.body;
+      const user = req.user as User;
+
+      const vote = await prisma.vote.findUnique({
+        where: { id: Number(voteId) },
+      });
+
+      if (!vote || vote.userId !== user.id) {
+        res
+          .status(403)
+          .json({ message: "Not authorized to update this vote." });
+        return;
+      }
+
+      const updatedVote = await prisma.vote.update({
+        where: { id: Number(voteId) },
+        data: { value },
+      });
+
+      res.status(200).json({ vote: updatedVote });
+    } catch (error) {
+      console.error("Error updating vote:", error);
+      res.status(500).json({ message: "Internal server error." });
+    }
+  }
+);
+
 export default router;
