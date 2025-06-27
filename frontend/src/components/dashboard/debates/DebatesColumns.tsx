@@ -14,6 +14,7 @@ import api from "../../../../api/axios";
 import axios from "axios";
 import { toast } from "react-toastify";
 import type { DebateDataMini } from "../../../types";
+import { Badge } from "../../ui/badge";
 
 export const getDebateColumns = (
   navigate: (path: string) => void,
@@ -47,36 +48,37 @@ export const getDebateColumns = (
   },
   {
     accessorKey: "role",
-    header: () => <div className="text-right">Role</div>,
+    header: () => <div className="text-center">Role</div>,
     cell: ({ row }) => (
-      <div className="capitalize text-right">
+      <Badge variant="outline" className="capitalize">
         {String(row.getValue("role")).toLowerCase()}
-      </div>
+      </Badge>
     ),
   },
   {
-    accessorKey: "debate.closed",
-    header: () => <div className="text-right">Status</div>,
+    accessorKey: "closed",
+    header: () => <div className="text-center">Status</div>,
     cell: ({ row }) => {
       const closed = row.original.debate.closed;
       return (
-        <div
+        <Badge
+          variant="outline"
           className={
             closed ? "text-red-500 text-right" : "text-green-500 text-right"
           }
         >
           {closed ? "Closed" : "Open"}
-        </div>
+        </Badge>
       );
     },
   },
   {
-    accessorKey: "debate.private",
+    accessorKey: "private",
     header: () => <div className="text-right">Privacy</div>,
     cell: ({ row }) => {
       const isPrivate = row.original.debate.private;
       return (
-        <div className="text-right">{isPrivate ? "Private" : "Public"}</div>
+        <Badge variant="outline">{isPrivate ? "Private" : "Public"}</Badge>
       );
     },
   },
@@ -86,13 +88,13 @@ export const getDebateColumns = (
     header: () => <div className="text-center">Topic</div>,
     cell: ({ row }) => {
       const topicTitle = row.original.debate.topic?.title;
-      return <div className="text-xs text-center">{topicTitle}</div>;
+      return <div className="text-s text-center">{topicTitle}</div>;
     },
   },
   {
     accessorKey: "joinedAt",
     header: ({ column }) => (
-      <div className="text-right">
+      <div>
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -103,8 +105,15 @@ export const getDebateColumns = (
       </div>
     ),
     cell: ({ row }) => {
-      const joinedAt = new Date(row.getValue("joinedAt")).toLocaleString();
-      return <div className="text-xs text-right">{joinedAt}</div>;
+      const joinedAt = new Date(row.getValue("joinedAt")).toLocaleDateString(
+        undefined,
+        {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        }
+      );
+      return <div className="text-xs">{joinedAt}</div>;
     },
   },
   {

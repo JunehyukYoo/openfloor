@@ -10,7 +10,11 @@ import {
   ChevronsRight,
 } from "lucide-react";
 import type { DebateDataMini } from "../../../types";
-import type { SortingState, ColumnFiltersState } from "@tanstack/react-table";
+import type {
+  VisibilityState,
+  SortingState,
+  ColumnFiltersState,
+} from "@tanstack/react-table";
 import {
   flexRender,
   getCoreRowModel,
@@ -31,6 +35,12 @@ import {
   TableHeader,
   TableRow,
 } from "../../ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "../../ui/dropdown-menu";
 import { getDebateColumns } from "./DebatesColumns";
 import { useNavigate } from "react-router-dom";
 // Table here
@@ -44,6 +54,8 @@ export function DebatesTable({ data, refreshDebates }: DataTableProps) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
   const navigate = useNavigate();
   const columns = getDebateColumns(navigate, refreshDebates);
   const table = useReactTable({
@@ -55,9 +67,11 @@ export function DebatesTable({ data, refreshDebates }: DataTableProps) {
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
     state: {
       sorting,
       columnFilters,
+      columnVisibility,
     },
   });
 
@@ -73,6 +87,32 @@ export function DebatesTable({ data, refreshDebates }: DataTableProps) {
           }
           className="max-w-sm"
         />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="ml-auto">
+              Columns
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="dark" align="end">
+            {table
+              .getAllColumns()
+              .filter((column) => column.getCanHide())
+              .map((column) => {
+                return (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="capitalize"
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
+                  >
+                    {column.id}
+                  </DropdownMenuCheckboxItem>
+                );
+              })}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <div className="rounded-md border">
         <Table>
