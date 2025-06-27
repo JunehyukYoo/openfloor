@@ -110,7 +110,9 @@ router.get(
           creator: true,
           stances: {
             include: {
-              justifications: { include: { votes: true, comments: true } },
+              justifications: {
+                include: { author: true, votes: true, comments: true },
+              },
             },
           },
         },

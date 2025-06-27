@@ -51,6 +51,8 @@ export interface Justification {
   stanceId: number;
   createdAt: Date;
   updatedAt: Date;
+  authorId: string;
+  author?: User;
   stance?: Stance;
   votes?: Vote[];
   comments?: Comment[];
