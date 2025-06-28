@@ -3,18 +3,19 @@ import type { AnalyticsData } from "../types";
 // Formats raw json data from backend into data
 // usable by RadialBarChart (Recharts) at routes/analytics.tsx
 export function processDebateBreakdown(data: AnalyticsData) {
-  const roles = ["admin", "debater", "observer"];
+  const roles = ["CREATOR", "ADMIN", "DEBATER", "OBSERVER"];
   const roleColorMap: Record<string, string> = {
-    debater: "#8884d8",
-    admin: "#82ca9d",
-    observer: "#ffc658",
+    DEBATER: "#8884d8",
+    ADMIN: "#82ca9d",
+    OBSERVER: "#ffc658",
+    CREATOR: "#dfc45e",
   };
-  // Convert raw stats to a role => count map
+  // Convert raw stats to a role -> count map
   const statsMap = new Map<string, number>();
   data.participation.participantStats.forEach((stat) =>
     statsMap.set(stat.role, stat._count)
   );
-
+  console.log("statMap", statsMap);
   return roles.map((role) => {
     const count = statsMap.get(role) ?? 0;
     return {
