@@ -55,8 +55,6 @@ const Analytics = () => {
     chartData = processDebateBreakdown(data);
     graphData = processActivityData(data);
   }
-  console.log(data);
-  console.log(chartData);
 
   if (loading) {
     return (

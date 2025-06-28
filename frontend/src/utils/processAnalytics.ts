@@ -15,7 +15,6 @@ export function processDebateBreakdown(data: AnalyticsData) {
   data.participation.participantStats.forEach((stat) =>
     statsMap.set(stat.role, stat._count)
   );
-  console.log("statMap", statsMap);
   return roles.map((role) => {
     const count = statsMap.get(role) ?? 0;
     return {
