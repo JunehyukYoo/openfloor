@@ -29,12 +29,13 @@ import { useNavigate } from "react-router-dom";
 //    participant with the role of DEBATER.
 const ROLE_DESCRIPTIONS = {
   CREATOR:
-    "As a creator you have all admin controls with unique the ability to delete debates.",
+    "As the creator, you have full administrative control, including the exclusive ability to delete entire debates.",
   ADMIN:
-    "You may add/modify/delete stances, justifications, and comments as well as participate in the debate as usual. However, you may not change or remove peoples votes.",
+    "As an admin, you can add, edit, and delete stances, justifications, and comments. You may also participate in the debate, but you cannot alter or remove other users' votes.",
   DEBATER:
-    "You may add justifications, vote freely, and comment under justifications (or comments). You may only modify/delete your own inputs.",
-  OBSERVER: "You may only observe and cannot participate in the debate.",
+    "As a debater, you can contribute justifications, cast votes, and comment on justifications or other comments. You may only edit or delete your own contributions.",
+  OBSERVER:
+    "As an observer, you can follow the debate but cannot actively participate.",
 };
 
 const InfoTabs = () => {
