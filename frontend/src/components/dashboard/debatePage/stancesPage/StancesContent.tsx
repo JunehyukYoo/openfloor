@@ -2,6 +2,9 @@
 import { SiteHeader as PageHeader } from "../../site-header";
 import { useParams } from "react-router-dom";
 import { useDebateContextNonNull } from "../../../../context/debateContext";
+import { Separator } from "../../../ui/separator";
+import { Card } from "../../../ui/card";
+import Justification from "./JustificationDetailed";
 
 const StancesContent = () => {
   const { debate } = useDebateContextNonNull();
@@ -19,6 +22,7 @@ const StancesContent = () => {
       </>
     );
   }
+
   return (
     <>
       <PageHeader
@@ -26,7 +30,21 @@ const StancesContent = () => {
         breadcrumb={[`${debate.creator.username}'s Debate`, stance.label]}
         debateId={debate.id}
       />
-      <p>Stances here!!!</p>
+      <div className="flex flex-col gap-4 p-4">
+        <h1 className="text-left scroll-m-20 text-4xl font-bold text-balance">
+          <span className="text-lg">{debate.topic.title}</span> {stance.label}
+        </h1>
+        <Separator />
+        {stance.justifications && stance.justifications.length > 0 ? (
+          <>
+            {stance.justifications.map((j) => (
+              <Justification key={`${j.id}-detailed`} justification={j} />
+            ))}
+          </>
+        ) : (
+          <Card>Nothing here yet</Card>
+        )}
+      </div>
     </>
   );
 };
