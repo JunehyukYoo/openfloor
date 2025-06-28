@@ -1,9 +1,9 @@
 import { useParams, useSearchParams } from "react-router-dom";
 
 export function useDebateParams() {
-  const { id } = useParams();
+  const { debateId } = useParams();
   const [searchParams] = useSearchParams();
   const inviteToken = searchParams.get("invite");
 
-  return { id, inviteToken };
+  return { debateId, inviteToken };
 }

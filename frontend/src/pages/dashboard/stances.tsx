@@ -1,18 +1,17 @@
-// pages/dashboard/debate-page.tsx
-import { DebateProvider } from "../../context/debateProvider";
-import { useDebateParams } from "../../hooks/use-debate";
-import DebatePageContent from "../../components/dashboard/debatePage/DebatePageContent";
+// pages/dashboard/stances.tsx
 
-const DebatePage = () => {
+import { DebateProvider } from "../../context/debateProvider";
+import StancesContent from "../../components/dashboard/debatePage/stancesPage/StancesContent";
+import { useDebateParams } from "../../hooks/use-debate";
+const Stances = () => {
   const { debateId, inviteToken } = useDebateParams();
 
   if (!debateId) return <div className="p-8">Debate ID not provided.</div>;
-
   return (
     <DebateProvider debateId={debateId} inviteToken={inviteToken}>
-      <DebatePageContent />
+      <StancesContent />
     </DebateProvider>
   );
 };
 
-export default DebatePage;
+export default Stances;

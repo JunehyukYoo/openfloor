@@ -22,6 +22,7 @@ import {
   hasAdminPermissions,
   hasDebatePermissions,
 } from "../../../utils/debateUtils";
+import { useNavigate } from "react-router-dom";
 import { useDebateContextNonNull } from "../../../context/debateContext";
 import { Button } from "../../ui/button";
 import { SiteHeader as PageHeader } from "../site-header";
@@ -37,7 +38,7 @@ const StancesCard = () => {
     userDetails && !debate.closed && hasAdminPermissions(userDetails.role);
   const canDebate =
     userDetails && !debate.closed && hasDebatePermissions(userDetails.role);
-
+  const navigate = useNavigate();
   const handleVote = async (
     justificationId: number,
     value: number,
@@ -121,7 +122,7 @@ const StancesCard = () => {
                               key={`j-${j.id}-accordion`}
                               className="flex gap-4"
                             >
-                              <h3 className="flex gap-2">
+                              <h3 className="flex gap-2 items-center">
                                 <Avatar className="h-10 w-10">
                                   <AvatarImage
                                     src={j.author?.profilePicture}
@@ -212,7 +213,12 @@ const StancesCard = () => {
                       )}
                     </Card>
                     <div className="flex justify-end">
-                      <Button variant="link">View details</Button>
+                      <Button
+                        variant="link"
+                        onClick={() => navigate(`stances/${stance.id}`)}
+                      >
+                        View details
+                      </Button>
                     </div>
                   </AccordionContent>
                 </AccordionItem>

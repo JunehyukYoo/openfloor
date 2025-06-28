@@ -16,9 +16,11 @@ import {
 export function SiteHeader({
   title,
   breadcrumb,
+  debateId,
 }: {
   title: string;
-  breadcrumb?: string;
+  breadcrumb?: string | string[];
+  debateId?: string;
 }) {
   const navigate = useNavigate();
   return (
@@ -29,8 +31,8 @@ export function SiteHeader({
           orientation="vertical"
           className="mx-2 data-[orientation=vertical]:h-4"
         />
-        <Breadcrumb>
-          <BreadcrumbList>
+        <Breadcrumb className="flex-1 overflow-hidden">
+          <BreadcrumbList className="flex flex-nowrap overflow-hidden">
             <BreadcrumbItem>
               <BreadcrumbLink
                 onClick={() => navigate(`/dashboard/${title.toLowerCase()}`)}
@@ -40,7 +42,40 @@ export function SiteHeader({
                 </h1>
               </BreadcrumbLink>
             </BreadcrumbItem>
-            {breadcrumb && (
+            {breadcrumb && Array.isArray(breadcrumb) && debateId ? (
+              <>
+                <BreadcrumbSeparator />
+                {breadcrumb.map((b, idx) => {
+                  if (idx === breadcrumb.length - 1) {
+                    return (
+                      <BreadcrumbItem key={`breadcrumb-${idx}`}>
+                        <BreadcrumbPage className="truncate max-w-[100px] sm:max-w-[150px] md:max-w-[300px] lg:max-w-[800px]">
+                          {b}
+                        </BreadcrumbPage>
+                      </BreadcrumbItem>
+                    );
+                  }
+                  return (
+                    <>
+                      <BreadcrumbItem key={`breadcrumb-${idx}`}>
+                        <BreadcrumbLink
+                          key={`breadcrumb-${idx}`}
+                          onClick={() =>
+                            navigate(
+                              `/dashboard/${title.toLowerCase()}/${debateId}`
+                            )
+                          }
+                          className="hover:cursor-pointer"
+                        >
+                          <BreadcrumbPage>{b}</BreadcrumbPage>
+                        </BreadcrumbLink>
+                      </BreadcrumbItem>
+                      <BreadcrumbSeparator />
+                    </>
+                  );
+                })}
+              </>
+            ) : (
               <>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
