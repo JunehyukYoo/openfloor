@@ -59,7 +59,6 @@ export function SiteHeader({
                     <>
                       <BreadcrumbItem key={`breadcrumb-${idx}`}>
                         <BreadcrumbLink
-                          key={`breadcrumb-${idx}`}
                           onClick={() =>
                             navigate(
                               `/dashboard/${title.toLowerCase()}/${debateId}`

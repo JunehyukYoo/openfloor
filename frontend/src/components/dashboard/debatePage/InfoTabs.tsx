@@ -332,7 +332,7 @@ const InfoTabs = () => {
                   // The last participant doesn't have a separator at the end
                   if (idx === debate.participants.length - 1) {
                     return (
-                      <div key={participant.id}>
+                      <div key={`participants-${participant.id}-${idx}`}>
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex gap-4">
                             <Avatar className="h-10 w-10">
@@ -376,7 +376,7 @@ const InfoTabs = () => {
                   }
                   return (
                     <>
-                      <div key={participant.id}>
+                      <div key={`participants-${participant.id}-${idx}`}>
                         <div className="flex items-center justify-between">
                           <div className="flex gap-4">
                             <Avatar className="h-10 w-10">
