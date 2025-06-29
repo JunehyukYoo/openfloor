@@ -1,34 +1,75 @@
 // components/dashboard/debatePage/stancesPage/CommentComponent.tsx
+
 import type { Comment } from "../../../../types";
 import { Button } from "../../../ui/button";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { getTimeAgo } from "../../../../utils/debateUtils";
 import Author from "../Author";
 
 const CommentComponent = ({
   comment,
+  depth,
+  avatarRef,
   onComment,
+  onLayoutChange,
 }: {
   comment: Comment;
-  onComment: (parentId?: number) => Promise<void>;
+  depth: number;
+  avatarRef?: React.RefObject<HTMLDivElement | null>;
+  onComment: ({
+    content,
+    parentId,
+  }: {
+    content: string;
+    parentId?: number;
+  }) => Promise<void>;
+  onLayoutChange: () => void | null;
 }) => {
   const [showComments, setShowComments] = useState<boolean>(false);
   const [commentInput, setCommentInput] = useState<string>("");
   const [isCommenting, setIsCommenting] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [timeAgo, setTimeAgo] = useState<string>("");
+  const hasComments = comment.children && comment.children.length > 0;
 
   useEffect(
     () => setTimeAgo(getTimeAgo(new Date(comment.createdAt))),
     [comment.createdAt]
   );
 
+  // Trigger recalculation after state change
+  // (but since state updates are batched, wait for next tick)
+  const toggleReplies = () => {
+    setShowComments((prev) => {
+      const newValue = !prev;
+      setTimeout(() => {
+        if (depth === 0) {
+          onLayoutChange();
+        }
+      }, 0);
+      return newValue;
+    });
+  };
+
   return (
-    <div className="flex gap-4">
-      <Author
-        username={comment.author!.username}
-        profilePicture={comment.author!.profilePicture}
-      />
+    <div className="relative flex gap-4">
+      <div className="absolute -left-[33px] top-2 -translate-y-1/2 w-10 h-10">
+        <div className="flex items-center">
+          <div className="h-6 w-full border-l-2 border-b-2 border-neutral-200 rounded-bl-4xl"></div>
+          <div className="h-px bg-neutral-200 flex-1"></div>
+        </div>
+      </div>
+      <div ref={depth === 0 ? avatarRef : undefined}>
+        <Author
+          username={comment.author!.username}
+          profilePicture={comment.author!.profilePicture}
+        />
+      </div>
+      {hasComments && showComments && (
+        <div className="absolute w-6">
+          <div className="w-[2px] bg-neutral-200 translate-x-[15px] translate-y-8 h-15" />
+        </div>
+      )}
       <div className="grow pt-1">
         <p className="font-semibold">
           {comment.author!.username} -{" "}
@@ -46,9 +87,10 @@ const CommentComponent = ({
           <Button
             variant="link"
             className="m-0 p-0"
-            onClick={() => setShowComments(!showComments)}
+            disabled={!hasComments}
+            onClick={toggleReplies}
           >
-            Show replies
+            {showComments ? "Hide replies" : "Show replies"}
           </Button>
         </div>
         {isCommenting && (
@@ -68,7 +110,10 @@ const CommentComponent = ({
                 size="sm"
                 onClick={async () => {
                   setIsLoading(true);
-                  await onComment(comment.id);
+                  await onComment({
+                    content: commentInput,
+                    parentId: comment.id,
+                  });
                   setIsLoading(false);
                   setIsCommenting(false);
                   setCommentInput("");
@@ -81,11 +126,13 @@ const CommentComponent = ({
           </div>
         )}
         {showComments && (
-          <div className="mt-2 ml-4 border-l-2 border-neutral-700 pl-4">
+          <div className="mt-4">
             {comment.children?.map((reply) => (
               <CommentComponent
                 key={reply.id}
+                depth={depth + 1}
                 comment={reply}
+                onLayoutChange={onLayoutChange}
                 onComment={onComment}
               />
             ))}

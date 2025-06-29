@@ -1,3 +1,5 @@
+import type { Comment } from "../types";
+
 export function hasAdminPermissions(role: string): boolean {
   return role === "ADMIN" || role === "CREATOR";
 }
@@ -33,4 +35,29 @@ export function getTimeAgo(date: Date) {
   }
   diff = Math.floor(diff / 12);
   return `${diff}y Ago`;
+}
+
+export function buildCommentTree(comments: Comment[]): Comment[] {
+  const commentMap: Record<number, Comment> = {};
+  const rootComments: Comment[] = [];
+
+  // Index by comment ID
+  comments.forEach((comment) => {
+    comment.children = [];
+    commentMap[comment.id] = comment;
+  });
+
+  // Building tree
+  comments.forEach((comment) => {
+    if (comment.parentId) {
+      const parent = commentMap[comment.parentId];
+      if (parent) {
+        parent.children!.push(comment);
+      }
+    } else {
+      rootComments.push(comment);
+    }
+  });
+
+  return rootComments;
 }

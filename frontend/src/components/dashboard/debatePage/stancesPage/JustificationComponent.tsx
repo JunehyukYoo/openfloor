@@ -1,5 +1,7 @@
-import type { Justification, Vote } from "../../../../types";
-import { useState, useEffect } from "react";
+// components/dashboard/debatePage/stancesPage/JustificationComponent.tsx
+
+import type { Justification, Vote, Comment } from "../../../../types";
+import { useState, useEffect, useRef } from "react";
 import { Card } from "../../../ui/card";
 import Author from "../Author";
 import { Button } from "../../../ui/button";
@@ -9,10 +11,11 @@ import {
   IconArrowBigUpFilled,
   IconArrowBigDownFilled,
 } from "@tabler/icons-react";
-import Comment from "./CommentComponent";
+import CommentComponent from "./CommentComponent";
 import {
   getTimeAgo,
   hasDebatePermissions,
+  buildCommentTree,
 } from "../../../../utils/debateUtils";
 import { useDebateContextNonNull } from "../../../../context/debateContext";
 import api from "../../../../../api/axios";
@@ -24,6 +27,7 @@ const JustificationComponent = ({
   justification: Justification;
 }) => {
   const [showComments, setShowComments] = useState<boolean>(false);
+  const [comments, setComments] = useState<Comment[] | null>(null);
   const [commentInput, setCommentInput] = useState<string>("");
   const [isCommenting, setIsCommenting] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -36,8 +40,57 @@ const JustificationComponent = ({
   );
   const isUpvoted = userVote?.value === 1;
   const isDownvoted = userVote?.value === -1;
-  const hasComments =
-    justification.comments && justification.comments.length > 0;
+  const hasComments = comments && comments.length > 0;
+
+  // FOR REDDIT LIKE LINE DRAWING
+  const barRef = useRef<HTMLDivElement | null>(null);
+  const lastAvatarRef = useRef<HTMLDivElement | null>(null);
+  const [barHeight, setBarHeight] = useState<number>(0);
+
+  const triggerBarRecalculation = () => {
+    if (!barRef.current || !lastAvatarRef.current) return;
+
+    const barTop = barRef.current.getBoundingClientRect().top;
+    const lastAvatarTop = lastAvatarRef.current.getBoundingClientRect().top;
+    const lastAvatarHeight =
+      lastAvatarRef.current.getBoundingClientRect().height;
+
+    const distance = lastAvatarTop - barTop + lastAvatarHeight / 2 - 50;
+
+    setBarHeight(distance);
+  };
+
+  // Lazy-loading justification's comments
+  useEffect(() => {
+    if (showComments && comments === null) {
+      const fetchAndBuildTree = async () => {
+        try {
+          const response = await api.get(
+            `/debates/${debate.id}/justifications/${justification.id}/comments`
+          );
+
+          const flatComments = response.data.comments;
+          const nestedComments = buildCommentTree(flatComments);
+
+          setComments(nestedComments);
+        } catch (error) {
+          console.error("Error fetching comments:", error);
+          toast.error("Failed to load comments.", {
+            position: "top-right",
+            theme: "dark",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
+      };
+
+      fetchAndBuildTree();
+    }
+  }, [showComments, debate.id, justification.id, comments]);
 
   useEffect(
     () => setTimeAgo(getTimeAgo(new Date(justification.createdAt))),
@@ -84,14 +137,18 @@ const JustificationComponent = ({
     }
   };
 
-  const handleComment = async (parentId?: number) => {
-    if (!commentInput.trim()) return;
+  const handleComment = async ({
+    content,
+    parentId,
+  }: {
+    content: string;
+    parentId?: number;
+  }) => {
+    if (!content.trim()) return;
     setIsLoading(true);
     try {
       // parentId for nested comments
-      const data = parentId
-        ? { content: commentInput, parentId }
-        : { content: commentInput };
+      const data = parentId ? { content, parentId } : { content };
       await api.post(
         `/debates/${debate.id}/justification/${justification.id}/comments`,
         data
@@ -123,6 +180,11 @@ const JustificationComponent = ({
           username={justification.author!.username}
           profilePicture={justification.author!.profilePicture}
         />
+        {hasComments && showComments && (
+          <div className="absolute w-6">
+            <div className="w-[2px] bg-neutral-200 translate-x-[15px] translate-y-8 h-20" />
+          </div>
+        )}
         <div className="text-left pt-1">
           <p className="font-semibold">
             {justification.author!.username} -{" "}
@@ -196,7 +258,7 @@ const JustificationComponent = ({
               className="m-0 p-0"
               onClick={() => setShowComments(!showComments)}
             >
-              Show comments
+              {showComments ? "Hide comments" : "Show comments"}
             </Button>
           </div>
           {isCommenting && (
@@ -214,7 +276,7 @@ const JustificationComponent = ({
                 </Button>
                 <Button
                   size="sm"
-                  onClick={() => handleComment()}
+                  onClick={() => handleComment({ content: commentInput })}
                   disabled={isLoading}
                 >
                   {isLoading ? "Posting..." : "Post"}
@@ -224,16 +286,31 @@ const JustificationComponent = ({
           )}
           {showComments &&
             (hasComments ? (
-              <div className="flex flex-col gap-4 pt-4">
-                {justification.comments?.map((comment) => {
-                  return (
-                    <Comment
-                      key={comment.id}
-                      comment={comment}
-                      onComment={handleComment}
-                    />
-                  );
-                })}
+              <div className="relative flex flex-col pt-4">
+                <div
+                  ref={barRef}
+                  className="absolute -left-[33px] w-[2px] bg-neutral-200"
+                  style={{ top: 0, height: `${barHeight}px` }}
+                ></div>
+
+                <div className="flex flex-col gap-4">
+                  {comments.map((comment, idx) => {
+                    return (
+                      <CommentComponent
+                        key={comment.id}
+                        comment={comment}
+                        onComment={handleComment}
+                        onLayoutChange={triggerBarRecalculation}
+                        depth={0}
+                        avatarRef={
+                          idx === comments.length - 1
+                            ? lastAvatarRef
+                            : undefined
+                        }
+                      />
+                    );
+                  })}
+                </div>
               </div>
             ) : (
               <p className="text-muted-foreground text-sm">No comments yet.</p>
