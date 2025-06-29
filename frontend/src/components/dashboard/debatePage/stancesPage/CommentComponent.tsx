@@ -5,6 +5,8 @@ import { Button } from "../../../ui/button";
 import { useState, useEffect } from "react";
 import { getTimeAgo } from "../../../../utils/debateUtils";
 import Author from "../Author";
+import { hasDebatePermissions } from "../../../../utils/debateUtils";
+import { useDebateContextNonNull } from "../../../../context/debateContext";
 
 const CommentComponent = ({
   comment,
@@ -24,7 +26,10 @@ const CommentComponent = ({
   const [isCommenting, setIsCommenting] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [timeAgo, setTimeAgo] = useState<string>("");
+  const { debate, userDetails } = useDebateContextNonNull();
   const hasComments = comment.children && comment.children.length > 0;
+  const canDebate =
+    userDetails && !debate.closed && hasDebatePermissions(userDetails.role);
 
   useEffect(
     () => setTimeAgo(getTimeAgo(new Date(comment.createdAt))),
@@ -48,7 +53,8 @@ const CommentComponent = ({
         <div className="flex gap-2">
           <Button
             variant="link"
-            className="m-0 p-0 "
+            className="m-0 p-0"
+            disabled={!canDebate}
             onClick={() => setIsCommenting(!isCommenting)}
           >
             Reply

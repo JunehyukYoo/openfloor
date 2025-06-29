@@ -741,6 +741,53 @@ router.put(
   }
 );
 
+// JUSTIFICATION ROUTES
+router.post(
+  "/:debateId/stances/:stanceId/justifications",
+  ensureAuthenticated,
+  ensureDebateAuthenticated,
+  async (req, res) => {
+    const { debateId, stanceId } = req.params;
+    const { content } = req.body;
+    const user = req.user as User;
+
+    if (!content || !content.trim()) {
+      res.status(400).json({ message: "Justification content is required." });
+      return;
+    }
+
+    try {
+      const stance = await prisma.stance.findFirst({
+        where: {
+          id: Number(stanceId),
+          debateId: debateId,
+        },
+      });
+
+      if (!stance) {
+        res.status(404).json({ message: "Stance not found for this debate." });
+        return;
+      }
+
+      const newJustification = await prisma.justification.create({
+        data: {
+          content: content.trim(),
+          stanceId: stance.id,
+          authorId: user.id,
+        },
+      });
+
+      res.status(201).json({
+        message: "Justification created successfully.",
+        justification: newJustification,
+      });
+    } catch (error) {
+      console.error("Error creating justification:", error);
+      res.status(500).json({ message: "Internal server error." });
+    }
+  }
+);
+
 // COMMENT ROUTES
 
 router.post(

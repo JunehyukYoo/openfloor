@@ -32,6 +32,7 @@ const JustificationComponent = ({
   const [isCommenting, setIsCommenting] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [timeAgo, setTimeAgo] = useState<string>("");
+  const [commentsVersion, setCommentsVersion] = useState<number>(0);
   const { debate, userDetails, refreshDebate } = useDebateContextNonNull();
   const canDebate =
     userDetails && !debate.closed && hasDebatePermissions(userDetails.role);
@@ -44,7 +45,7 @@ const JustificationComponent = ({
 
   // Lazy-loading justification's comments
   useEffect(() => {
-    if (showComments && comments === null) {
+    if (showComments) {
       const fetchAndBuildTree = async () => {
         try {
           const response = await api.get(
@@ -72,7 +73,7 @@ const JustificationComponent = ({
 
       fetchAndBuildTree();
     }
-  }, [showComments, debate.id, justification.id, comments]);
+  }, [showComments, debate.id, justification.id, comments, commentsVersion]);
 
   useEffect(
     () => setTimeAgo(getTimeAgo(new Date(justification.createdAt))),
@@ -138,6 +139,7 @@ const JustificationComponent = ({
       setCommentInput("");
       setIsCommenting(false);
       refreshDebate();
+      setCommentsVersion((prev) => prev + 1);
     } catch (error) {
       console.error("Error posting comment:", error);
       toast.error("Failed to post comment.", {
@@ -225,7 +227,8 @@ const JustificationComponent = ({
             )}
             <Button
               variant="link"
-              className="m-0 p-0 "
+              className="m-0 p-0"
+              disabled={!canDebate}
               onClick={() => setIsCommenting(!isCommenting)}
             >
               Comment
