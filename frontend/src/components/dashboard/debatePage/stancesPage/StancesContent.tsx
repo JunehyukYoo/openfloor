@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { useDebateContextNonNull } from "../../../../context/debateContext";
 import { Separator } from "../../../ui/separator";
 import { Card } from "../../../ui/card";
-import Justification from "./JustificationDetailed";
+import Justification from "./JustificationComponent";
 
 const StancesContent = () => {
   const { debate } = useDebateContextNonNull();

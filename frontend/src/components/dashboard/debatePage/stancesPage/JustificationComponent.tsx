@@ -1,23 +1,24 @@
 import type { Justification, Vote } from "../../../../types";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "../../../ui/card";
-import { Avatar, AvatarImage } from "../../../ui/avatar";
+import Author from "../Author";
 import { Button } from "../../../ui/button";
-import {
-  // hasAdminPermissions,
-  hasDebatePermissions,
-} from "../../../../utils/debateUtils";
-import { useDebateContextNonNull } from "../../../../context/debateContext";
-import api from "../../../../../api/axios";
-import { toast } from "react-toastify";
 import {
   IconArrowBigUp,
   IconArrowBigDown,
   IconArrowBigUpFilled,
   IconArrowBigDownFilled,
 } from "@tabler/icons-react";
+import Comment from "./CommentComponent";
+import {
+  getTimeAgo,
+  hasDebatePermissions,
+} from "../../../../utils/debateUtils";
+import { useDebateContextNonNull } from "../../../../context/debateContext";
+import api from "../../../../../api/axios";
+import { toast } from "react-toastify";
 
-const JustificationDetailed = ({
+const JustificationComponent = ({
   justification,
 }: {
   justification: Justification;
@@ -26,6 +27,7 @@ const JustificationDetailed = ({
   const [commentInput, setCommentInput] = useState<string>("");
   const [isCommenting, setIsCommenting] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [timeAgo, setTimeAgo] = useState<string>("");
   const { debate, userDetails, refreshDebate } = useDebateContextNonNull();
   const canDebate =
     userDetails && !debate.closed && hasDebatePermissions(userDetails.role);
@@ -36,6 +38,11 @@ const JustificationDetailed = ({
   const isDownvoted = userVote?.value === -1;
   const hasComments =
     justification.comments && justification.comments.length > 0;
+
+  useEffect(
+    () => setTimeAgo(getTimeAgo(new Date(justification.createdAt))),
+    [justification.createdAt]
+  );
 
   const handleVote = async (
     justificationId: number,
@@ -77,13 +84,17 @@ const JustificationDetailed = ({
     }
   };
 
-  const handleComment = async () => {
+  const handleComment = async (parentId?: number) => {
     if (!commentInput.trim()) return;
     setIsLoading(true);
     try {
+      // parentId for nested comments
+      const data = parentId
+        ? { content: commentInput, parentId }
+        : { content: commentInput };
       await api.post(
         `/debates/${debate.id}/justification/${justification.id}/comments`,
-        { content: commentInput }
+        data
       );
       setCommentInput("");
       setIsCommenting(false);
@@ -105,53 +116,17 @@ const JustificationDetailed = ({
     }
   };
 
-  const getTimeAgo = () => {
-    let diff = Math.floor(
-      (Date.now() - new Date(justification.createdAt).getTime()) / 1000
-    );
-    if (diff < 60) {
-      return `${diff}s Ago`;
-    }
-    diff = Math.floor(diff / 60);
-    if (diff < 60) {
-      return `${diff}min Ago`;
-    }
-    diff = Math.floor(diff / 60);
-    if (diff < 24) {
-      return `${diff}h Ago`;
-    }
-    diff = Math.floor(diff / 24);
-    if (diff < 7) {
-      return `${diff}d Ago`;
-    }
-    diff = Math.floor(diff / 7);
-    if (diff < 20) {
-      return `${diff}w Ago`;
-    }
-    diff = Math.floor(diff / 4);
-    if (diff < 12) {
-      return `${diff}mon Ago`;
-    }
-    diff = Math.floor(diff / 12);
-    return `${diff}y Ago`;
-  };
-
   return (
-    <Card className="bg-neutral-900">
+    <Card className="bg-neutral-900 pt-1 pb-1">
       <div className="flex gap-4 p-4">
-        <Avatar className="h-8 w-8">
-          <AvatarImage
-            src={justification.author?.profilePicture}
-            alt={justification.author?.username}
-            className="h-10 w-10 rounded-full object-cover"
-          />
-        </Avatar>
+        <Author
+          username={justification.author!.username}
+          profilePicture={justification.author!.profilePicture}
+        />
         <div className="text-left pt-1">
           <p className="font-semibold">
-            {justification.author?.username} -{" "}
-            <span className="text-muted-foreground text-sm">
-              {getTimeAgo()}
-            </span>
+            {justification.author!.username} -{" "}
+            <span className="text-muted-foreground text-sm">{timeAgo}</span>
           </p>
           <p>{justification.content}</p>
           <div className="flex gap-2 items-center">
@@ -237,7 +212,11 @@ const JustificationDetailed = ({
                 <Button size="sm" onClick={() => setIsCommenting(false)}>
                   Close
                 </Button>
-                <Button size="sm" onClick={handleComment} disabled={isLoading}>
+                <Button
+                  size="sm"
+                  onClick={() => handleComment()}
+                  disabled={isLoading}
+                >
                   {isLoading ? "Posting..." : "Post"}
                 </Button>
               </div>
@@ -245,9 +224,15 @@ const JustificationDetailed = ({
           )}
           {showComments &&
             (hasComments ? (
-              <div>
+              <div className="flex flex-col gap-4 pt-4">
                 {justification.comments?.map((comment) => {
-                  return <p>{comment.content}</p>;
+                  return (
+                    <Comment
+                      key={comment.id}
+                      comment={comment}
+                      onComment={handleComment}
+                    />
+                  );
                 })}
               </div>
             ) : (
@@ -259,4 +244,4 @@ const JustificationDetailed = ({
   );
 };
 
-export default JustificationDetailed;
+export default JustificationComponent;
