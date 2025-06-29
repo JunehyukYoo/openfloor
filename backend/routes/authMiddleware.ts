@@ -59,6 +59,7 @@ export async function ensureDebateAuthenticated(
       res.status(401).send({
         message: "Lack permissions to view or participate in debate.",
       });
+      return;
     }
 
     return next();
