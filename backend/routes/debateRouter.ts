@@ -86,7 +86,7 @@ router.post("/create", ensureAuthenticated, async (req, res) => {
 });
 
 router.get(
-  "/:id",
+  "/:debateId",
   ensureAuthenticated,
   ensureDebateAuthenticated,
   async (req, res) => {
@@ -94,11 +94,11 @@ router.get(
       res.status(401).json({ message: "User not authenticated." });
       return;
     }
-    const { id } = req.params;
+    const { debateId } = req.params;
     try {
       const debate = await prisma.debate.findUnique({
         where: {
-          id: id,
+          id: debateId,
         },
         include: {
           topic: true,
@@ -121,7 +121,7 @@ router.get(
         where: {
           userId_debateId: {
             userId: (req.user as User).id,
-            debateId: id,
+            debateId,
           },
         },
       });
@@ -134,12 +134,12 @@ router.get(
 );
 
 router.get(
-  "/:id/support",
+  "/:debateId/support",
   ensureAuthenticated,
   ensureDebateAuthenticated,
   async (req, res) => {
     try {
-      const { id } = req.params;
+      const { debateId } = req.params;
       const user = req.user as User;
       const justificationVotes = await prisma.vote.groupBy({
         by: ["justificationId"],
@@ -147,7 +147,7 @@ router.get(
       });
 
       const justifications = await prisma.justification.findMany({
-        where: { stance: { debateId: id } },
+        where: { stance: { debateId } },
         select: { id: true, stanceId: true },
       });
 
@@ -166,7 +166,7 @@ router.get(
       });
 
       const stances = await prisma.stance.findMany({
-        where: { debateId: id },
+        where: { debateId },
         select: { id: true, label: true },
       });
 
@@ -184,11 +184,11 @@ router.get(
 );
 
 router.delete(
-  "/:id",
+  "/:debateId",
   ensureAuthenticated,
   ensureDebateAuthenticated,
   async (req, res) => {
-    const { id } = req.params;
+    const { debateId } = req.params;
     const user = req.user as User;
 
     try {
@@ -196,7 +196,7 @@ router.delete(
         where: {
           userId_debateId: {
             userId: user.id,
-            debateId: id,
+            debateId,
           },
         },
       });
@@ -210,7 +210,7 @@ router.delete(
 
       await prisma.debate.delete({
         where: {
-          id,
+          id: debateId,
         },
       });
       res.json({ message: "Debate successfully deleted." });
@@ -222,13 +222,13 @@ router.delete(
 );
 
 // NOTE: Can only join public debates, no need to check for debate authentication
-router.post("/:id/join", ensureAuthenticated, async (req, res) => {
-  const { id } = req.params;
+router.post("/:debateId/join", ensureAuthenticated, async (req, res) => {
+  const { debateId } = req.params;
   const user = req.user as User;
 
   try {
     const existingParticipant = await prisma.participant.findUnique({
-      where: { userId_debateId: { userId: user.id, debateId: id } },
+      where: { userId_debateId: { userId: user.id, debateId } },
     });
 
     if (existingParticipant) {
@@ -238,7 +238,7 @@ router.post("/:id/join", ensureAuthenticated, async (req, res) => {
     await prisma.participant.create({
       data: {
         userId: user.id,
-        debateId: id,
+        debateId,
         role: "DEBATER",
       },
     });
@@ -251,18 +251,18 @@ router.post("/:id/join", ensureAuthenticated, async (req, res) => {
 });
 
 router.delete(
-  "/:id/leave",
+  "/:debateId/leave",
   ensureAuthenticated,
   ensureDebateAuthenticated,
   async (req, res) => {
-    const { id } = req.params;
+    const { debateId } = req.params;
     const user = req.user as User;
     try {
       await prisma.participant.delete({
         where: {
           userId_debateId: {
             userId: user.id,
-            debateId: id,
+            debateId,
           },
         },
       });
@@ -275,11 +275,11 @@ router.delete(
 );
 
 router.put(
-  "/:id/end",
+  "/:debateId/end",
   ensureAuthenticated,
   ensureDebateAuthenticated,
   async (req, res) => {
-    const { id } = req.params;
+    const { debateId } = req.params;
     const user = req.user as User;
 
     try {
@@ -287,14 +287,14 @@ router.put(
         where: {
           userId_debateId: {
             userId: user.id,
-            debateId: id,
+            debateId,
           },
         },
       });
 
       if (participant!.role === "CREATOR" || participant!.role === "ADMIN") {
         await prisma.debate.update({
-          where: { id },
+          where: { id: debateId },
           data: { closed: true },
         });
         res.json({ message: "Debate ended successfully." });
@@ -312,12 +312,12 @@ router.put(
 
 // Create token
 router.post(
-  "/:id/invites",
+  "/:debateId/invites",
   ensureAuthenticated,
   ensureDebateAuthenticated,
   async (req, res) => {
     const user = req.user as User;
-    const { id } = req.params;
+    const { debateId } = req.params;
     const { role } = req.body;
 
     try {
@@ -325,7 +325,7 @@ router.post(
         where: {
           userId_debateId: {
             userId: user.id,
-            debateId: id,
+            debateId,
           },
         },
       });
@@ -348,7 +348,7 @@ router.post(
       const invite = await prisma.inviteToken.create({
         data: {
           token,
-          debateId: id,
+          debateId,
           expiresAt,
           role,
         },
@@ -363,55 +363,60 @@ router.post(
 );
 
 // Join via token
-router.post("/:id/join-via-token", ensureAuthenticated, async (req, res) => {
-  const { id } = req.params;
-  const { token } = req.body;
-  const user = req.user as User;
-
-  try {
-    // Validate token
-    const invite = await prisma.inviteToken.findFirst({
-      where: { token, debateId: id, expiresAt: { gt: new Date() } },
-    });
-
-    if (!invite) {
-      res.status(400).json({ message: "Invalid or expired invite token." });
-      return;
-    }
-
-    // Check if user is already a participant
-    const existingParticipant = await prisma.participant.findUnique({
-      where: { userId_debateId: { userId: user.id, debateId: id } },
-    });
-
-    if (existingParticipant) {
-      res.status(400).json({ message: "You are already a participant." });
-      return;
-    }
-
-    // Add user as observer (public debates do not need tokens)
-    await prisma.participant.create({
-      data: { userId: user.id, debateId: id, role: invite.role },
-    });
-
-    res.json({ message: "Successfully joined the debate." });
-  } catch (error) {
-    console.error("Error joining debate via token:", error);
-    res.status(500).json({ message: "Internal server error." });
-  }
-});
-
-// Get active tokens
-router.get(
-  "/:id/invites",
+router.post(
+  "/:debateId/join-via-token",
   ensureAuthenticated,
   ensureDebateAuthenticated,
   async (req, res) => {
-    const { id } = req.params;
+    const { debateId } = req.params;
+    const { token } = req.body;
+    const user = req.user as User;
+
+    try {
+      // Validate token
+      const invite = await prisma.inviteToken.findFirst({
+        where: { token, debateId, expiresAt: { gt: new Date() } },
+      });
+
+      if (!invite) {
+        res.status(400).json({ message: "Invalid or expired invite token." });
+        return;
+      }
+
+      // Check if user is already a participant
+      const existingParticipant = await prisma.participant.findUnique({
+        where: { userId_debateId: { userId: user.id, debateId } },
+      });
+
+      if (existingParticipant) {
+        res.status(400).json({ message: "You are already a participant." });
+        return;
+      }
+
+      // Add user as observer (public debates do not need tokens)
+      await prisma.participant.create({
+        data: { userId: user.id, debateId, role: invite.role },
+      });
+
+      res.json({ message: "Successfully joined the debate." });
+    } catch (error) {
+      console.error("Error joining debate via token:", error);
+      res.status(500).json({ message: "Internal server error." });
+    }
+  }
+);
+
+// Get active tokens
+router.get(
+  "/:debateId/invites",
+  ensureAuthenticated,
+  ensureDebateAuthenticated,
+  async (req, res) => {
+    const { debateId } = req.params;
 
     try {
       const tokens = await prisma.inviteToken.findMany({
-        where: { debateId: id, expiresAt: { gt: new Date() } }, // Only return non-expired tokens
+        where: { debateId, expiresAt: { gt: new Date() } }, // Only return non-expired tokens
         select: {
           token: true,
           role: true,
@@ -438,7 +443,7 @@ router.get(
         const label = labelMap[token.role as keyof typeof labelMap];
         responseMap[
           label
-        ] = `${FRONTEND_URL}/dashboard/debates/${id}?invite=${token.token}`;
+        ] = `${FRONTEND_URL}/dashboard/debates/${debateId}?invite=${token.token}`;
       });
 
       res.json({ responseMap, expiresAt: tokens[0].expiresAt });
@@ -454,6 +459,7 @@ router.get(
 router.put(
   "/:debateId/participants/:participantId/role",
   ensureAuthenticated,
+  ensureDebateAuthenticated,
   async (req, res) => {
     const { participantId } = req.params;
     const { role } = req.body;
@@ -484,6 +490,7 @@ router.put(
 router.delete(
   "/:debateId/participants/:participantId",
   ensureAuthenticated,
+  ensureDebateAuthenticated,
   async (req, res) => {
     try {
       const { debateId, participantId } = req.params;
@@ -527,90 +534,101 @@ router.delete(
 
 // STANCE ROUTES
 // Stance edit form submission
-router.put("/:debateId/stances", ensureAuthenticated, async (req, res) => {
-  try {
-    const { debateId } = req.params;
-    const { updatedStances, stancesToDelete } = req.body;
+router.put(
+  "/:debateId/stances",
+  ensureAuthenticated,
+  ensureDebateAuthenticated,
+  async (req, res) => {
+    try {
+      const { debateId } = req.params;
+      const { updatedStances, stancesToDelete } = req.body;
 
-    // Validate arrays
-    if (!Array.isArray(updatedStances) || !Array.isArray(stancesToDelete)) {
-      res.status(400).json({ message: "Invalid input format." });
-      return;
+      // Validate arrays
+      if (!Array.isArray(updatedStances) || !Array.isArray(stancesToDelete)) {
+        res.status(400).json({ message: "Invalid input format." });
+        return;
+      }
+
+      // Update stance labels
+      for (const stance of updatedStances) {
+        await prisma.stance.update({
+          where: { id: stance.id },
+          data: { label: stance.label },
+        });
+      }
+
+      // Delete stances
+      if (stancesToDelete.length > 0) {
+        await prisma.stance.deleteMany({
+          where: {
+            id: { in: stancesToDelete },
+            debateId: debateId,
+          },
+        });
+      }
+
+      res.status(200).json({ message: "Stances updated successfully." });
+    } catch (error) {
+      console.error("Error updating stances:", error);
+      res.status(500).json({ message: "Internal server error." });
     }
+  }
+);
 
-    // Update stance labels
-    for (const stance of updatedStances) {
-      await prisma.stance.update({
-        where: { id: stance.id },
-        data: { label: stance.label },
-      });
-    }
+router.post(
+  "/:debateId/stances",
+  ensureAuthenticated,
+  ensureDebateAuthenticated,
+  async (req, res) => {
+    try {
+      const { debateId } = req.params;
+      const { stances } = req.body;
 
-    // Delete stances
-    if (stancesToDelete.length > 0) {
-      await prisma.stance.deleteMany({
-        where: {
-          id: { in: stancesToDelete },
+      // Validate request body
+      if (
+        !Array.isArray(stances) ||
+        stances.some(
+          (label) => typeof label !== "string" || label.trim().length === 0
+        )
+      ) {
+        res.status(400).json({ message: "Stances must be non-empty strings." });
+        return;
+      }
+
+      // Enforce character limit
+      const MAX_LENGTH = 100;
+      if (stances.some((label) => label.length > MAX_LENGTH)) {
+        res
+          .status(400)
+          .json({ message: `Stances cannot exceed ${MAX_LENGTH} characters.` });
+        return;
+      }
+
+      // Create new stances
+      const newStances = await prisma.stance.createMany({
+        data: stances.map((label) => ({
+          label: label.trim(),
           debateId: debateId,
-        },
+        })),
       });
-    }
 
-    res.status(200).json({ message: "Stances updated successfully." });
-  } catch (error) {
-    console.error("Error updating stances:", error);
-    res.status(500).json({ message: "Internal server error." });
+      res.status(201).json({
+        message: "Stances created successfully.",
+        stances: newStances,
+      });
+    } catch (error) {
+      console.error("Error adding stances:", error);
+      res.status(500).json({ message: "Internal server error." });
+    }
   }
-});
-
-router.post("/:debateId/stances", ensureAuthenticated, async (req, res) => {
-  try {
-    const { debateId } = req.params;
-    const { stances } = req.body;
-
-    // Validate request body
-    if (
-      !Array.isArray(stances) ||
-      stances.some(
-        (label) => typeof label !== "string" || label.trim().length === 0
-      )
-    ) {
-      res.status(400).json({ message: "Stances must be non-empty strings." });
-      return;
-    }
-
-    // Enforce character limit
-    const MAX_LENGTH = 100;
-    if (stances.some((label) => label.length > MAX_LENGTH)) {
-      res
-        .status(400)
-        .json({ message: `Stances cannot exceed ${MAX_LENGTH} characters.` });
-      return;
-    }
-
-    // Create new stances
-    const newStances = await prisma.stance.createMany({
-      data: stances.map((label) => ({
-        label: label.trim(),
-        debateId: debateId,
-      })),
-    });
-
-    res.status(201).json({
-      message: "Stances created successfully.",
-      stances: newStances,
-    });
-  } catch (error) {
-    console.error("Error adding stances:", error);
-    res.status(500).json({ message: "Internal server error." });
-  }
-});
+);
 
 // VOTE ROUTES
 // Create Vote
 router.post(
   "/:debateId/justification/:justificationId/votes",
   ensureAuthenticated,
+  ensureDebateAuthenticated,
   async (req, res) => {
     try {
       const { debateId, justificationId } = req.params;
@@ -654,6 +672,7 @@ router.post(
 router.delete(
   "/:debateId/justification/:justificationId/votes/:voteId",
   ensureAuthenticated,
+  ensureDebateAuthenticated,
   async (req, res) => {
     try {
       const { debateId, justificationId, voteId } = req.params;
@@ -687,9 +706,10 @@ router.delete(
 router.put(
   "/:debateId/justification/:justificationId/votes/:voteId",
   ensureAuthenticated,
+  ensureDebateAuthenticated,
   async (req, res) => {
     try {
-      const { debateId, justificationId, voteId } = req.params;
+      const { voteId } = req.params;
       const { value } = req.body;
       const user = req.user as User;
 

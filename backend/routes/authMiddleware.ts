@@ -18,12 +18,12 @@ export async function ensureDebateAuthenticated(
   res: Response,
   next: NextFunction
 ) {
-  const { id } = req.params;
+  const { debateId } = req.params;
   const token = req.query.invite as string | undefined;
 
   try {
     const debate = await prisma.debate.findUnique({
-      where: { id },
+      where: { id: debateId },
       include: { participants: true },
     });
 
@@ -37,11 +37,16 @@ export async function ensureDebateAuthenticated(
       return next();
     }
 
+    if (!req.user) {
+      res.status(401).json({ message: "User not authenticated." });
+      return;
+    }
+
     const user = req.user as User;
 
     // Check if user is a participant
     const validParticipant = await prisma.participant.findUnique({
-      where: { userId_debateId: { userId: user.id, debateId: id } },
+      where: { userId_debateId: { userId: user.id, debateId } },
     });
 
     // Check if user has a valid invite token
@@ -49,7 +54,7 @@ export async function ensureDebateAuthenticated(
       ? await prisma.inviteToken.findFirst({
           where: {
             token,
-            debateId: id,
+            debateId,
             expiresAt: { gt: new Date() },
           },
         })
