@@ -1,7 +1,7 @@
 // components/dashboard/debatePage/stancesPage/JustificationComponent.tsx
 
 import type { Justification, Vote, Comment } from "../../../../types";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "../../../ui/card";
 import Author from "../Author";
 import { Button } from "../../../ui/button";
@@ -41,24 +41,6 @@ const JustificationComponent = ({
   const isUpvoted = userVote?.value === 1;
   const isDownvoted = userVote?.value === -1;
   const hasComments = comments && comments.length > 0;
-
-  // FOR REDDIT LIKE LINE DRAWING
-  const barRef = useRef<HTMLDivElement | null>(null);
-  const lastAvatarRef = useRef<HTMLDivElement | null>(null);
-  const [barHeight, setBarHeight] = useState<number>(0);
-
-  const triggerBarRecalculation = () => {
-    if (!barRef.current || !lastAvatarRef.current) return;
-
-    const barTop = barRef.current.getBoundingClientRect().top;
-    const lastAvatarTop = lastAvatarRef.current.getBoundingClientRect().top;
-    const lastAvatarHeight =
-      lastAvatarRef.current.getBoundingClientRect().height;
-
-    const distance = lastAvatarTop - barTop + lastAvatarHeight / 2 - 50;
-
-    setBarHeight(distance);
-  };
 
   // Lazy-loading justification's comments
   useEffect(() => {
@@ -180,11 +162,6 @@ const JustificationComponent = ({
           username={justification.author!.username}
           profilePicture={justification.author!.profilePicture}
         />
-        {hasComments && showComments && (
-          <div className="absolute w-6">
-            <div className="w-[2px] bg-neutral-200 translate-x-[15px] translate-y-8 h-20" />
-          </div>
-        )}
         <div className="text-left pt-1">
           <p className="font-semibold">
             {justification.author!.username} -{" "}
@@ -286,31 +263,16 @@ const JustificationComponent = ({
           )}
           {showComments &&
             (hasComments ? (
-              <div className="relative flex flex-col pt-4">
-                <div
-                  ref={barRef}
-                  className="absolute -left-[33px] w-[2px] bg-neutral-200"
-                  style={{ top: 0, height: `${barHeight}px` }}
-                ></div>
-
-                <div className="flex flex-col gap-4">
-                  {comments.map((comment, idx) => {
-                    return (
-                      <CommentComponent
-                        key={comment.id}
-                        comment={comment}
-                        onComment={handleComment}
-                        onLayoutChange={triggerBarRecalculation}
-                        depth={0}
-                        avatarRef={
-                          idx === comments.length - 1
-                            ? lastAvatarRef
-                            : undefined
-                        }
-                      />
-                    );
-                  })}
-                </div>
+              <div className="relative flex flex-col gap-4 mt-4 border-l-2 border-neutral-400">
+                {comments.map((comment) => {
+                  return (
+                    <CommentComponent
+                      key={comment.id}
+                      comment={comment}
+                      onComment={handleComment}
+                    />
+                  );
+                })}
               </div>
             ) : (
               <p className="text-muted-foreground text-sm">No comments yet.</p>
