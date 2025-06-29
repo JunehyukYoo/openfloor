@@ -111,7 +111,11 @@ router.get(
           stances: {
             include: {
               justifications: {
-                include: { author: true, votes: true, comments: true },
+                include: {
+                  author: true,
+                  votes: true,
+                  comments: { include: { author: true } },
+                },
               },
             },
           },
@@ -177,7 +181,7 @@ router.get(
       }));
       res.json({ supportMap });
     } catch (error) {
-      console.error("Error deleting debate:", error);
+      console.error("Error fetching support map:", error);
       res.status(500).json({ message: "Internal server error." });
     }
   }
@@ -732,6 +736,40 @@ router.put(
       res.status(200).json({ vote: updatedVote });
     } catch (error) {
       console.error("Error updating vote:", error);
+      res.status(500).json({ message: "Internal server error." });
+    }
+  }
+);
+
+// COMMENT ROUTES
+
+router.post(
+  "/:debateId/justification/:justificationId/comments",
+  ensureAuthenticated,
+  ensureDebateAuthenticated,
+  async (req, res) => {
+    try {
+      const { debateId, justificationId } = req.params;
+      const { content, parentId } = req.body;
+      const user = req.user as User;
+
+      if (!content || typeof content !== "string" || content.trim() === "") {
+        res.status(400).json({ message: "Comment cannot be empty." });
+        return;
+      }
+
+      const comment = await prisma.comment.create({
+        data: {
+          content: content.trim(),
+          parentId: parentId || null,
+          justificationId: Number(justificationId),
+          authorId: user.id,
+        },
+      });
+
+      res.status(201).json({ comment });
+    } catch (error) {
+      console.error("Error creating comment:", error);
       res.status(500).json({ message: "Internal server error." });
     }
   }
