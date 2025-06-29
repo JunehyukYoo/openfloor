@@ -1,4 +1,5 @@
 import type { Justification, Vote } from "../../../../types";
+import { useState } from "react";
 import { Card } from "../../../ui/card";
 import { Avatar, AvatarImage } from "../../../ui/avatar";
 import { Button } from "../../../ui/button";
@@ -21,9 +22,11 @@ const JustificationDetailed = ({
 }: {
   justification: Justification;
 }) => {
+  const [showComments, setShowComments] = useState<boolean>(false);
+  const [commentInput, setCommentInput] = useState<string>("");
+  const [isCommenting, setIsCommenting] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { debate, userDetails, refreshDebate } = useDebateContextNonNull();
-  // const isAdmin =
-  //   userDetails && !debate.closed && hasAdminPermissions(userDetails.role);
   const canDebate =
     userDetails && !debate.closed && hasDebatePermissions(userDetails.role);
   const userVote = justification.votes?.find(
@@ -31,6 +34,8 @@ const JustificationDetailed = ({
   );
   const isUpvoted = userVote?.value === 1;
   const isDownvoted = userVote?.value === -1;
+  const hasComments =
+    justification.comments && justification.comments.length > 0;
 
   const handleVote = async (
     justificationId: number,
@@ -69,6 +74,34 @@ const JustificationDetailed = ({
         draggable: true,
         progress: undefined,
       });
+    }
+  };
+
+  const handleComment = async () => {
+    if (!commentInput.trim()) return;
+    setIsLoading(true);
+    try {
+      await api.post(
+        `/debates/${debate.id}/justification/${justification.id}/comments`,
+        { content: commentInput }
+      );
+      setCommentInput("");
+      setIsCommenting(false);
+      refreshDebate();
+    } catch (error) {
+      console.error("Error posting comment:", error);
+      toast.error("Failed to post comment.", {
+        position: "top-right",
+        theme: "dark",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -176,13 +209,50 @@ const JustificationDetailed = ({
                 }
               />
             )}
-            <Button variant="link" className="m-0 p-0">
+            <Button
+              variant="link"
+              className="m-0 p-0 "
+              onClick={() => setIsCommenting(!isCommenting)}
+            >
               Comment
             </Button>
-            <Button variant="link" className="m-0 p-0">
+            <Button
+              variant="link"
+              className="m-0 p-0"
+              onClick={() => setShowComments(!showComments)}
+            >
               Show comments
             </Button>
           </div>
+          {isCommenting && (
+            <div className="mt-2 flex flex-col gap-2 rounded-xl border-2 bg-neutral-800 text-white focus-within:outline-1">
+              <textarea
+                className="w-full p-2 border-0 outline-none min-h-[40px]"
+                placeholder="Write your comment..."
+                value={commentInput}
+                onChange={(e) => setCommentInput(e.target.value)}
+                rows={3}
+              />
+              <div className="flex justify-end gap-2 pr-2 pb-2">
+                <Button size="sm" onClick={() => setIsCommenting(false)}>
+                  Close
+                </Button>
+                <Button size="sm" onClick={handleComment} disabled={isLoading}>
+                  {isLoading ? "Posting..." : "Post"}
+                </Button>
+              </div>
+            </div>
+          )}
+          {showComments &&
+            (hasComments ? (
+              <div>
+                {justification.comments?.map((comment) => {
+                  return <p>{comment.content}</p>;
+                })}
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-sm">No comments yet.</p>
+            ))}
         </div>
       </div>
     </Card>
