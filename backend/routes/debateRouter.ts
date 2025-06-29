@@ -775,4 +775,27 @@ router.post(
   }
 );
 
+// Flat list of comments per justification for frontend to process
+router.get(
+  "/:debateId/justifications/:justificationId/comments",
+  ensureAuthenticated,
+  ensureDebateAuthenticated,
+  async (req, res) => {
+    const { justificationId } = req.params;
+
+    try {
+      const comments = await prisma.comment.findMany({
+        where: { justificationId: Number(justificationId) },
+        include: { author: true },
+        orderBy: { createdAt: "asc" },
+      });
+
+      res.json({ comments });
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      res.status(500).json({ message: "Internal server error." });
+    }
+  }
+);
+
 export default router;
