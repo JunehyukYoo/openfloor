@@ -86,8 +86,6 @@ npx prisma db seed
 
 ✅ Seeds the database with initial data.
 
----
-
 ## 🚀 Production Deployment Notes
 
 - **Backend Hosting:** Railway
