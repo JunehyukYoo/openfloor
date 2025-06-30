@@ -788,6 +788,51 @@ router.post(
   }
 );
 
+router.delete(
+  "/:debateId/justifications/:justificationId",
+  ensureAuthenticated,
+  ensureDebateAuthenticated,
+  async (req, res) => {
+    try {
+      const { debateId, justificationId } = req.params;
+      const user = req.user as User;
+
+      const justification = await prisma.justification.findUnique({
+        where: { id: Number(justificationId) },
+      });
+
+      const participant = await prisma.participant.findUnique({
+        where: { userId_debateId: { userId: user.id, debateId } },
+      });
+
+      if (!justification) {
+        res.status(404).json({ message: "Justification not found." });
+        return;
+      }
+
+      if (
+        justification.authorId !== user.id &&
+        participant!.role !== "ADMIN" &&
+        participant!.role !== "CREATOR"
+      ) {
+        res.status(403).json({
+          message: "You are not authorized to delete this justification.",
+        });
+        return;
+      }
+
+      await prisma.justification.delete({
+        where: { id: Number(justificationId) },
+      });
+
+      res.json({ message: "Successfully deleted justification." });
+    } catch (error) {
+      console.error("Error deleting justification:", error);
+      res.status(500).json({ message: "Internal server error." });
+    }
+  }
+);
+
 // COMMENT ROUTES
 
 router.post(
@@ -817,6 +862,60 @@ router.post(
       res.status(201).json({ comment });
     } catch (error) {
       console.error("Error creating comment:", error);
+      res.status(500).json({ message: "Internal server error." });
+    }
+  }
+);
+
+router.delete(
+  "/:debateId/justifications/:justificationId/comments/:commentId",
+  ensureAuthenticated,
+  ensureDebateAuthenticated,
+  async (req, res) => {
+    try {
+      const { debateId, justificationId, commentId } = req.params;
+      const user = req.user as User;
+
+      const comment = await prisma.comment.findUnique({
+        where: { id: Number(commentId) },
+      });
+
+      const participant = await prisma.participant.findUnique({
+        where: { userId_debateId: { userId: user.id, debateId } },
+      });
+
+      if (!comment) {
+        res.status(404).json({ message: "Comment not found." });
+        return;
+      }
+
+      if (comment.justificationId !== Number(justificationId)) {
+        res
+          .status(400)
+          .json({ message: "Comment does not belong to this justification." });
+        return;
+      }
+
+      if (
+        comment.authorId !== user.id &&
+        participant!.role !== "ADMIN" &&
+        participant!.role !== "CREATOR"
+      ) {
+        res
+          .status(403)
+          .json({ message: "You are not authorized to delete this comment." });
+        return;
+      }
+
+      await prisma.comment.delete({
+        where: {
+          id: Number(commentId),
+        },
+      });
+
+      res.json({ message: "Succeessfully deleted comment." });
+    } catch (error) {
+      console.error("Error deleting comment:", error);
       res.status(500).json({ message: "Internal server error." });
     }
   }

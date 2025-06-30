@@ -1,18 +1,30 @@
 // components/dashboard/debatePage/stancesPage/CommentComponent.tsx
 
 import type { Comment } from "../../../../types";
+import { IconDots } from "@tabler/icons-react";
 import { Button } from "../../../ui/button";
 import { useState, useEffect } from "react";
 import { getTimeAgo } from "../../../../utils/debateUtils";
 import Author from "../Author";
-import { hasDebatePermissions } from "../../../../utils/debateUtils";
+import {
+  hasDebatePermissions,
+  hasAdminPermissions,
+} from "../../../../utils/debateUtils";
 import { useDebateContextNonNull } from "../../../../context/debateContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../ui/dropdown-menu";
 
 const CommentComponent = ({
   comment,
+  onDelete,
   onComment,
 }: {
   comment: Comment;
+  onDelete: (commentId: number) => Promise<void>;
   onComment: ({
     content,
     parentId,
@@ -28,6 +40,8 @@ const CommentComponent = ({
   const [timeAgo, setTimeAgo] = useState<string>("");
   const { debate, userDetails } = useDebateContextNonNull();
   const hasComments = comment.children && comment.children.length > 0;
+  const isAdmin =
+    userDetails && !debate.closed && hasAdminPermissions(userDetails.role);
   const canDebate =
     userDetails && !debate.closed && hasDebatePermissions(userDetails.role);
 
@@ -50,7 +64,7 @@ const CommentComponent = ({
           <span className="text-muted-foreground text-sm">{timeAgo}</span>
         </p>
         <p className="text-wrap">{comment.content}</p>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <Button
             variant="link"
             className="m-0 p-0"
@@ -67,6 +81,22 @@ const CommentComponent = ({
           >
             {showComments ? "Hide replies" : "Show replies"}
           </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <IconDots size={18} className="hover:cursor-pointer" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="dark">
+              <DropdownMenuItem variant="destructive">Report</DropdownMenuItem>
+              {(isAdmin || userDetails!.userId === comment.authorId) && (
+                <DropdownMenuItem
+                  variant="destructive"
+                  onClick={() => onDelete(comment.id)}
+                >
+                  Delete
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         {isCommenting && (
           <div className="mt-2 flex flex-col gap-2 rounded-xl border-2 bg-neutral-800 text-white focus-within:outline-1">
@@ -106,6 +136,7 @@ const CommentComponent = ({
               <CommentComponent
                 key={reply.id}
                 comment={reply}
+                onDelete={onDelete}
                 onComment={onComment}
               />
             ))}

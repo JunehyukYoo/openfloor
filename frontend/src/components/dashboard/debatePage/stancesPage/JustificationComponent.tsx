@@ -10,12 +10,20 @@ import {
   IconArrowBigDown,
   IconArrowBigUpFilled,
   IconArrowBigDownFilled,
+  IconDots,
 } from "@tabler/icons-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../ui/dropdown-menu";
 import CommentComponent from "./CommentComponent";
 import {
   getTimeAgo,
   hasDebatePermissions,
   buildCommentTree,
+  hasAdminPermissions,
 } from "../../../../utils/debateUtils";
 import { useDebateContextNonNull } from "../../../../context/debateContext";
 import api from "../../../../../api/axios";
@@ -34,6 +42,8 @@ const JustificationComponent = ({
   const [timeAgo, setTimeAgo] = useState<string>("");
   const [commentsVersion, setCommentsVersion] = useState<number>(0);
   const { debate, userDetails, refreshDebate } = useDebateContextNonNull();
+  const isAdmin =
+    userDetails && !debate.closed && hasAdminPermissions(userDetails.role);
   const canDebate =
     userDetails && !debate.closed && hasDebatePermissions(userDetails.role);
   const userVote = justification.votes?.find(
@@ -157,6 +167,68 @@ const JustificationComponent = ({
     }
   };
 
+  const handleDeleteComment = async (commentId: number) => {
+    try {
+      await api.delete(
+        `/debates/${debate.id}/justifications/${justification.id}/comments/${commentId}`
+      );
+      toast.success("Comment deleted successfully.", {
+        position: "top-right",
+        theme: "dark",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      setCommentsVersion((prev) => prev + 1);
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      toast.error("Failed to delete comment.", {
+        position: "top-right",
+        theme: "dark",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  };
+
+  const handleDeleteJustification = async () => {
+    try {
+      await api.delete(
+        `/debates/${debate.id}/justifications/${justification.id}`
+      );
+      toast.success("Justification deleted successfully.", {
+        position: "top-right",
+        theme: "dark",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      refreshDebate();
+    } catch (error) {
+      console.error("Error deleting justification:", error);
+      toast.error("Failed to delete justification.", {
+        position: "top-right",
+        theme: "dark",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  };
+
   return (
     <Card className="bg-neutral-900 pt-1 pb-1 max-w-full">
       <div className="flex gap-4 p-4">
@@ -242,6 +314,25 @@ const JustificationComponent = ({
             >
               {showComments ? "Hide comments" : "Show comments"}
             </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <IconDots size={18} className="hover:cursor-pointer" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="dark">
+                <DropdownMenuItem variant="destructive">
+                  Report
+                </DropdownMenuItem>
+                {(isAdmin ||
+                  userDetails!.userId === justification.authorId) && (
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={handleDeleteJustification}
+                  >
+                    Delete
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           {isCommenting && (
             <div className="mt-2 flex flex-col gap-2 rounded-xl border-2 bg-neutral-800 text-white focus-within:outline-1">
@@ -274,6 +365,7 @@ const JustificationComponent = ({
                     <CommentComponent
                       key={comment.id}
                       comment={comment}
+                      onDelete={handleDeleteComment}
                       onComment={handleComment}
                     />
                   );
