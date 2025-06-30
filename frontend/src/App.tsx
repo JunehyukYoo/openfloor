@@ -29,7 +29,11 @@ function App() {
   const { isLoading } = useAuth();
 
   if (isLoading) {
-    return <LoadingScreen />;
+    return (
+      <div className="h-screen w-screen">
+        <LoadingScreen />
+      </div>
+    );
   }
 
   return (
