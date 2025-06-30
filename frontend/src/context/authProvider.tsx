@@ -14,7 +14,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const checkLogin = async () => {
       try {
         const res = await api.get("/me");
-        if (res.status === 200) {
+        if (res.status === 200 && res.data.user) {
           setLoggedIn(true);
           setUser(res.data.user);
         } else {
