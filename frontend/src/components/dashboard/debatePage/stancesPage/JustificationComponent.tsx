@@ -158,18 +158,20 @@ const JustificationComponent = ({
   };
 
   return (
-    <Card className="bg-neutral-900 pt-1 pb-1">
+    <Card className="bg-neutral-900 pt-1 pb-1 max-w-full">
       <div className="flex gap-4 p-4">
         <Author
           username={justification.author!.username}
           profilePicture={justification.author!.profilePicture}
         />
-        <div className="text-left pt-1">
+        <div className="text-left pt-1 w-0 flex-1">
           <p className="font-semibold">
             {justification.author!.username} -{" "}
             <span className="text-muted-foreground text-sm">{timeAgo}</span>
           </p>
-          <p>{justification.content}</p>
+          <p className="break-words whitespace-pre-wrap max-w-full overflow-hidden">
+            {justification.content}
+          </p>
           <div className="flex gap-2 items-center">
             {justification.votes?.reduce((acc, v) => acc + v.value, 0)}
             {!isUpvoted ? (

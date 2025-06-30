@@ -108,7 +108,7 @@ const StancesCard = () => {
                     {stance.label} {i === 0 && "(leading)"}
                   </AccordionTrigger>
                   <AccordionContent className="flex flex-col gap-4">
-                    <Card className="p-4 bg-neutral-800/[0.9]">
+                    <Card className="p-4 bg-neutral-800/[0.9] flex flex-col gap-4">
                       {stance.justifications &&
                       stance.justifications.length > 0 ? (
                         stance.justifications.map((j, idx) => {
@@ -117,12 +117,16 @@ const StancesCard = () => {
                           );
                           const isUpvoted = userVote?.value === 1;
                           const isDownvoted = userVote?.value === -1;
+                          const isNotLast =
+                            idx !== stance.justifications!.length - 1;
                           return (
                             <div
                               key={`j-${j.id}-accordion`}
-                              className="flex gap-4"
+                              className={`grid grid-cols-4 gap-2 pb-4 items-start w-full ${
+                                isNotLast && "border-b-2"
+                              }`}
                             >
-                              <h3 className="flex gap-2 items-center">
+                              <div className="col-span-1 flex gap-2 items-center">
                                 <Avatar className="h-10 w-10">
                                   <AvatarImage
                                     src={j.author?.profilePicture}
@@ -134,20 +138,18 @@ const StancesCard = () => {
                                   <span className="font-medium">
                                     {j.author?.username}
                                   </span>
-                                  <span className="text-sm text-muted-foreground">
-                                    {j.author?.email}
-                                  </span>
                                 </div>
-                              </h3>
-                              <h3 className="text-[18px] grow pt-2">
+                              </div>
+                              <div className="col-span-4 text-left text-[1rem] min-w-0 break-words">
                                 <span className="underline text-sm">
                                   {idx === 0
                                     ? "TOP Justification"
                                     : `Justification #${idx + 1}`}
-                                </span>{" "}
+                                </span>
+                                <br />
                                 {j.content}
-                              </h3>
-                              <h3 className="flex gap-1 items-center">
+                              </div>
+                              <div className="col-span-1 flex gap-1 items-center whitespace-nowrap">
                                 {j.votes?.reduce((acc, v) => acc + v.value, 0)}
                                 {!isUpvoted ? (
                                   <IconArrowBigUp
@@ -176,7 +178,6 @@ const StancesCard = () => {
                                     }
                                   />
                                 )}
-
                                 {!isDownvoted ? (
                                   <IconArrowBigDown
                                     size={24}
@@ -204,7 +205,7 @@ const StancesCard = () => {
                                     }
                                   />
                                 )}
-                              </h3>
+                              </div>
                             </div>
                           );
                         })

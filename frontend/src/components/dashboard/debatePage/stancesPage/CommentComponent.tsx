@@ -49,7 +49,7 @@ const CommentComponent = ({
           {comment.author!.username} -{" "}
           <span className="text-muted-foreground text-sm">{timeAgo}</span>
         </p>
-        <p>{comment.content}</p>
+        <p className="text-wrap">{comment.content}</p>
         <div className="flex gap-2">
           <Button
             variant="link"
