@@ -22,10 +22,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Set up cors
-// NOTE: origin url should be changed for production
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.FRONTEND_URL,
     credentials: true,
   })
 );
@@ -53,7 +52,6 @@ app.use(
 );
 
 // Initialize passport and its sessions
-// TODO: Currently not using hashing for dev purposes, change later
 require("./config/passport");
 app.use(passport.initialize());
 app.use(passport.session());
