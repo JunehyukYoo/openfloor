@@ -1,5 +1,6 @@
 // server.ts
-require("dotenv").config();
+const dotenv = require("dotenv");
+const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const pool = require("./lib/pool").default;
@@ -7,6 +8,13 @@ const session = require("express-session");
 const poolSession = require("connect-pg-simple")(session);
 const passport = require("passport");
 import { Request, Response, NextFunction } from "express";
+
+const envFile =
+  process.env.NODE_ENV === "production"
+    ? ".env.production"
+    : ".env.development";
+dotenv.config({ path: path.resolve(process.cwd(), envFile) });
+console.log(`✅ Loaded environment from ${envFile}`);
 
 // Setup app
 const app = express();
