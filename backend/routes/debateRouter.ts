@@ -630,7 +630,7 @@ router.post(
 // VOTE ROUTES
 // Create Vote
 router.post(
-  "/:debateId/justification/:justificationId/votes",
+  "/:debateId/justifications/:justificationId/votes",
   ensureAuthenticated,
   ensureDebateAuthenticated,
   async (req, res) => {
@@ -674,7 +674,7 @@ router.post(
 
 // Delete Vote
 router.delete(
-  "/:debateId/justification/:justificationId/votes/:voteId",
+  "/:debateId/justifications/:justificationId/votes/:voteId",
   ensureAuthenticated,
   ensureDebateAuthenticated,
   async (req, res) => {
@@ -708,7 +708,7 @@ router.delete(
 
 // Update Vote
 router.put(
-  "/:debateId/justification/:justificationId/votes/:voteId",
+  "/:debateId/justifications/:justificationId/votes/:voteId",
   ensureAuthenticated,
   ensureDebateAuthenticated,
   async (req, res) => {
@@ -791,7 +791,7 @@ router.post(
 // COMMENT ROUTES
 
 router.post(
-  "/:debateId/justification/:justificationId/comments",
+  "/:debateId/justifications/:justificationId/comments",
   ensureAuthenticated,
   ensureDebateAuthenticated,
   async (req, res) => {

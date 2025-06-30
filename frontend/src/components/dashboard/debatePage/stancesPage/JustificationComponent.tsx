@@ -89,18 +89,18 @@ const JustificationComponent = ({
       if (!userVote) {
         // User hasn't voted yet: create vote
         await api.post(
-          `/debates/${debate.id}/justification/${justificationId}/votes`,
+          `/debates/${debate.id}/justifications/${justificationId}/votes`,
           { value }
         );
       } else if (userVote.value === value) {
         // User clicked the same vote: delete (toggle off)
         await api.delete(
-          `/debates/${debate.id}/justification/${justificationId}/votes/${userVote.id}`
+          `/debates/${debate.id}/justifications/${justificationId}/votes/${userVote.id}`
         );
       } else {
         // User switches vote direction: update
         await api.put(
-          `/debates/${debate.id}/justification/${justificationId}/votes/${userVote.id}`,
+          `/debates/${debate.id}/justifications/${justificationId}/votes/${userVote.id}`,
           { value }
         );
       }
@@ -133,7 +133,7 @@ const JustificationComponent = ({
       // parentId for nested comments
       const data = parentId ? { content, parentId } : { content };
       await api.post(
-        `/debates/${debate.id}/justification/${justification.id}/comments`,
+        `/debates/${debate.id}/justifications/${justification.id}/comments`,
         data
       );
       setCommentInput("");
