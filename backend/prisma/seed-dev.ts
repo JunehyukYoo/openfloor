@@ -1,6 +1,6 @@
 // prisma/seed-dev.ts
 import "dotenv/config";
-import { Role } from "../generated/prisma";
+import { Role } from "@prisma/client";
 import prisma from "../lib/prisma";
 import bcrypt from "bcryptjs";
 import type { User } from "../types/index";

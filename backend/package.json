@@ -10,9 +10,9 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "scripts": {
-    "build": "npm install",
+    "build": "tsc && npm run prisma:generate",
+    "start": "node dist/server.js",
     "dev": "npm run prisma:generate && ts-node-dev --respawn --pretty --transpile-only ./server.ts",
-    "start": "ts-node server.ts",
     "prisma:generate": "prisma generate"
   },
   "keywords": [],
@@ -20,7 +20,6 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
-    "@prisma/client": "^6.9.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/express-session": "^1.18.2",
@@ -34,8 +33,10 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@prisma/client": "^6.10.1",
     "aws-sdk": "^2.1692.0",
     "bcrypt": "^6.0.0",
+    "connect-pg-simple": "^10.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.0.0",
     "express": "^5.1.0",

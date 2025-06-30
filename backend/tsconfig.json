@@ -1,6 +1,7 @@
 // backend/tsconfig.json
 {
   "compilerOptions": {
+    "outDir": "./dist",
     "target": "ES2020",
     "module": "CommonJS",
     "moduleResolution": "node",

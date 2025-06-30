@@ -2,7 +2,7 @@
 
 import express from "express";
 import prisma from "../lib/prisma";
-import { Role } from "../generated/prisma/client";
+import { Role } from "@prisma/client";
 import {
   ensureAuthenticated,
   ensureDebateAuthenticated,
