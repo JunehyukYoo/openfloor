@@ -4,6 +4,8 @@
 
 **OpenFloor** is a modern web platform for hosting and participating in structured, user-facilitated debates. Designed for students, educators, and debate enthusiasts, it offers a clean, fast, and engaging space to explore ideas, justify stances, and make persuasive arguments.
 
+### [Click Me](https://openfloor-debate.vercel.app/) to begin debating!
+
 ## ✨ Features
 
 - 🎙 **Start or Join Debates**  
