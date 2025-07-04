@@ -14,9 +14,27 @@ const Register = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  const usernameRegex = /^[a-zA-Z0-9]{3,20}$/;
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
+    if (!usernameRegex.test(username)) {
+      setErrorMessage(
+        "Username must be 3-20 characters long and contain only letters and numbers."
+      );
+      return;
+    }
+
+    if (!passwordRegex.test(password)) {
+      setErrorMessage(
+        "Password must be at least 8 characters long, and include at least one uppercase letter, one lowercase letter, one digit, and one special character (!@#$%^&*)."
+      );
+      return;
+    }
+
     if (password !== passwordAgain) {
       setErrorMessage("Passwords do not match, try again.");
       setPassword("");
