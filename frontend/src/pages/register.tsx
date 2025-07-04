@@ -9,6 +9,7 @@ import axios from "axios";
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordAgain, setPasswordAgain] = useState("");
   const [username, setUsername] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -16,6 +17,13 @@ const Register = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
+    if (password !== passwordAgain) {
+      setErrorMessage("Passwords do not match, try again.");
+      setPassword("");
+      setPasswordAgain("");
+      return;
+    }
+
     try {
       const { data } = await api.post("/register", {
         email,
@@ -107,6 +115,16 @@ const Register = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="w-1/2 bg-transparent border-b border-white text-white text-base py-3 px-2 mb-5 outline-none placeholder:text-gray-400 focus:border-b-2 focus:border-indigo-500 transition-all"
+              />
+            </div>
+            <div className="flex justify-center items-center w-full">
+              <input
+                type="password"
+                placeholder="Confirm Password*"
+                required
+                value={passwordAgain}
+                onChange={(e) => setPasswordAgain(e.target.value)}
                 className="w-1/2 bg-transparent border-b border-white text-white text-base py-3 px-2 mb-5 outline-none placeholder:text-gray-400 focus:border-b-2 focus:border-indigo-500 transition-all"
               />
             </div>
